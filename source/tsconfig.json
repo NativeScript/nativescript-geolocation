@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5",
+        "noImplicitAny": false,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": false,
+        "declaration": false,
+        "noLib": false
+    },
+    "filesGlob": [
+        "../node_modules/tns-core-modules/tns-core-modules.d.ts",
+        "../d.ts/references.d.ts",
+        "./**/*.ts",
+        "!./node_modules/**/*.ts"
+    ],
+    "files": [
+        "../node_modules/tns-core-modules/tns-core-modules.d.ts",
+        "../d.ts/references.d.ts",
+        "./nativescript-geolocation-common.ts",
+        "./nativescript-geolocation.android.ts",
+        "./nativescript-geolocation.d.ts",
+        "./nativescript-geolocation.ios.ts"
+    ],
+    "exclude": []
+}
