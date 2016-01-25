@@ -2,8 +2,8 @@ import appModule = require("application");
 import enums = require("ui/enums");
 import timer = require("timer");
 import trace = require("trace");
-import defModule = require("nativescript-geolocation");
 import common = require("./nativescript-geolocation-common");
+import {LocationMonitor as LocationMonitorDef} from "./location-monitor";
 global.moduleMerge(common, exports);
 
 var locationListeners = {};
@@ -46,7 +46,7 @@ function createLocationListener() {
 }
 
 function locationFromAndroidLocation(androidLocation) {
-    var location = new defModule.Location();
+    var location = new common.Location();
     location.latitude = androidLocation.getLatitude();
     location.longitude = androidLocation.getLongitude();
     location.altitude = androidLocation.getAltitude();
@@ -83,7 +83,7 @@ function androidLocationFromLocation(location) {
     return androidLocation;
 }
 
-export class LocationMonitor implements defModule.LocationMonitor {
+export class LocationMonitor implements LocationMonitorDef {
     static getLastKnownLocation() {
         var criteria = new android.location.Criteria();
         criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);

@@ -3,7 +3,8 @@ import enums = require("ui/enums");
 import timer = require("timer");
 import trace = require("trace");
 import platformModule = require("platform");
-import defModule = require("nativescript-geolocation");
+import {Location as LocationDef} from "./location";
+import {LocationMonitor as LocationMonitorDef, Options} from "./location-monitor";
 import common = require("./nativescript-geolocation-common");
 global.moduleMerge(common, exports);
 
@@ -23,11 +24,11 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
     }
 
     private id: number;
-    private _onLocation: (location: defModule.Location) => any;
+    private _onLocation: (location: LocationDef) => any;
     private _onError: (error: Error) => any
-    private _options: defModule.Options;
+    private _options: Options;
 
-    public initWithLocationErrorOptions(location: (location: defModule.Location) => any, error?: (error: Error) => any, options?: defModule.Options): LocationListenerImpl {
+    public initWithLocationErrorOptions(location: (location: LocationDef) => any, error?: (error: Error) => any, options?: Options): LocationListenerImpl {
         this._onLocation = location;
 
         if (error) {
@@ -58,7 +59,7 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
 }
 
 function locationFromCLLocation(clLocation) {
-    var location = new defModule.Location();
+    var location = new common.Location();
     location.latitude = clLocation.coordinate.latitude;
     location.longitude = clLocation.coordinate.longitude;
     location.altitude = clLocation.altitude;
@@ -83,7 +84,7 @@ function clLocationFromLocation(location) {
     return iosLocation;
 }
 
-export class LocationMonitor implements defModule.LocationMonitor {
+export class LocationMonitor implements LocationMonitorDef {
     static getLastKnownLocation() {
         var iosLocation;
         for(var locManagerId in locationManagers) {
