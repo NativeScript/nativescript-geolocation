@@ -1,7 +1,9 @@
-import defModule = require("nativescript-geolocation");
+import {Location as LocationDef} from "./location";
+import * as locationModule from "./location-monitor";
 import timer = require("timer");
+var location: typeof locationModule = null; //required dynamically
 
-export class Location implements defModule.Location {
+export class Location implements LocationDef {
     public latitude: number;
     public longitude: number;
 
@@ -25,11 +27,14 @@ var defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
 export function getCurrentLocation(options) {
     options = options || {};
+    if (!location) {
+        location = require("nativescript-geolocation");
+    }
 
     if (options && options.timeout === 0) {
         // we should take any cached location e.g. lastKnownLocation
         return new Promise(function (resolve, reject) {
-            var lastLocation = defModule.LocationMonitor.getLastKnownLocation();
+            var lastLocation = location.LocationMonitor.getLastKnownLocation();
             if (lastLocation) {
                 if (options && typeof options.maximumAge === "number") {
                     if (lastLocation.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
@@ -54,9 +59,9 @@ export function getCurrentLocation(options) {
             if (timerId !== undefined) {
                 timer.clearTimeout(timerId);
             }
-            defModule.LocationMonitor.stopLocationMonitoring(locListenerId);
+            location.LocationMonitor.stopLocationMonitoring(locListenerId);
         }
-        if (!defModule.isEnabled()) {
+        if (!location.isEnabled()) {
             reject(new Error("Location service is disabled"));
         }
         var successCallback = function(location) {
@@ -75,10 +80,10 @@ export function getCurrentLocation(options) {
                 resolve(location);
             }
         };
-        var locListener = defModule.LocationMonitor.createListenerWithCallbackAndOptions(successCallback, options);
+        var locListener = location.LocationMonitor.createListenerWithCallbackAndOptions(successCallback, options);
 
         try {
-            defModule.LocationMonitor.startLocationMonitoring(options, locListener);
+            location.LocationMonitor.startLocationMonitoring(options, locListener);
         }
         catch (e) {
             stopTimerAndMonitor((<any>locListener).id);
@@ -87,7 +92,7 @@ export function getCurrentLocation(options) {
 
         if (options && typeof options.timeout === "number") {
             var timerId = timer.setTimeout(function () {
-                defModule.LocationMonitor.stopLocationMonitoring((<any>locListener).id);
+                location.LocationMonitor.stopLocationMonitoring((<any>locListener).id);
                 reject(new Error("Timeout while searching for location!"));
             }, options.timeout || defaultGetLocationTimeout);
         }
