@@ -16,7 +16,18 @@ module.exports = function(grunt) {
     copy: {
       package: {
         files: [
-          { expand: true, cwd: 'source', src: ['**/*.js', 'package.json', 'README.md', 'platforms/**'], dest: 'dist/package' }
+          {
+              expand: true,
+              cwd: 'source',
+              src: [
+                  '**/*.js',
+                  '**/*.d.ts',
+                  'package.json',
+                  'README.md',
+                  'platforms/**'
+              ],
+              dest: 'dist/package'
+          }
         ]
       }
     },
