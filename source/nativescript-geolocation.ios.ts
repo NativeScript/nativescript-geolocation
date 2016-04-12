@@ -166,7 +166,7 @@ export function distance(loc1, loc2) {
 }
 
 export function enableLocationRequest(always?: boolean) {
-    if (platformModule.device.osVersion.indexOf("8") === 0) {
+    if (Number(platformModule.device.osVersion) >= 8.0) {
         var iosLocationManager = CLLocationManager.alloc().init();
         if (always) {
             iosLocationManager.requestAlwaysAuthorization();
