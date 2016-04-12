@@ -85,7 +85,7 @@ declare module "nativescript-geolocation" {
     }
 
     function getCurrentLocation(options): Promise<Location>;
-    function watchLocation(options): Number;
+    function watchLocation(successCallback: (location: Location) => void, errorCallback: (err: Error) => void, options): Number;
     function clearWatch(watchId): void;
     function enableLocationRequest(always?: boolean): void;
     function isEnabled(): boolean;
