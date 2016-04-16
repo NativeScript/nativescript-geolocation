@@ -165,8 +165,16 @@ export function distance(loc1, loc2) {
     return loc1.ios.distanceFromLocation(loc2.ios);
 }
 
+/**
+* cast semantic version string to Float 9.9.9 -> 9.9
+**/
+export function semverToNum(semver: string): number {
+  const s = semver.split('.');
+  return s.length <= 2 ? Number(semver) : Number(`${s[0]}.${s[1]}`)
+}
+
 export function enableLocationRequest(always?: boolean) {
-    if (Number(platformModule.device.osVersion) >= 8.0) {
+    if (semverToNum(platformModule.device.osVersion) >= 8.0) {
         var iosLocationManager = CLLocationManager.alloc().init();
         if (always) {
             iosLocationManager.requestAlwaysAuthorization();
