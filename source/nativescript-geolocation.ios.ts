@@ -105,7 +105,7 @@ export class LocationMonitor implements LocationMonitorDef {
             return locationFromCLLocation(iosLocation);
         }
 
-        var locListener = new LocationListenerImpl();
+        var locListener = LocationListenerImpl.new();
         locListener.initWithLocationErrorOptions(null, null, null);
         iosLocation = LocationMonitor.createiOSLocationManager(locListener, null).location;
         if (iosLocation) {
@@ -129,7 +129,7 @@ export class LocationMonitor implements LocationMonitorDef {
     }
 
     static createListenerWithCallbackAndOptions(successCallback, options) {
-        var locListener = new LocationListenerImpl();
+        var locListener = LocationListenerImpl.new();
         locListener.initWithLocationErrorOptions(successCallback, null, options);
         return locListener;
     }
@@ -178,7 +178,7 @@ export function enableLocationRequest(always?: boolean) {
 }
 
 export function watchLocation(successCallback, errorCallback, options) {
-    var locListener = new LocationListenerImpl();
+    var locListener = LocationListenerImpl.new();
     locListener.initWithLocationErrorOptions(successCallback, errorCallback, options);
     try {
         var iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
