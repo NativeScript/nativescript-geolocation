@@ -1,4 +1,5 @@
 import appModule = require("application");
+import platform = require("platform");
 import enums = require("ui/enums");
 import timer = require("timer");
 import trace = require("trace");
@@ -154,7 +155,7 @@ export function distance(loc1, loc2) {
 }
 
 export function enableLocationRequest(always?: boolean) {
-    (<android.app.Activity>appModule.android.currentContext).startActivityForResult(new android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+    enableLocationRequestCore();
 }
 
 function criteriaFromOptions(options) {
@@ -168,7 +169,7 @@ function criteriaFromOptions(options) {
     return criteria;
 }
 
-export function watchLocation(successCallback, errorCallback, options) {
+function watchLocationCore(successCallback, errorCallback, options, locListener) {
     var criteria = new android.location.Criteria();
     if (options && options.desiredAccuracy <= enums.Accuracy.high) {
         criteria.setAccuracy(android.location.Criteria.ACCURACY_FINE);
@@ -176,21 +177,161 @@ export function watchLocation(successCallback, errorCallback, options) {
     else {
         criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
     }
-    var locListener = createLocationListener();
     (<any>locListener)._onLocation = successCallback;
     try {
         var updateTime = (options && typeof options.minimumUpdateTime === "number") ? options.minimumUpdateTime : minTimeUpdate;
         var updateDistance = (options && typeof options.updateDistance === "number") ? options.updateDistance : minRangeUpdate;
         getAndroidLocationManager().requestLocationUpdates(updateTime, updateDistance, criteria, locListener, null);
-        return (<any>locListener).id;
     }
     catch (e) {
         LocationMonitor.stopLocationMonitoring((<any>locListener).id);
         errorCallback(e);
-        return null;
     }
+}
+
+function enableLocationServiceRequest(currentContext, successCallback?, successArgs?, errorCallback?, errorArgs?) {
+    if (!isEnabled()) {
+        let onActivityResultHandler = function (data: appModule.AndroidActivityResultEventData) {
+            appModule.android.off(appModule.AndroidApplication.activityResultEvent, onActivityResultHandler);
+            if (data.requestCode === 0) {
+                if (isEnabled()) {
+                    if (successCallback) {
+                        successCallback.apply(this, successArgs);
+                    }
+                } else {
+                    if (errorCallback) {
+                        errorCallback.apply(this, errorArgs);
+                    }
+                }
+            }
+        };
+        appModule.android.on(appModule.AndroidApplication.activityResultEvent, onActivityResultHandler);
+        currentContext.startActivityForResult(new android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+    } else {
+        if (successCallback) {
+            successCallback.apply(this, successArgs);
+        }
+    }
+}
+
+function enableLocationRequestCore(successCallback?, successArgs?, errorCallback?, errorArgs?) {
+    let currentContext = <android.app.Activity>appModule.android.currentContext;
+    if (parseInt(platform.device.sdkVersion) >= 23) {
+        appModule.android.on(appModule.AndroidApplication.activityRequestPermissionsEvent, (data: appModule.AndroidActivityRequestPermissionsEventData) => {
+            console.log('requestCode: ' + data.requestCode + ' permissions: ' + data.permissions + ' grantResults: ' + data.grantResults);
+            if (data.requestCode === 5000) {
+                if (data.grantResults.length > 0 && data.grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    console.log("permission granted!!!");
+                    enableLocationServiceRequest(currentContext, successCallback, successArgs, errorCallback, errorArgs);
+                } else {
+                    console.log("permission not granted!!!");
+                    if (errorCallback) {
+                        errorCallback.apply(this, errorArgs);
+                    }
+                }
+            }
+        });
+        let res = (<any>android.support.v4.content.ContextCompat).checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
+        if (res === -1) {
+            (<any>android.support.v4.app).ActivityCompat.requestPermissions(currentContext, ['android.permission.ACCESS_FINE_LOCATION'], 5000);
+        } else {
+            enableLocationServiceRequest(currentContext, successCallback, successArgs, errorCallback, errorArgs);
+        }
+    } else {
+        enableLocationServiceRequest(currentContext, successCallback, successArgs, errorCallback, errorArgs);
+    }
+}
+
+export function watchLocation(successCallback, errorCallback, options) {
+    var locListener = createLocationListener();
+    if (!isEnabled()) {
+        let notGrantedError = new Error("Location service is not enabled or using it is not granted.");
+        enableLocationRequestCore(watchLocationCore, [successCallback, errorCallback, options, locListener], errorCallback, [notGrantedError]);
+    } else {
+        watchLocationCore(successCallback, errorCallback, options, locListener);
+    }
+    return (<any>locListener).id;
 }
 
 export function clearWatch(locListenerId) {
     LocationMonitor.stopLocationMonitoring(locListenerId);
+}
+
+export function getCurrentLocation(options) {
+    options = options || {};
+
+    if (options && options.timeout === 0) {
+        // we should take any cached location e.g. lastKnownLocation
+        return new Promise(function (resolve, reject) {
+            var lastLocation = LocationMonitor.getLastKnownLocation();
+            if (lastLocation) {
+                if (options && typeof options.maximumAge === "number") {
+                    if (lastLocation.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
+                        resolve(lastLocation);
+                    }
+                    else {
+                        reject(new Error("Last known location too old!"));
+                    }
+                }
+                else {
+                    resolve(lastLocation);
+                }
+            }
+            else {
+                reject(new Error("There is no last known location!"));
+            }
+        });
+    }
+
+    return new Promise(function (resolve, reject) {
+        var timerId;
+        var stopTimerAndMonitor = function (locListenerId) {
+            if (timerId !== undefined) {
+                timer.clearTimeout(timerId);
+            }
+            LocationMonitor.stopLocationMonitoring(locListenerId);
+        }
+        var enabledCallback = function (resolve, reject, options) {
+            var successCallback = function(location) {
+                if (options && typeof options.maximumAge === "number") {
+                    if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
+                        stopTimerAndMonitor((<any>locListener).id);
+                        resolve(location);
+                    }
+                    else {
+                        stopTimerAndMonitor((<any>locListener).id);
+                        reject(new Error("New location is older than requested maximum age!"));
+                    }
+                }
+                else {
+                    stopTimerAndMonitor((<any>locListener).id);
+                    resolve(location);
+                }
+            };
+            var locListener = LocationMonitor.createListenerWithCallbackAndOptions(successCallback, options);
+
+            try {
+                LocationMonitor.startLocationMonitoring(options, locListener);
+            }
+            catch (e) {
+                stopTimerAndMonitor((<any>locListener).id);
+                reject(e);
+            }
+
+            if (options && typeof options.timeout === "number") {
+                timerId = timer.setTimeout(function () {
+                    LocationMonitor.stopLocationMonitoring((<any>locListener).id);
+                    reject(new Error("Timeout while searching for location!"));
+                }, options.timeout || common.defaultGetLocationTimeout);
+            }
+        };
+        var permissionDeniedCallback = function (reject) {
+            reject(new Error("Location service is not enabled or using it is not granted."));
+        };
+        if (!isEnabled()) {
+            enableLocationRequestCore(enabledCallback, [resolve, reject, options], permissionDeniedCallback, [reject]);
+        } else {
+            enabledCallback(resolve, reject, options);
+        }
+    });
 }
