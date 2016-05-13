@@ -166,7 +166,13 @@ export function distance(loc1, loc2) {
 }
 
 export function enableLocationRequest(always?: boolean) {
-    if (Number(platformModule.device.osVersion) >= 8.0) {
+    var v2i = function convertVersionToInt(version){
+        // 9.9.9 -> 9, 9, 9
+        var parts = String(version).split(".").slice(0, 3).reverse(); while(parts.length < 3){ parts.unshift(0); }
+        // 9, 9, 9 -> 9 * (1000 ^ 2) + 9 * (1000 ^ 1) + 9 * (1000 ^ 0)
+        return parts.reduce(function(rv, cv, ci){ return rv += parseInt(cv) * Math.pow(1000, ci); }, 0);
+    }
+    if (v2i(platformModule.device.osVersion) >= v2i("8.0")) {
         var iosLocationManager = CLLocationManager.alloc().init();
         if (always) {
             iosLocationManager.requestAlwaysAuthorization();
