@@ -87,7 +87,7 @@ function clLocationFromLocation(location) {
 export class LocationMonitor implements LocationMonitorDef {
     static getLastKnownLocation() {
         var iosLocation;
-        for(var locManagerId in locationManagers) {
+        for (var locManagerId in locationManagers) {
             if (locationManagers.hasOwnProperty(locManagerId)) {
                 var tempLocation = locationManagers[locManagerId].location;
                 if (!iosLocation) {
@@ -151,8 +151,8 @@ export function isEnabled() {
         return (CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse
             || CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways
             || CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorized);
-        }
-        return false;
+    }
+    return false;
 }
 
 export function distance(loc1, loc2) {
@@ -166,14 +166,12 @@ export function distance(loc1, loc2) {
 }
 
 export function enableLocationRequest(always?: boolean) {
-    if (Number(platformModule.device.osVersion) >= 8.0) {
-        var iosLocationManager = CLLocationManager.alloc().init();
-        if (always) {
-            iosLocationManager.requestAlwaysAuthorization();
-        }
-        else {
-            iosLocationManager.requestWhenInUseAuthorization();
-        }
+    var iosLocationManager = CLLocationManager.alloc().init();
+    if (always) {
+        iosLocationManager.requestAlwaysAuthorization();
+    }
+    else {
+        iosLocationManager.requestWhenInUseAuthorization();
     }
 }
 
@@ -232,7 +230,7 @@ export function getCurrentLocation(options) {
         if (!isEnabled()) {
             reject(new Error("Location service is disabled"));
         }
-        var successCallback = function(location) {
+        var successCallback = function (location) {
             if (options && typeof options.maximumAge === "number") {
                 if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                     stopTimerAndMonitor((<any>locListener).id);
