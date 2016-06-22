@@ -9,6 +9,7 @@ import common = require("./nativescript-geolocation-common");
 global.moduleMerge(common, exports);
 
 var locationManagers = {};
+var locationListeners = {};
 var watchId = 0;
 var minRangeUpdate = 0; // 0 meters
 var defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
@@ -105,7 +106,7 @@ export class LocationMonitor implements LocationMonitorDef {
             return locationFromCLLocation(iosLocation);
         }
 
-        var locListener = new LocationListenerImpl();
+        var locListener = LocationListenerImpl.new();
         locListener.initWithLocationErrorOptions(null, null, null);
         iosLocation = LocationMonitor.createiOSLocationManager(locListener, null).location;
         if (iosLocation) {
@@ -119,17 +120,19 @@ export class LocationMonitor implements LocationMonitorDef {
             locationManagers[iosLocManagerId].stopUpdatingLocation();
             locationManagers[iosLocManagerId].delegate = null;
             delete locationManagers[iosLocManagerId];
+            delete locationListeners[iosLocManagerId];
         }
     }
 
     static startLocationMonitoring(options, locListener) {
         var iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
         locationManagers[locListener.id] = iosLocManager;
+        locationListeners[locListener.id] = locListener;
         iosLocManager.startUpdatingLocation();
     }
 
     static createListenerWithCallbackAndOptions(successCallback, options) {
-        var locListener = new LocationListenerImpl();
+        var locListener = LocationListenerImpl.new();
         locListener.initWithLocationErrorOptions(successCallback, null, options);
         return locListener;
     }
@@ -140,6 +143,7 @@ export class LocationMonitor implements LocationMonitorDef {
         iosLocManager.desiredAccuracy = options ? options.desiredAccuracy : enums.Accuracy.high;
         iosLocManager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
         locationManagers[locListener.id] = iosLocManager;
+        locationListeners[locListener.id] = locListener;
         return iosLocManager;
     }
 }
@@ -176,7 +180,7 @@ export function enableLocationRequest(always?: boolean) {
 }
 
 export function watchLocation(successCallback, errorCallback, options) {
-    var locListener = new LocationListenerImpl();
+    var locListener = LocationListenerImpl.new();
     locListener.initWithLocationErrorOptions(successCallback, errorCallback, options);
     try {
         var iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
