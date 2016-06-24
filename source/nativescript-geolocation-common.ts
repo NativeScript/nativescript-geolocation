@@ -1,7 +1,4 @@
 import {Location as LocationDef} from "./location";
-import * as locationModule from "./location-monitor";
-import timer = require("timer");
-var location: typeof locationModule = null; //required dynamically
 
 export class Location implements LocationDef {
     public latitude: number;

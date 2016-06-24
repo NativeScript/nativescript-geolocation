@@ -30,17 +30,19 @@ export interface Options {
     timeout?: number;
 }
 
-export function getCurrentLocation(options): Promise<Location>;
-export function watchLocation(options): Number;
-export function clearWatch(watchId): void;
+declare type successCallbackType = (location: Location) => void;
+declare type errorCallbackType = (error: Error) => void;
+
+export function getCurrentLocation(options: Options): Promise<Location>;
+export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
+export function clearWatch(watchId: number): void;
 export function enableLocationRequest(always?: boolean): void;
 export function isEnabled(): boolean;
 export function distance(loc1: Location, loc2: Location): number;
 
 export class LocationMonitor {
     static getLastKnownLocation(): Location;
-    static stopLocationMonitoring(locListenerId: Number): void;
     static startLocationMonitoring(options: Options, locListener: any): void;
-    static createListenerWithCallbackAndOptions(successCallback: (location: Location) => void, options: Options): any;
+    static createListenerWithCallbackAndOptions(successCallback: successCallbackType, options: Options): any;
     static stopLocationMonitoring(locListenerId: Number): void;
 }

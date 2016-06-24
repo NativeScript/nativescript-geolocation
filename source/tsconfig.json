@@ -20,7 +20,6 @@
         "../d.ts/references.d.ts",
         "./nativescript-geolocation-common.ts",
         "./nativescript-geolocation.android.ts",
-        "./nativescript-geolocation.d.ts",
         "./nativescript-geolocation.ios.ts"
     ],
     "exclude": []
