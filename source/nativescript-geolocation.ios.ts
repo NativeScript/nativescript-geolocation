@@ -17,9 +17,12 @@ var defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate {
     public static ObjCProtocols = [CLLocationManagerDelegate];
 
+    public authorizeAlways: boolean;
     public id: number;
     private _onLocation: successCallbackType;
     private _onError: errorCallbackType;
+    private _resolve: () => void;
+    private _reject: (error: Error) => void;
 
     public static initWithLocationError(successCallback: successCallbackType, error?: errorCallbackType): LocationListenerImpl {
         let listener = <LocationListenerImpl>LocationListenerImpl.new();
@@ -31,9 +34,20 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
         return listener;
     }
 
+    public static initWithPromiseCallbacks(resolve: () => void, reject: (error: Error) => void, authorizeAlways: boolean = false): LocationListenerImpl {
+        let listener = <LocationListenerImpl>LocationListenerImpl.new();
+        watchId++;
+        listener.id = watchId;
+        listener._resolve = resolve;
+        listener._reject = reject;
+        listener.authorizeAlways = authorizeAlways;
+
+        return listener;
+    }
+
     public locationManagerDidUpdateLocations(manager: CLLocationManager, locations: NSArray): void {
-        for (let i = 0, count = locations.count; i < count; i++) {
-            if (this._onLocation) {
+         if (this._onLocation) {
+             for (let i = 0, count = locations.count; i < count; i++) {
                 let location = locationFromCLLocation(<CLLocation>locations.objectAtIndex(i));
                 this._onLocation(location);
             }
@@ -45,9 +59,51 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
             this._onError(new Error(error.localizedDescription));
         }
     }
+
+    public locationManagerDidChangeAuthorizationStatus(manager: CLLocationManager, status: CLAuthorizationStatus) {
+        switch (status) {
+            case CLAuthorizationStatus.kCLAuthorizationStatusNotDetermined:
+                break;
+
+            case CLAuthorizationStatus.kCLAuthorizationStatusRestricted:
+                break;
+
+            case CLAuthorizationStatus.kCLAuthorizationStatusDenied:
+                if (this._reject) {
+                     LocationMonitor.stopLocationMonitoring(this.id);
+                    this._reject(new Error("Authorization Denied."));
+                }
+                break;
+
+            case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways:
+                if (this.authorizeAlways && this._resolve) {
+                    LocationMonitor.stopLocationMonitoring(this.id);
+                    this._resolve();
+                }
+                else if (this._reject) {
+                    LocationMonitor.stopLocationMonitoring(this.id);
+                    this._reject(new Error("Authorization Denied."));
+                }
+                break;
+
+            case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse:
+                if (!this.authorizeAlways && this._resolve) {
+                    LocationMonitor.stopLocationMonitoring(this.id);
+                    this._resolve();
+                }
+                else if (this._reject) {
+                    LocationMonitor.stopLocationMonitoring(this.id);
+                    this._reject(new Error("Authorization Denied."));
+                }
+                break;
+        
+            default:
+                break;
+        }
+    }
 }
 
-function locationFromCLLocation(clLocation: CLLocation): common.Location {
+function locationFromCLLocation(clLocation: CLLocation): LocationDef {
     let location = new common.Location();
     location.latitude = clLocation.coordinate.latitude;
     location.longitude = clLocation.coordinate.longitude;
@@ -62,7 +118,7 @@ function locationFromCLLocation(clLocation: CLLocation): common.Location {
     return location;
 }
 
-function clLocationFromLocation(location: common.Location): CLLocation {
+function clLocationFromLocation(location: LocationDef): CLLocation {
     let hAccuracy = location.horizontalAccuracy ? location.horizontalAccuracy : -1;
     let vAccuracy = location.verticalAccuracy ? location.verticalAccuracy : -1;
     let speed = location.speed ? location.speed : -1;
@@ -112,24 +168,22 @@ export function getCurrentLocation(options: Options): Promise<LocationDef> {
             LocationMonitor.stopLocationMonitoring(locListenerId);
         }
 
-        let successCallback = function (location: common.Location) {
+        let successCallback = function (location: LocationDef) {
+            stopTimerAndMonitor(locListener.id);
             if (typeof options.maximumAge === "number") {
                 if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
-                    stopTimerAndMonitor(locListener.id);
                     resolve(location);
                 }
                 else {
-                    stopTimerAndMonitor(locListener.id);
                     reject(new Error("New location is older than requested maximum age!"));
                 }
             }
             else {
-                stopTimerAndMonitor(locListener.id);
                 resolve(location);
             }
         };
 
-        var locListener = LocationMonitor.createListenerWithCallbackAndOptions(successCallback, options);
+        var locListener = LocationListenerImpl.initWithLocationError(successCallback);
         try {
             LocationMonitor.startLocationMonitoring(options, locListener);
         }
@@ -168,14 +222,28 @@ export function clearWatch(watchId: number): void {
     LocationMonitor.stopLocationMonitoring(watchId);
 }
 
-export function enableLocationRequest(always?: boolean): void {
-    let iosLocationManager = CLLocationManager.alloc().init();
-    if (always) {
-        iosLocationManager.requestAlwaysAuthorization();
-    }
-    else {
-        iosLocationManager.requestWhenInUseAuthorization();
-    }
+export function enableLocationRequest(always?: boolean): Promise<void> {
+    return new Promise<void>(function (resolve, reject) {
+        if (isEnabled()) {
+            resolve();
+            return;
+        }
+    
+        let listener = LocationListenerImpl.initWithPromiseCallbacks(resolve, reject, always);
+        try {
+            let manager = LocationMonitor.createiOSLocationManager(listener, null);   
+            if (always) {
+                manager.requestAlwaysAuthorization();
+            }
+            else {
+                manager.requestWhenInUseAuthorization();
+            }
+        }
+        catch (e) {
+            LocationMonitor.stopLocationMonitoring(listener.id);
+            reject(e);
+        }
+    });
 }
 
 export function isEnabled(): boolean {
@@ -189,7 +257,7 @@ export function isEnabled(): boolean {
     return false;
 }
 
-export function distance(loc1: common.Location, loc2: common.Location): number {
+export function distance(loc1: LocationDef, loc2: LocationDef): number {
     if (!loc1.ios) {
         loc1.ios = clLocationFromLocation(loc1);
     }
@@ -200,7 +268,7 @@ export function distance(loc1: common.Location, loc2: common.Location): number {
 }
 
 export class LocationMonitor implements LocationMonitorDef {
-    static getLastKnownLocation(): common.Location {
+    static getLastKnownLocation(): LocationDef {
         let iosLocation: CLLocation;
         for (let locManagerId in locationManagers) {
             if (locationManagers.hasOwnProperty(locManagerId)) {
@@ -225,13 +293,7 @@ export class LocationMonitor implements LocationMonitorDef {
 
     static startLocationMonitoring(options: Options, locListener: LocationListenerImpl): void {
         let iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
-        locationManagers[locListener.id] = iosLocManager;
-        locationListeners[locListener.id] = locListener;
         iosLocManager.startUpdatingLocation();
-    }
-
-    static createListenerWithCallbackAndOptions(successCallback: successCallbackType, options: Options): LocationListenerImpl {
-        return LocationListenerImpl.initWithLocationError(successCallback);
     }
 
     static stopLocationMonitoring(iosLocManagerId: number) {

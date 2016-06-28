@@ -257,8 +257,22 @@ export function clearWatch(watchId: number): void {
     LocationMonitor.stopLocationMonitoring(watchId);
 }
 
-export function enableLocationRequest(always?: boolean): void {
-    enableLocationRequestCore();
+export function enableLocationRequest(always?: boolean): Promise<void> {
+    return new Promise<void>(function (resolve, reject) {
+        if (isEnabled()) {
+            resolve();
+            return;
+        }
+
+        let enabledCallback = function (resolve, reject) {
+            resolve();
+        };
+        var permissionDeniedCallback = function (reject) {
+            reject(new Error("Location service is not enabled or using it is not granted."));
+        };
+
+        enableLocationRequestCore(enabledCallback, [resolve], permissionDeniedCallback, [reject]);
+    });
 }
 
 export function isEnabled(): boolean {

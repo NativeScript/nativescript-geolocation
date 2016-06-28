@@ -36,7 +36,7 @@ declare type errorCallbackType = (error: Error) => void;
 export function getCurrentLocation(options: Options): Promise<Location>;
 export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
 export function clearWatch(watchId: number): void;
-export function enableLocationRequest(always?: boolean): void;
+export function enableLocationRequest(always?: boolean): Promise<void>;
 export function isEnabled(): boolean;
 export function distance(loc1: Location, loc2: Location): number;
 
