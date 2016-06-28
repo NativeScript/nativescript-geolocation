@@ -47,6 +47,28 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
     }
 }
 
+class AuthorizationListenerImpl extends NSObject implements CLLocationManagerDelegate {
+    public static ObjCProtocols = [CLLocationManagerDelegate];
+
+    public id: number;
+    private _callback: (listenderId: number) => void;
+
+    public static initWithCallback(callback: (listenderId: number) => void) {
+        let listener = <AuthorizationListenerImpl>AuthorizationListenerImpl.new();
+
+        listener.id = (++watchId);        
+        listener._callback = callback;
+
+        return listener;
+    }
+
+    public locationManagerDidChangeAuthorizationStatus(manager: CLLocationManager, status: number) {
+        if (status !== CLAuthorizationStatus.kCLAuthorizationStatusNotDetermined) {
+            this._callback(this.id);
+        }    
+    }
+}
+
 function locationFromCLLocation(clLocation: CLLocation): common.Location {
     let location = new common.Location();
     location.latitude = clLocation.coordinate.latitude;
@@ -170,6 +192,16 @@ export function clearWatch(watchId: number): void {
 
 export function enableLocationRequest(always?: boolean): void {
     let iosLocationManager = CLLocationManager.alloc().init();
+    let authorizationListener = AuthorizationListenerImpl.initWithCallback((listenerId: number) => {
+        locationManagers[listenerId].delegate = null;
+        delete locationManagers[listenerId];
+        delete locationListeners[listenerId];
+    });
+
+    iosLocationManager.delegate = authorizationListener;    
+    locationManagers[authorizationListener.id] = iosLocationManager;
+    locationListeners[authorizationListener.id] = authorizationListener;
+
     if (always) {
         iosLocationManager.requestAlwaysAuthorization();
     }
