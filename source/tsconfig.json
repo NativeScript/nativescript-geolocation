@@ -7,7 +7,8 @@
         "preserveConstEnums": true,
         "sourceMap": false,
         "declaration": false,
-        "noLib": false
+        "noLib": false,
+        "experimentalDecorators": true
     },
     "filesGlob": [
         "../node_modules/tns-core-modules/tns-core-modules.d.ts",
