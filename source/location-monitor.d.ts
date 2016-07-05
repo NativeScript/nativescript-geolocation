@@ -44,5 +44,5 @@ export class LocationMonitor {
     static getLastKnownLocation(): Location;
     static startLocationMonitoring(options: Options, locListener: any): void;
     static createListenerWithCallbackAndOptions(successCallback: successCallbackType, options: Options): any;
-    static stopLocationMonitoring(locListenerId: Number): void;
+    static stopLocationMonitoring(locListenerId: number): void;
 }
