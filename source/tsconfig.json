@@ -8,6 +8,7 @@
         "sourceMap": false,
         "declaration": false,
         "noLib": false,
+        "noImplicitUseStrict": true,
         "experimentalDecorators": true
     },
     "filesGlob": [
