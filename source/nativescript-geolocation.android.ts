@@ -125,6 +125,7 @@ function enableLocationServiceRequest(currentContext, successCallback?, successA
                     }
                 }
             }
+            appModule.android.off(appModule.AndroidApplication.activityResultEvent, onActivityResultHandler);    
         };
         appModule.android.on(appModule.AndroidApplication.activityResultEvent, onActivityResultHandler);
         currentContext.startActivityForResult(new android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
@@ -138,7 +139,7 @@ function enableLocationServiceRequest(currentContext, successCallback?, successA
 function enableLocationRequestCore(successCallback?, successArgs?, errorCallback?: errorCallbackType, errorArgs?): void {
     let currentContext = <android.app.Activity>appModule.android.currentContext;
     if (parseInt(platform.device.sdkVersion) >= 23) {
-        appModule.android.on(appModule.AndroidApplication.activityRequestPermissionsEvent, (data: appModule.AndroidActivityRequestPermissionsEventData) => {
+        let activityRequestPermissionsHandler = function (data: appModule.AndroidActivityRequestPermissionsEventData) {
             console.log('requestCode: ' + data.requestCode + ' permissions: ' + data.permissions + ' grantResults: ' + data.grantResults);
             if (data.requestCode === 5000) {
                 if (data.grantResults.length > 0 && data.grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
@@ -151,7 +152,9 @@ function enableLocationRequestCore(successCallback?, successArgs?, errorCallback
                     }
                 }
             }
-        });
+            appModule.android.off(appModule.AndroidApplication.activityRequestPermissionsEvent, activityRequestPermissionsHandler);
+        };
+        appModule.android.on(appModule.AndroidApplication.activityRequestPermissionsEvent, activityRequestPermissionsHandler);
         let res = (<any>android.support.v4.content.ContextCompat).checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
         if (res === -1) {
             (<any>android.support.v4.app).ActivityCompat.requestPermissions(currentContext, ['android.permission.ACCESS_FINE_LOCATION'], 5000);
