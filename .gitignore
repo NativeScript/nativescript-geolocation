@@ -31,3 +31,6 @@ dist
 
 #Exclude all javascript (js) files from source code
 source/**/*.js
+
+#Exclude visual studio code local folder
+.vscode
