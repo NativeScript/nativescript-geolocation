@@ -231,7 +231,7 @@ export function getCurrentLocation(options: Options): Promise<common.Location> {
 
             var locListener = LocationMonitor.createListenerWithCallbackAndOptions(successCallback, options);
             try {
-                LocationMonitor.startLocationMonitoring(options, locListener);
+                getAndroidLocationManager().requestSingleUpdate(criteriaFromOptions(options), locListener, null);
             }
             catch (e) {
                 stopTimerAndMonitor((<any>locListener).id);
