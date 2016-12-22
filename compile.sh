@@ -19,4 +19,8 @@ mkdir -p $PACK_DIR
 
 #compile package and copy file required by npm
 node_modules/.bin/tsc -p $SOURCE_DIR --outDir $PACK_DIR
+
+#tslint
+node_modules/.bin/tslint --project $SOURCE_DIR/tsconfig.json --config $SOURCE_DIR/tslint.json
+
 copy_package_files

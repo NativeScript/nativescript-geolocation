@@ -1,6 +1,8 @@
 {
   "devDependencies": {
-    "typescript": "^2.0.6",
-    "tns-core-modules": "^2.3.0"
+    "tns-core-modules": "^2.3.0",
+    "tns-platform-declarations": "^2.4.0-2016-09-28-1",
+    "tslint": "^4.1.1",
+    "typescript": "^2.0.6"
   }
 }
