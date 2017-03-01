@@ -256,7 +256,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
 
 export function isEnabled(): boolean {
     if (CLLocationManager.locationServicesEnabled()) {
-        // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse and 
+        // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse and
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways are options that are available in iOS 8.0+
         // while CLAuthorizationStatus.kCLAuthorizationStatusAuthorized is here to support iOS 8.0-.
         const AUTORIZED_WHEN_IN_USE = CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse;
