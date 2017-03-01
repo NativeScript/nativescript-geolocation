@@ -3,6 +3,10 @@
     "version": "0.0.18",
     "description": "Provides API for getting and monitoring location for NativeScript app.",
     "main": "nativescript-geolocation",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NativeScript/nativescript-geolocation.git"
+    },
     "nativescript": {
         "platforms": {
             "android": "2.4.0",
