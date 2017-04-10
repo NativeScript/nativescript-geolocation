@@ -1,32 +1,32 @@
-import {Location} from "./location";
+import { Location } from "./location";
 
 /**
 * Provides options for location monitoring.
 */
 export interface Options {
-   /**
-    * Specifies desired accuracy in meters. Defaults to DesiredAccuracy.HIGH
-    */
+    /**
+     * Specifies desired accuracy in meters. Defaults to DesiredAccuracy.HIGH
+     */
     desiredAccuracy?: number;
 
-   /**
-    * Update distance filter in meters. Specifies how often to update. Default on iOS is no filter, on Android it is 0 meters
-    */
+    /**
+     * Update distance filter in meters. Specifies how often to update. Default on iOS is no filter, on Android it is 0 meters
+     */
     updateDistance?: number;
 
-   /**
-    * Minimum time interval between location updates, in milliseconds (ignored on iOS)
-    */
+    /**
+     * Minimum time interval between location updates, in milliseconds (ignored on iOS)
+     */
     minimumUpdateTime?: number;
 
-   /**
-    * how old locations to receive in ms.
-    */
+    /**
+     * how old locations to receive in ms.
+     */
     maximumAge?: number;
 
-   /**
-    * how long to wait for a location in ms.
-    */
+    /**
+     * how long to wait for a location in ms.
+     */
     timeout?: number;
 }
 
