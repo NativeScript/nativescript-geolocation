@@ -28,7 +28,7 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
     private _reject: (error: Error) => void;
 
     public static initWithLocationError(successCallback: successCallbackType,
-                                        error?: errorCallbackType): LocationListenerImpl {
+        error?: errorCallbackType): LocationListenerImpl {
         let listener = <LocationListenerImpl>LocationListenerImpl.new();
         watchId++;
         listener.id = watchId;
@@ -39,8 +39,8 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
     }
 
     public static initWithPromiseCallbacks(resolve: () => void,
-                                           reject: (error: Error) => void,
-                                           authorizeAlways: boolean = false): LocationListenerImpl {
+        reject: (error: Error) => void,
+        authorizeAlways: boolean = false): LocationListenerImpl {
         let listener = <LocationListenerImpl>LocationListenerImpl.new();
         watchId++;
         listener.id = watchId;
@@ -52,8 +52,8 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
     }
 
     public locationManagerDidUpdateLocations(manager: CLLocationManager, locations: NSArray<CLLocation>): void {
-         if (this._onLocation) {
-             for (let i = 0, count = locations.count; i < count; i++) {
+        if (this._onLocation) {
+            for (let i = 0, count = locations.count; i < count; i++) {
                 let location = locationFromCLLocation(<CLLocation>locations.objectAtIndex(i));
                 this._onLocation(location);
             }
@@ -76,7 +76,7 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
 
             case CLAuthorizationStatus.kCLAuthorizationStatusDenied:
                 if (this._reject) {
-                     LocationMonitor.stopLocationMonitoring(this.id);
+                    LocationMonitor.stopLocationMonitoring(this.id);
                     this._reject(new Error("Authorization Denied."));
                 }
                 break;
@@ -130,7 +130,7 @@ function clLocationFromLocation(location: commonLocation): CLLocation {
     let altitude = location.altitude ? location.altitude : -1;
     let timestamp = location.timestamp ? location.timestamp : null;
     let iosLocation = CLLocation.alloc()
-    .initWithCoordinateAltitudeHorizontalAccuracyVerticalAccuracyCourseSpeedTimestamp(
+        .initWithCoordinateAltitudeHorizontalAccuracyVerticalAccuracyCourseSpeedTimestamp(
         CLLocationCoordinate2DMake(location.latitude, location.longitude),
         altitude,
         hAccuracy,
@@ -138,7 +138,7 @@ function clLocationFromLocation(location: commonLocation): CLLocation {
         course,
         speed,
         timestamp
-    );
+        );
     return iosLocation;
 }
 
@@ -212,10 +212,10 @@ export function getCurrentLocation(options: Options): Promise<commonLocation> {
 }
 
 export function watchLocation(successCallback: successCallbackType,
-                              errorCallback: errorCallbackType,
-                              options: Options): number {
-    let zonedSuccessCallback = global.zonedCallback(successCallback);
-    let zonedErrorCallback = global.zonedCallback(errorCallback);
+    errorCallback: errorCallbackType,
+    options: Options): number {
+    let zonedSuccessCallback = (<any>global).zonedCallback(successCallback);
+    let zonedErrorCallback = (<any>global).zonedCallback(errorCallback);
     let locListener = LocationListenerImpl.initWithLocationError(zonedSuccessCallback, zonedErrorCallback);
     try {
         let iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);

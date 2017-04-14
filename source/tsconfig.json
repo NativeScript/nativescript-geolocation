@@ -10,12 +10,19 @@
         "noEmitHelpers": true,
         "experimentalDecorators": true,
         "lib": [
-            "es2016"
-        ]
+            "es6",
+            "dom"
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "*": [
+                "./node_modules/tns-core-modules/*",
+                "./node_modules/*"
+            ]
+        }
     },
-    "filesGlob": [
-        "./**/*.ts",
-        "!./node_modules/**/*.ts"
-    ],
-    "exclude": []
+    "exclude": [
+        "node_modules",
+        "platforms"
+    ]
 }
