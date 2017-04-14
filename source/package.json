@@ -9,14 +9,16 @@
     },
     "nativescript": {
         "platforms": {
-            "android": "2.4.0",
-            "ios": "2.4.0"
+            "android": "3.0.0",
+            "ios": "3.0.0"
         }
     },
     "keywords": [
-        "NativeScript", "location", "geolocation"
+        "NativeScript",
+        "location",
+        "geolocation"
     ],
-    "author": "NativeScript team",
+    "author": "NativeScript Team",
     "devDependencies": {
         "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1",
         "tns-platform-declarations": "^3.0.0 || ^3.0.0-rc.1",

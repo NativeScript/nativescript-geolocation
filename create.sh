@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 DIST_DIR=dist
 
