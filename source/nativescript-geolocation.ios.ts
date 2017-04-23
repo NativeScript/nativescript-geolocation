@@ -257,7 +257,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
 
 export function isEnabled(): boolean {
     if (CLLocationManager.locationServicesEnabled()) {
-        // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse and 
+        // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse and
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways are options that are available in iOS 8.0+
         // while CLAuthorizationStatus.kCLAuthorizationStatusAuthorized is here to support iOS 8.0-.
         const AUTORIZED_WHEN_IN_USE = CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse;
@@ -324,10 +324,12 @@ export class LocationMonitor implements LocationMonitorDef {
         locationManagers[locListener.id] = iosLocManager;
         locationListeners[locListener.id] = locListener;
         if (parseInt(Platform.device.osVersion.split(".")[0]) >= 9) {
-            iosLocManager.allowsBackgroundLocationUpdates = options && options.iosAllowsBackgroundLocationUpdates != null ?
+            iosLocManager.allowsBackgroundLocationUpdates =
+                options && options.iosAllowsBackgroundLocationUpdates != null ?
                 options.iosAllowsBackgroundLocationUpdates : false;
         }
-        iosLocManager.pausesLocationUpdatesAutomatically = options && options.iosPausesLocationUpdatesAutomatically != null ?
+        iosLocManager.pausesLocationUpdatesAutomatically =
+            options && options.iosPausesLocationUpdatesAutomatically != null ?
             options.iosPausesLocationUpdatesAutomatically : true;
         return iosLocManager;
     }
