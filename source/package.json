@@ -26,6 +26,6 @@
         "typescript": "^2.2.2"
     },
     "peerDependencies": {
-        "tns-core-modules": "^3.0.0 || ^3.0.0-rc.1 || >=3.0.0-2017"
+        "tns-core-modules": "^3.0.0 || >3.2.0-"
     }
 }
