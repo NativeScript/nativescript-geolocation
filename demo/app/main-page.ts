@@ -4,9 +4,9 @@ import { EventData } from "data/observable";
 import { Page } from "ui/page";
 import { MainViewModel } from "./main-view-model";
 
-var page: Page;
-var model = new MainViewModel();
-var watchId;
+let page: Page;
+let model = new MainViewModel();
+let watchId;
 
 export function pageLoaded(args: EventData) {
     page = <Page>args.object;
@@ -20,7 +20,7 @@ export function enableLocationTap() {
 }
 
 export function buttonGetLocationTap() {
-    var location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 }).
+    let location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 }).
         then(function (loc) {
             if (loc) {
                 model.locations.push(loc);

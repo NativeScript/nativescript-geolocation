@@ -15,7 +15,7 @@ export class MainViewModel extends Observable {
     public set locations(value: ObservableArray<geolocation.Location>) {
         if (this._locations !== value) {
             this._locations = value;
-            this.notifyPropertyChange('locations', value)
+            this.notifyPropertyChange('locations', value);
         }
     }
 }

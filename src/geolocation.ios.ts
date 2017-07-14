@@ -325,3 +325,7 @@ export class LocationMonitor implements LocationMonitorDef {
         return iosLocManager;
     }
 }
+
+export class Location extends commonLocation {
+
+}

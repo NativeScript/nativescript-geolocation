@@ -233,7 +233,6 @@ export function watchLocation(successCallback: successCallbackType,
     return (<any>locListener).id;
 }
 
-
 export function getCurrentLocation(options: Options): Promise<commonLocation> {
     options = options || {};
 
@@ -389,4 +388,8 @@ export class LocationMonitor implements LocationMonitorDef {
             delete locationListeners[locListenerId];
         }
     }
+}
+
+export class Location extends commonLocation {
+
 }

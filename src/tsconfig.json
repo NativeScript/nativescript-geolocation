@@ -5,7 +5,6 @@
         "declaration": false,
         "removeComments": true,
         "preserveConstEnums": true,
-
         "noLib": false,
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
