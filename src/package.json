@@ -37,9 +37,6 @@
     "license": "Apache-2.0",
     "homepage": "https://github.com/NativeScript/nativescript-geolocation",
     "readmeFilename": "README.md",
-    "peerDependencies": {
-        "tns-core-modules": "^3.0.0 || >3.2.0-"
-    },
     "devDependencies": {
         "tns-core-modules": "^3.0.0",
         "tns-platform-declarations": "^3.0.0",
