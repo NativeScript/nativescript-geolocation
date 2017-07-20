@@ -2,7 +2,7 @@ import { Accuracy } from "ui/enums";
 import { setTimeout, clearTimeout } from "timer";
 import { write } from "trace";
 import {
-    Location as commonLocation,
+    LocationBase,
     defaultGetLocationTimeout,
     minRangeUpdate
 } from "./geolocation.common";
@@ -107,8 +107,8 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
     }
 }
 
-function locationFromCLLocation(clLocation: CLLocation): commonLocation {
-    let location = new commonLocation();
+function locationFromCLLocation(clLocation: CLLocation): Location {
+    let location = new Location();
     location.latitude = clLocation.coordinate.latitude;
     location.longitude = clLocation.coordinate.longitude;
     location.altitude = clLocation.altitude;
@@ -122,7 +122,7 @@ function locationFromCLLocation(clLocation: CLLocation): commonLocation {
     return location;
 }
 
-function clLocationFromLocation(location: commonLocation): CLLocation {
+function clLocationFromLocation(location: Location): CLLocation {
     let hAccuracy = location.horizontalAccuracy ? location.horizontalAccuracy : -1;
     let vAccuracy = location.verticalAccuracy ? location.verticalAccuracy : -1;
     let speed = location.speed ? location.speed : -1;
@@ -143,7 +143,7 @@ function clLocationFromLocation(location: commonLocation): CLLocation {
 }
 
 // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
-export function getCurrentLocation(options: Options): Promise<commonLocation> {
+export function getCurrentLocation(options: Options): Promise<Location> {
     options = options || {};
     if (options.timeout === 0) {
         // we should take any cached location e.g. lastKnownLocation
@@ -181,7 +181,7 @@ export function getCurrentLocation(options: Options): Promise<commonLocation> {
             LocationMonitor.stopLocationMonitoring(locListenerId);
         };
 
-        let successCallback = function (location: commonLocation) {
+        let successCallback = function (location: Location) {
             stopTimerAndMonitor(locListener.id);
             if (typeof options.maximumAge === "number") {
                 if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
@@ -267,7 +267,7 @@ export function isEnabled(): boolean {
     return false;
 }
 
-export function distance(loc1: commonLocation, loc2: commonLocation): number {
+export function distance(loc1: Location, loc2: Location): number {
     if (!loc1.ios) {
         loc1.ios = clLocationFromLocation(loc1);
     }
@@ -278,7 +278,7 @@ export function distance(loc1: commonLocation, loc2: commonLocation): number {
 }
 
 export class LocationMonitor implements LocationMonitorDef {
-    static getLastKnownLocation(): commonLocation {
+    static getLastKnownLocation(): Location {
         let iosLocation: CLLocation;
         for (let locManagerId in locationManagers) {
             if (locationManagers.hasOwnProperty(locManagerId)) {
@@ -326,6 +326,6 @@ export class LocationMonitor implements LocationMonitorDef {
     }
 }
 
-export class Location extends commonLocation {
-
+export class Location extends LocationBase {
+    public ios: CLLocation;      // iOS native location
 }

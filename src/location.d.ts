@@ -42,14 +42,4 @@ export class Location {
      * The time at which this location was determined.
      */
     timestamp: Date;
-
-    /**
-     * The android-specific [location](http://developer.android.com/reference/android/location/Location.html) object.
-     */
-    android: any;
-
-    /**
-     * The ios-specific [CLLocation](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocation_Class/) object.
-     */
-    ios: any;
 }

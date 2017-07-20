@@ -20,24 +20,24 @@ export function enableLocationTap() {
 }
 
 export function buttonGetLocationTap() {
-    let location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 }).
-        then(function (loc) {
+    let location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 })
+        .then(function(loc) {
             if (loc) {
                 model.locations.push(loc);
             }
-        }, function (e) {
+        }, function(e) {
             console.log("Error: " + e.message);
         });
 }
 
 export function buttonStartTap() {
     watchId = geolocation.watchLocation(
-        function (loc) {
+        function(loc) {
             if (loc) {
                 model.locations.push(loc);
             }
         },
-        function (e) {
+        function(e) {
             console.log("Error: " + e.message);
         },
         { desiredAccuracy: Accuracy.high, updateDistance: 0.1, minimumUpdateTime: 100 });
