@@ -25,104 +25,6 @@ const locationListeners = {};
 let watchId = 0;
 let androidLocationManager: android.location.LocationManager;
 
-class MockManager {
-    static intervalId: number;
-    private MOCK_PROVIDER_NAME = "mockLocationProvider";
-
-    requestSingleUpdate(options, locListener, looper) {
-        let newLocation = new android.location.Location(this.MOCK_PROVIDER_NAME);
-
-        newLocation.setLatitude(this._getRandomCoordinate());
-        newLocation.setLongitude(this._getRandomCoordinate());
-        newLocation.setTime((new Date()).getTime());
-        newLocation.setAccuracy(500);
-
-        (<android.location.LocationListener>locListener).onLocationChanged(newLocation);
-    }
-
-    getProviders(criteria, enabledOnly) {
-        return [this.MOCK_PROVIDER_NAME];
-    }
-
-    removeUpdates(listener) {
-        clearInterval(MockManager.intervalId);
-    }
-
-    requestLocationUpdates(minTime, minDistance, criteria, listener, looper) {
-        this.removeUpdates(null);
-        MockManager.intervalId = setInterval(() => this.requestSingleUpdate(null, listener, null), 1000);
-    }
-
-    getLastKnownLocation() {
-
-    }
-
-    _getRandomCoordinate() {
-        let min = -180;
-        let max = 180;
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    }
-}
-
-// function getAndroidMockLocationManager() {
-//     let manager = new MockManager();
-
-//     return manager;
-// }
-
-// function getAndroidMockLocationManager(): android.location.LocationManager {
-//     if (!androidLocationManager) {
-//         androidLocationManager = (<android.content.Context>androidAppInstance.context)
-//             .getSystemService(android.content.Context.LOCATION_SERVICE);
-//     }
-
-//     if (androidLocationManager.getProvider(MOCK_PROVIDER_NAME) != null) {
-//         androidLocationManager.removeTestProvider(MOCK_PROVIDER_NAME);
-//     }
-//     androidLocationManager.addTestProvider
-//         (
-//         MOCK_PROVIDER_NAME,
-//         false,
-//         false,
-//         false,
-//         false,
-//         false,
-//         false,
-//         false,
-//         android.location.Criteria.POWER_LOW,
-//         android.location.Criteria.ACCURACY_LOW
-//         );
-
-//     let newLocation = new android.location.Location(MOCK_PROVIDER_NAME);
-
-//     newLocation.setLatitude(-111.111);
-//     newLocation.setLongitude(11.111);
-//     newLocation.setTime((new Date()).getTime());
-//     newLocation.setAccuracy(500);
-
-//     androidLocationManager.setTestProviderEnabled
-//         (
-//         MOCK_PROVIDER_NAME,
-//         true
-//         );
-
-//     androidLocationManager.setTestProviderStatus
-//         (
-//         MOCK_PROVIDER_NAME,
-//         android.location.LocationProvider.AVAILABLE,
-//         null,
-//         new Date().getMilliseconds()
-//         );
-
-//     androidLocationManager.setTestProviderLocation
-//         (
-//         MOCK_PROVIDER_NAME,
-//         newLocation
-//         );
-
-//     return androidLocationManager;
-// }
-
 function getAndroidLocationManager(): android.location.LocationManager {
     if (!androidLocationManager) {
         androidLocationManager = (<android.content.Context>androidAppInstance.context)
@@ -495,6 +397,7 @@ export class Location extends LocationBase {
     public android: android.location.Location;  // android Location
 }
 
+// used for tests only
 export function setCustomLocationManager(manager) {
     androidLocationManager = manager;
 }
