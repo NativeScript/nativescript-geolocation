@@ -218,7 +218,7 @@ export function watchLocation(successCallback: successCallbackType,
     let zonedErrorCallback = (<any>global).zonedCallback(errorCallback);
     let locListener = LocationListenerImpl.initWithLocationError(zonedSuccessCallback, zonedErrorCallback);
     try {
-        let iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
+        let iosLocManager = getIOSLocationManager(locListener, options);
         iosLocManager.startUpdatingLocation();
         return locListener.id;
     } catch (e) {
@@ -241,7 +241,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
 
         let listener = LocationListenerImpl.initWithPromiseCallbacks(resolve, reject, always);
         try {
-            let manager = LocationMonitor.createiOSLocationManager(listener, null);
+            let manager = getIOSLocationManager(listener, null);
             if (always) {
                 manager.requestAlwaysAuthorization();
             } else {
@@ -260,6 +260,7 @@ export function isEnabled(): boolean {
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways are options that are available in iOS 8.0+
         // while CLAuthorizationStatus.kCLAuthorizationStatusAuthorized is here to support iOS 8.0-.
         const AUTORIZED_WHEN_IN_USE = CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse;
+
         return (CLLocationManager.authorizationStatus() === AUTORIZED_WHEN_IN_USE
             || CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways
             || CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorized);
@@ -294,7 +295,8 @@ export class LocationMonitor implements LocationMonitorDef {
         }
 
         let locListener = LocationListenerImpl.initWithLocationError(null);
-        iosLocation = LocationMonitor.createiOSLocationManager(locListener, null).location;
+        iosLocation = getIOSLocationManager(locListener, null).location;
+
         if (iosLocation) {
             return locationFromCLLocation(iosLocation);
         }
@@ -302,7 +304,7 @@ export class LocationMonitor implements LocationMonitorDef {
     }
 
     static startLocationMonitoring(options: Options, locListener: any): void {
-        let iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
+        let iosLocManager = getIOSLocationManager(locListener, options);
         iosLocManager.startUpdatingLocation();
     }
 
@@ -324,6 +326,30 @@ export class LocationMonitor implements LocationMonitorDef {
         locationListeners[locListener.id] = locListener;
         return iosLocManager;
     }
+}
+
+let iosLocationManager: any;
+
+function getIOSLocationManager(locListener: any, options: Options): CLLocationManager {
+    if (!iosLocationManager) {
+        return LocationMonitor.createiOSLocationManager(locListener, options);
+    } else {
+        var manager = new iosLocationManager();
+
+        manager.delegate = locListener;
+        manager.desiredAccuracy = options ? options.desiredAccuracy : Accuracy.high;
+        manager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
+
+        locationManagers[locListener.id] = manager;
+        locationListeners[locListener.id] = locListener;
+
+        return manager;
+    }
+}
+
+// used for tests only
+export function setCustomLocationManager(manager) {
+    iosLocationManager = function () { return manager; };
 }
 
 export class Location extends LocationBase {
