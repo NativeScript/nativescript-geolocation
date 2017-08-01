@@ -1,6 +1,8 @@
 matrix:
   include:
     - os: linux
+      dist: precise
+      sudo: required
       language: android
       jdk: oraclejdk8
       before_script:
