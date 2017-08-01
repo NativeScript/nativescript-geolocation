@@ -1,0 +1,33 @@
+matrix:
+  include:
+    - os: linux
+      language: android
+      jdk: oraclejdk8
+      before_script:
+        - echo no | android create avd --force -n test -t android-21 -b armeabi-v7a
+        - emulator -avd test -no-audio -no-window &
+        - android-wait-for-emulator
+      before_install:
+        - nvm install 6
+      script: npm run test.android
+    - os: osx
+      language: node_js
+      node_js: "6"
+      jdk: oraclejdk8
+      osx_image: xcode8.3
+      script: npm run test.ios
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-23.0.2
+    - android-23
+    - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-21
+
+install:
+    - npm install -g nativescript
+    - tns usage-reporting disable
+    - tns error-reporting disable
+    - cd src
