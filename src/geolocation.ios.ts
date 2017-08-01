@@ -334,7 +334,7 @@ function getIOSLocationManager(locListener: any, options: Options): CLLocationMa
     if (!iosLocationManager) {
         return LocationMonitor.createiOSLocationManager(locListener, options);
     } else {
-        var manager = new iosLocationManager();
+        let manager = new iosLocationManager();
 
         manager.delegate = locListener;
         manager.desiredAccuracy = options ? options.desiredAccuracy : Accuracy.high;
