@@ -26,5 +26,8 @@
     "lazy": "1.0.11",
     "nativescript-dev-typescript": "libs",
     "typescript": "2.3.4"
+  },
+  "scripts": {
+    "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'"
   }
 }
