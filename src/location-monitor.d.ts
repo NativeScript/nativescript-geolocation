@@ -35,7 +35,7 @@ declare type errorCallbackType = (error: Error) => void;
 
 /**
  * Get current location applying the specified options (if any).
- * @param {Options} options 
+ * @param {Options} options
  */
 export function getCurrentLocation(options: Options): Promise<Location>;
 
@@ -47,7 +47,7 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
 
 /**
  * Stop monitoring for location change. Parameter expected is the watchId returned from `watchLocation`.
- * @param watchId The watch id returned when watchLocation was called 
+ * @param watchId The watch id returned when watchLocation was called
  */
 export function clearWatch(watchId: number): void;
 
