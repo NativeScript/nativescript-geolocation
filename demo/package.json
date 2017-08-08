@@ -25,7 +25,8 @@
     "karma-nativescript-launcher": "^0.4.0",
     "lazy": "1.0.11",
     "nativescript-dev-typescript": "libs",
-    "typescript": "2.3.4"
+    "typescript": "2.3.4",
+    "tslint": "~5.4.3"
   },
   "scripts": {
     "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'"

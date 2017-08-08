@@ -44,7 +44,7 @@
         "typescript": "2.3.4",
         "prompt": "^1.0.0",
         "rimraf": "^2.5.0",
-        "tslint": "^5.0.0"
+        "tslint": "~5.4.3"
     },
     "dependencies": {},
     "bootstrapper": "nativescript-plugin-seed"
