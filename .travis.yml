@@ -30,7 +30,7 @@ matrix:
       group: edge
       jdk: oraclejdk8
       before_script:
-        - echo no | android create avd --force -n test -t android-25 -b armeabi-v7a
+        - echo no | android create avd --force -n test -t android-24 -b armeabi-v7a
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
       before_install:
@@ -50,7 +50,7 @@ android:
     - build-tools-25.0.2
     - android-25
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-25
+    - sys-img-armeabi-v7a-android-24
 
 install:
     - echo no | npm install -g nativescript
