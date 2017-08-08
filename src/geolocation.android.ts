@@ -102,11 +102,11 @@ function androidLocationFromLocation(location: Location): android.location.Locat
 function criteriaFromOptions(options: Options): android.location.Criteria {
     let criteria = new android.location.Criteria();
     if (options && options.desiredAccuracy <= Accuracy.high) {
-        // criteria.setAccuracy(android.location.Criteria.ACCURACY_FINE);
-        criteria.setAccuracy(android.location.Criteria.ACCURACY_LOW);
+        criteria.setAccuracy(android.location.Criteria.ACCURACY_FINE);
+        //criteria.setAccuracy(android.location.Criteria.ACCURACY_LOW);
     } else {
-        criteria.setAccuracy(android.location.Criteria.ACCURACY_LOW);
-        // criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
+        //criteria.setAccuracy(android.location.Criteria.ACCURACY_LOW);
+        criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
     }
     return criteria;
 }
