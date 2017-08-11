@@ -1,0 +1,16 @@
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" loaded="pageLoaded" class="page">
+  <GridLayout rows="auto, *, auto">
+        <GridLayout row="0" columns="*, *, *, *" >
+            <Button text="Enable Location" col="0" textWrap="true" tap="enableLocationTap"/>
+            <Button text="Get Current Location" col="1" textWrap="true" tap="buttonGetLocationTap"/>
+            <Button text="Start Monitoring" col="2" textWrap="true" tap="buttonStartTap"/>
+            <Button text="Stop Monitoring" col="3" textWrap="true" tap="buttonStopTap"/>
+        </GridLayout>
+        <ListView row="1" items="{{ locations }}">
+            <ListView.itemTemplate>
+                <Label text="{{ $value, latitude + ', ' + longitude + ', ' + altitude }}" />
+            </ListView.itemTemplate>
+        </ListView>
+        <Button text="Clear" row="2" tap="buttonClearTap"/>
+    </GridLayout>
+</Page>

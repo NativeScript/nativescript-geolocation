@@ -1,0 +1,52 @@
+{
+    "name": "nativescript-geolocation",
+    "version": "3.0.1",
+    "description": "Provides API for getting and monitoring location for NativeScript app.",
+    "main": "geolocation",
+    "nativescript": {
+        "platforms": {
+            "android": "3.0.0",
+            "ios": "3.0.0"
+        }
+    },
+    "scripts": {
+        "tsc": "tsc -skipLibCheck",
+        "build": "npm i && tsc",
+        "postclone": "npm i && node scripts/postclone.js && cd ../demo && npm i && cd ../src && npm run plugin.link",
+        "test.android": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build android && tns test android --justlaunch",
+        "test.ios": "npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios && tns test ios --justlaunch",
+        "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude \"**/node_modules/**\"",
+        "plugin.link": "npm link && cd ../demo && npm link nativescript-geolocation && cd ../src",
+        "plugin.tscwatch": "npm run tsc -- -w",
+        "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
+        "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
+        "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/NativeScript/nativescript-geolocation.git"
+    },
+    "keywords": [
+        "NativeScript",
+        "JavaScript",
+        "Android",
+        "iOS"
+    ],
+    "author": "NativeScript Team",
+    "bugs": {
+        "url": "https://github.com/NativeScript/nativescript-geolocation/issues"
+    },
+    "license": "Apache-2.0",
+    "homepage": "https://github.com/NativeScript/nativescript-geolocation",
+    "readmeFilename": "README.md",
+    "devDependencies": {
+        "tns-core-modules": "^3.0.0",
+        "tns-platform-declarations": "^3.0.0",
+        "typescript": "2.3.4",
+        "prompt": "^1.0.0",
+        "rimraf": "^2.5.0",
+        "tslint": "~5.4.3"
+    },
+    "dependencies": {},
+    "bootstrapper": "nativescript-plugin-seed"
+}
