@@ -39,7 +39,6 @@ var geolocation = require("nativescript-geolocation");
 
 ``` 
 geolocation.enableLocationRequest();
-
 ```
 
 ### Call plugin methods
@@ -53,7 +52,8 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance:
 
 ### Properties
 
-*Location*
+#### Location
+
 | Property | Default | Description |
 | --- | --- | --- |
 | latitude | - | The latitude of the geolocation, in degrees. |
@@ -64,7 +64,8 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance:
 | speed | - | The speed, in meters/second over ground. |
 | timestamp | - | The time at which this location was determined. |
 
-*Options*
+#### Options
+
 | Property | Default | Description |
 | --- | --- | --- |
 | desiredAccuracy? | Accuracy.high | Specifies desired accuracy in meters. |
