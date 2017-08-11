@@ -12,10 +12,6 @@ install(){
 
 pack() {
 
-    # TODO: tslint?
-    #tslint
-    #$SOURCE_DIR/node_modules/.bin/tslint --project $SOURCE_DIR/tsconfig.json --config $SOURCE_DIR/tslint.json
-
     echo 'Clearing /src and /package...'
     node_modules/.bin/rimraf "$TO_SOURCE_DIR"
     node_modules/.bin/rimraf "$PACK_DIR"
