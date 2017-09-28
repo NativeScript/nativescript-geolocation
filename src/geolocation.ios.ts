@@ -7,7 +7,6 @@ import {
     minRangeUpdate
 } from "./geolocation.common";
 import {
-    LocationMonitor as LocationMonitorDef,
     Options,
     successCallbackType,
     errorCallbackType
@@ -278,7 +277,7 @@ export function distance(loc1: Location, loc2: Location): number {
     return loc1.ios.distanceFromLocation(loc2.ios);
 }
 
-export class LocationMonitor implements LocationMonitorDef {
+export class LocationMonitor {
     static getLastKnownLocation(): Location {
         let iosLocation: CLLocation;
         for (let locManagerId in locationManagers) {

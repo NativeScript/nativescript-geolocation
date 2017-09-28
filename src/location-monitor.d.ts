@@ -70,10 +70,3 @@ export function isEnabled(): boolean;
  * @returns {number} The calculated distance in meters.
  */
 export function distance(loc1: Location, loc2: Location): number;
-
-export class LocationMonitor {
-    static getLastKnownLocation(): Location;
-    static startLocationMonitoring(options: Options, locListener: any): void;
-    static createListenerWithCallbackAndOptions(successCallback: successCallbackType, options: Options): any;
-    static stopLocationMonitoring(locListenerId: number): void;
-}

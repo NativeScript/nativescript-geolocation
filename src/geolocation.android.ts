@@ -15,7 +15,6 @@ import {
     minRangeUpdate
 } from "./geolocation.common";
 import {
-    LocationMonitor as LocationMonitorDef,
     Options,
     successCallbackType,
     errorCallbackType
@@ -343,7 +342,7 @@ export function distance(loc1: Location, loc2: Location): number {
     return loc1.android.distanceTo(loc2.android);
 }
 
-export class LocationMonitor implements LocationMonitorDef {
+export class LocationMonitor {
     static getLastKnownLocation(): Location {
         let criteria = new android.location.Criteria();
         criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
