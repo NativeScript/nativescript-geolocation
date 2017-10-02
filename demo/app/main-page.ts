@@ -20,13 +20,13 @@ export function enableLocationTap() {
 }
 
 export function buttonGetLocationTap() {
-    let location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 })
+    let location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateTime: 5000, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 })
         .then(function(loc) {
             if (loc) {
                 model.locations.push(loc);
             }
         }, function(e) {
-            console.log("Error: " + e.message);
+            console.log("Error: " + (e.message || e));
         });
 }
 

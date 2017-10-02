@@ -10,10 +10,15 @@ export interface Options {
     desiredAccuracy?: number;
 
     /**
-     * Update distance filter in meters. Specifies how often to update. Default on iOS is no filter, on Android it is 0 meters
+     * Update distance filter in meters. Specifies how often to update. Default on iOS is no filter  (ignored on Android)
      */
     updateDistance?: number;
-
+    
+    /**
+     * Interval between location updates, in milliseconds (ignored on iOS)
+     */
+    updateTime?: number;
+    
     /**
      * Minimum time interval between location updates, in milliseconds (ignored on iOS)
      */
@@ -59,9 +64,10 @@ export function enableLocationRequest(always?: boolean): Promise<void>;
 
 /**
  * Check if location services are enabled
+ * @param options android only. Check the availability based on the specified options.
  * @returns {boolean} True if location services are enabled
  */
-export function isEnabled(): boolean;
+export function isEnabled(options?: Options): Promise<boolean>;
 
 /**
  * Calculate the distance between two locations.

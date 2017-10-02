@@ -7,71 +7,72 @@ import { write } from "trace";
 import { LocationBase, defaultGetLocationTimeout, minTimeUpdate, minRangeUpdate } from "./geolocation.common";
 import { Options, successCallbackType, errorCallbackType } from "./location-monitor";
 import * as permissions from "nativescript-permissions";
+let application = require("application");
 
 declare var com: any;
+let REQUEST_ENABLE_LOCATION = 4269; // random number
 
-let mFusedLocationClient = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(androidAppInstance.context);
-// TODO: ENABLE LOCATION SERVICE
-
-/**
- * Get current location applying the specified options (if any).
- * @param {Options} options
- */
 export function getCurrentLocation(options: Options): Promise<Location> {
-    if (options.timeout === 0) {
-        // return the last known location
-        return new Promise(function(resolve, reject) {
-            requestLocationPermissions().then(() => {
-                let locationTask = mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(getLocationListener(options.maximumAge, resolve, reject))
-                    .addOnFailureListener(getTaskFailListener(reject));
-            });
-        });
-    } else {
-        // wait for the current location
-        return new Promise(function(resolve, reject) {
-            requestLocationPermissions().then(() => {
-                console.log('get last known location');
-                let locationTask = mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(getLocationListener(options.maximumAge, resolve, reject))
-                    .addOnFailureListener(getTaskFailListener(reject));
-            });
-        });
-    }
+    let mFusedLocationClient = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(androidAppInstance.context);
+    return new Promise(function (resolve, reject) {
+        _requestLocationPermissions().then(() => {
+            _makeGooglePlayServicesAvailable().then(() => {
+                enableLocationRequest().then(() => {
+                    // TODO: get last known or wait for current based on the timeout.. if (options.timeout === 0) {
+                    let locationTask = mFusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(getLocationListener(options.maximumAge, resolve, reject))
+                        .addOnFailureListener(getTaskFailListener((e) => reject(e.getMessage())));
+                }, reject);
+            }, reject);
+        }, reject);
+    });
 }
 
-function requestLocationPermissions(): Promise<any> {
-    return permissions.requestPermission([(<any>android).Manifest.permission.ACCESS_FINE_LOCATION]);
+function getLocationRequest(options: Options): any {
+    let mLocationRequest = new com.google.android.gms.location.LocationRequest();
+    mLocationRequest.setInterval(options.updateTime || 0);
+    mLocationRequest.setFastestInterval(options.minimumUpdateTime || 0);
+    if (options.desiredAccuracy === Accuracy.high) {
+        mLocationRequest.setPriority(com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY);
+    } else {
+        mLocationRequest.setPriority(com.google.android.gms.location.LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+    }
+
+    return mLocationRequest;
+}
+
+function _requestLocationPermissions(): Promise<any> {
+    return permissions.requestPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
 }
 
 function getLocationListener(maxAge, onLocation, onError) {
-    return new com.google.android.gms.tasks.OnSuccessListener({
-        onSuccess: function(nativeLocation: android.location.Location) {
-            console.log('onSuccess: ' + nativeLocation);
-            if (nativeLocation != null) {
-                let location = new Location(nativeLocation);
-                if (typeof maxAge === "number" && nativeLocation != null) {
-                    if (location.timestamp.valueOf() + maxAge > new Date().valueOf()) {
-                        onLocation(location);
-                    } else {
-                        onError(new Error("Last known location too old!"));
-                    }
-                } else {
+    return getTaskSuccessListener((nativeLocation: android.location.Location) => {
+        if (nativeLocation != null) {
+            let location = new Location(nativeLocation);
+            if (typeof maxAge === "number" && nativeLocation != null) {
+                if (location.timestamp.valueOf() + maxAge > new Date().valueOf()) {
                     onLocation(location);
+                } else {
+                    onError(new Error("Last known location too old!"));
                 }
             } else {
-                onError(new Error("There is no last known location!"));
+                onLocation(location);
             }
+        } else {
+            onError(new Error("There is no last known location!"));
         }
     });
 }
 
-function getTaskFailListener(onFail) {
+function getTaskSuccessListener(done: (result) => void) {
+    return new com.google.android.gms.tasks.OnSuccessListener({
+        onSuccess: done
+    });
+}
+
+function getTaskFailListener(done: (exception) => void) {
     return new com.google.android.gms.tasks.OnFailureListener({
-        onFailure: function (exception) {
-            console.log('onFailure: ' + exception);
-            onFail(exception.getMessage());
-        }
+        onFailure: done
     });
 }
 
@@ -91,20 +92,78 @@ export function clearWatch(watchId: number): void {
 
 }
 
-/**
- * Ask for permissions to use location services. The option `always` is application for iOS only. Read more: https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization.
- * @param always iOS only. https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization
- */
 export function enableLocationRequest(always?: boolean): Promise<void> {
-    return null;
+    return new Promise<void>(function (resolve, reject) {
+        isEnabled().then(() => {
+            resolve();
+        }, (ex) => {
+            let statusCode = ex.getStatusCode();
+            if (statusCode === com.google.android.gms.common.api.CommonStatusCodes.RESOLUTION_REQUIRED) {
+                try {
+                    // TODO: ask NS for better approach
+                    androidAppInstance.foregroundActivity.onActivityResult = (requestCode, resultCode, data) => {
+                        if (requestCode === REQUEST_ENABLE_LOCATION) {
+                            if (resultCode === 0) {
+                                reject('Location not enabled.');
+                            } else {
+                                resolve();
+                            }
+                        }
+                    };
+
+                    ex.startResolutionForResult(androidAppInstance.foregroundActivity, REQUEST_ENABLE_LOCATION);
+                } catch (sendEx) {
+                    // Ignore the error.
+                    resolve();
+                }
+            } else {
+                reject();
+            }
+        });
+    });
 }
 
-/**
- * Check if location services are enabled
- * @returns {boolean} True if location services are enabled
- */
-export function isEnabled(): boolean {
-    return null;
+function _makeGooglePlayServicesAvailable(): Promise<void> {
+    return new Promise<void>(function (resolve, reject) {
+        if (_isGooglePlayServicesAvailable()) {
+            resolve();
+            return;
+        }
+
+        let googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
+        googleApiAvailability.makeGooglePlayServicesAvailable(androidAppInstance.foregroundActivity)
+            .addOnSuccessListener(getTaskSuccessListener(resolve))
+            .addOnFailureListener(getTaskFailListener(reject));
+    });
+}
+
+function _isGooglePlayServicesAvailable(): boolean {
+    let isLocationServiceEnabled = true;
+    let googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
+    let resultCode = googleApiAvailability.isGooglePlayServicesAvailable(androidAppInstance.foregroundActivity);
+    if (resultCode !== com.google.android.gms.common.ConnectionResult.SUCCESS) {
+        isLocationServiceEnabled = false;
+    }
+
+    return isLocationServiceEnabled;
+}
+
+export function isEnabled(options?: Options): Promise<boolean> {
+    return new Promise(function (resolve, reject) {
+        options = options || { desiredAccuracy: Accuracy.high, updateTime: 0, updateDistance: 0, maximumAge: 0, timeout: 0 };
+        let locationRequest = getLocationRequest(options);
+        let locationSettingsBuilder = new com.google.android.gms.location.LocationSettingsRequest.Builder();
+        locationSettingsBuilder.addLocationRequest(locationRequest);
+        locationSettingsBuilder.setAlwaysShow(true);
+        let locationSettingsClient = com.google.android.gms.location.LocationServices.getSettingsClient(androidAppInstance.context);
+        locationSettingsClient.checkLocationSettings(locationSettingsBuilder.build())
+            .addOnSuccessListener(getTaskSuccessListener((a) => {
+                resolve();
+            }))
+            .addOnFailureListener(getTaskFailListener((ex) => {
+                reject(ex);
+            }));
+    });
 }
 
 /**

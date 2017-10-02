@@ -165,7 +165,7 @@ export function getCurrentLocation(options: Options): Promise<Location> {
     }
 
     return new Promise(function (resolve, reject) {
-        if (!isEnabled()) {
+        if (!_isEnabled()) {
             reject(new Error("Location service is disabled"));
         }
 
@@ -233,7 +233,7 @@ export function clearWatch(_watchId: number): void {
 
 export function enableLocationRequest(always?: boolean): Promise<void> {
     return new Promise<void>(function (resolve, reject) {
-        if (isEnabled()) {
+        if (_isEnabled()) {
             resolve();
             return;
         }
@@ -253,7 +253,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
     });
 }
 
-export function isEnabled(): boolean {
+function _isEnabled(options?: Options): boolean {
     if (CLLocationManager.locationServicesEnabled()) {
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse and
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways are options that are available in iOS 8.0+
@@ -265,6 +265,12 @@ export function isEnabled(): boolean {
             || CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorized);
     }
     return false;
+}
+
+export function isEnabled(): Promise<boolean> {
+    return new Promise(function (resolve, reject) {
+        resolve(_isEnabled());
+    });
 }
 
 export function distance(loc1: Location, loc2: Location): number {
