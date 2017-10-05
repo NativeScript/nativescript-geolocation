@@ -15,8 +15,14 @@ let _onEnableLocationFail = null;
 
 const locationListeners = {};
 let watchIdCounter = 0;
-let fusedLocationClient = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(androidAppInstance.context);
-// TODO: move on application start
+let fusedLocationClient;
+
+function _ensureLocationClient() {
+    // Wrapped in a function as we should not access java object there because of the snapshots.
+    fusedLocationClient = fusedLocationClient ||
+        com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(androidAppInstance.context);
+}
+
 androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: any) {
     if (args.requestCode === REQUEST_ENABLE_LOCATION) {
         if (args.resultCode === 0) {
@@ -30,28 +36,25 @@ androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: an
 });
 
 export function getCurrentLocation(options: Options): Promise<Location> {
+    _ensureLocationClient();
     return new Promise(function (resolve, reject) {
-        _requestLocationPermissions().then(() => {
-            _makeGooglePlayServicesAvailable().then(() => {
-                enableLocationRequest().then(() => {
-                    if (options.timeout === 0) {
-                        // get last known
-                        let locationTask = fusedLocationClient.getLastLocation()
-                            .addOnSuccessListener(_getLocationListener(options.maximumAge, resolve, reject))
-                            .addOnFailureListener(_getTaskFailListener((e) => reject(e.getMessage())));
-                    } else {
-                        // wait for the exact location
-                        let locationRequest = _getLocationRequest(options);
-                        let watchId = _getNextWatchId();
-                        let locationCallback = _getLocationCallback(watchId, (nativeLocation) => {
-                            clearWatch(watchId);
-                            resolve(new Location(nativeLocation));
-                        });
+        enableLocationRequest().then(() => {
+            if (options.timeout === 0) {
+                // get last known
+                let locationTask = fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(_getLocationListener(options.maximumAge, resolve, reject))
+                    .addOnFailureListener(_getTaskFailListener((e) => reject(e.getMessage())));
+            } else {
+                // wait for the exact location
+                let locationRequest = _getLocationRequest(options);
+                let watchId = _getNextWatchId();
+                let locationCallback = _getLocationCallback(watchId, (nativeLocation) => {
+                    clearWatch(watchId);
+                    resolve(new Location(nativeLocation));
+                });
 
-                        _requestLocationUpdates(locationRequest, locationCallback);
-                    }
-                }, reject);
-            }, reject);
+                _requestLocationUpdates(locationRequest, locationCallback);
+            }
         }, reject);
     });
 }
@@ -62,21 +65,27 @@ function _getNextWatchId() {
 }
 
 function _requestLocationUpdates(locationRequest, locationCallback) {
+    _ensureLocationClient();
     fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */);
 }
 
 function _getLocationCallback(watchId, onLocation): any {
     let LocationCallback = com.google.android.gms.location.LocationCallback.extend({
-        onLocationAvailability: function (locationAvailability) {
-        },
+        // IMPORTANT: Do not touch any scope variables here. The Java definition of the class is cached
+        // internally in NativeScript and if we directly use 'watchId' or 'onLocation' here, we will
+        // always receive the references from the first '_getLocationCallback' method call!!!
         onLocationResult: function (locationResult) {
             this.onLocation(locationResult.getLastLocation());
         }
     });
 
-    locationListeners[watchId] = new LocationCallback();
-    locationListeners[watchId].onLocation = onLocation;
-    return locationListeners[watchId];
+    let locationCallback = new LocationCallback();
+    // Workaround for the above-mentioned Note
+    locationCallback.onLocation = onLocation;
+
+    locationListeners[watchId] = locationCallback;
+
+    return locationCallback;
 }
 
 function _getLocationRequest(options: Options): any {
@@ -140,6 +149,7 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
 }
 
 export function clearWatch(watchId: number): void {
+    _ensureLocationClient();
     let listener = locationListeners[watchId];
     if (listener) {
         fusedLocationClient.removeLocationUpdates(listener);
@@ -149,23 +159,27 @@ export function clearWatch(watchId: number): void {
 
 export function enableLocationRequest(always?: boolean): Promise<void> {
     return new Promise<void>(function (resolve, reject) {
-        _isEnabled().then(() => {
-            resolve();
-        }, (ex) => {
-            let statusCode = ex.getStatusCode();
-            if (statusCode === com.google.android.gms.common.api.CommonStatusCodes.RESOLUTION_REQUIRED) {
-                try {
-                    _onEnableLocationSuccess = resolve;
-                    _onEnableLocationFail = reject;
-                    ex.startResolutionForResult(androidAppInstance.foregroundActivity, REQUEST_ENABLE_LOCATION);
-                } catch (sendEx) {
-                    // Ignore the error.
+        _requestLocationPermissions().then(() => {
+            _makeGooglePlayServicesAvailable().then(() => {
+                _isEnabled().then(() => {
                     resolve();
-                }
-            } else {
-                reject();
-            }
-        });
+                }, (ex) => {
+                    let statusCode = ex.getStatusCode();
+                    if (statusCode === com.google.android.gms.common.api.CommonStatusCodes.RESOLUTION_REQUIRED) {
+                        try {
+                            _onEnableLocationSuccess = resolve;
+                            _onEnableLocationFail = reject;
+                            ex.startResolutionForResult(androidAppInstance.foregroundActivity, REQUEST_ENABLE_LOCATION);
+                        } catch (sendEx) {
+                            // Ignore the error.
+                            resolve();
+                        }
+                    } else {
+                        reject('Cannot enable the location service');
+                    }
+                });
+            }, reject);
+        }, reject);
     });
 }
 
