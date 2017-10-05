@@ -16,8 +16,13 @@ export function pageLoaded(args: EventData) {
 export function enableLocationTap() {
     geolocation.isEnabled().then(function (isEnabled) {
         if (!isEnabled) {
-            geolocation.enableLocationRequest();
+            geolocation.enableLocationRequest().then(function () {
+            }, function (e) {
+                console.log("Error: " + (e.message || e));
+            });
         }
+    }, function (e) {
+        console.log("Error: " + (e.message || e));
     });
 }
 

@@ -158,6 +158,7 @@ export function clearWatch(watchId: number): void {
 }
 
 export function enableLocationRequest(always?: boolean): Promise<void> {
+    _ensureLocationClient();
     return new Promise<void>(function (resolve, reject) {
         _requestLocationPermissions().then(() => {
             _makeGooglePlayServicesAvailable().then(() => {
@@ -189,7 +190,6 @@ function _makeGooglePlayServicesAvailable(): Promise<void> {
             resolve();
             return;
         }
-
         let googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
         googleApiAvailability.makeGooglePlayServicesAvailable(androidAppInstance.foregroundActivity)
             .addOnSuccessListener(_getTaskSuccessListener(resolve))
@@ -228,12 +228,17 @@ function _isEnabled(options?: Options): Promise<boolean> {
 
 export function isEnabled(options?: Options): Promise<boolean> {
     return new Promise(function (resolve, reject) {
-        _isEnabled().then(
-            () => {
-                resolve(true);
-            }, () => {
-                resolve(false);
-            });
+        if (!_isGooglePlayServicesAvailable() ||
+            !permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION)) {
+            resolve(false);
+        } else {
+            _isEnabled().then(
+                () => {
+                    resolve(true);
+                }, () => {
+                    resolve(false);
+                });
+        }
     });
 }
 
