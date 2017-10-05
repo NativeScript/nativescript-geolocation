@@ -14,9 +14,9 @@ let _onEnableLocationSuccess = null;
 let _onEnableLocationFail = null;
 
 const locationListeners = {};
-let watchId = 0;
+let watchIdCounter = 0;
 let fusedLocationClient = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(androidAppInstance.context);
-
+// TODO: move on application start
 androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: any) {
     if (args.requestCode === REQUEST_ENABLE_LOCATION) {
         if (args.resultCode === 0) {
@@ -42,7 +42,9 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                     } else {
                         // wait for the exact location
                         let locationRequest = _getLocationRequest(options);
-                        const locationCallback = _getLocationCallback((nativeLocation) => {
+                        let watchId = _getNextWatchId();
+                        let locationCallback = _getLocationCallback(watchId, (nativeLocation) => {
+                            clearWatch(watchId);
                             resolve(new Location(nativeLocation));
                         });
 
@@ -54,24 +56,27 @@ export function getCurrentLocation(options: Options): Promise<Location> {
     });
 }
 
-function _requestLocationUpdates(locationRequest, locationCallback): number {
-    watchId++;
-    locationListeners[watchId] = locationCallback;
-    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */);
-
+function _getNextWatchId() {
+    let watchId = ++watchIdCounter;
     return watchId;
 }
 
-function _getLocationCallback(onLocation): any {
+function _requestLocationUpdates(locationRequest, locationCallback) {
+    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */);
+}
+
+function _getLocationCallback(watchId, onLocation): any {
     let LocationCallback = com.google.android.gms.location.LocationCallback.extend({
         onLocationAvailability: function (locationAvailability) {
         },
         onLocationResult: function (locationResult) {
-            onLocation(locationResult.getLastLocation());
+            this.onLocation(locationResult.getLastLocation());
         }
     });
 
-    return new LocationCallback();
+    locationListeners[watchId] = new LocationCallback();
+    locationListeners[watchId].onLocation = onLocation;
+    return locationListeners[watchId];
 }
 
 function _getLocationRequest(options: Options): any {
@@ -124,11 +129,14 @@ function _getTaskFailListener(done: (exception) => void) {
 
 export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number {
     let locationRequest = _getLocationRequest(options);
-    const locationCallback = _getLocationCallback((nativeLocation) => {
+    let watchId = _getNextWatchId();
+    const locationCallback = _getLocationCallback(watchId, (nativeLocation) => {
         successCallback(new Location(nativeLocation));
     });
 
-    return _requestLocationUpdates(locationRequest, locationCallback);
+    _requestLocationUpdates(locationRequest, locationCallback);
+
+    return watchId;
 }
 
 export function clearWatch(watchId: number): void {
