@@ -6,7 +6,7 @@ import { MainViewModel } from "./main-view-model";
 
 let page: Page;
 let model = new MainViewModel();
-let watchId;
+let watchIds = [];
 
 export function pageLoaded(args: EventData) {
     page = <Page>args.object;
@@ -14,38 +14,44 @@ export function pageLoaded(args: EventData) {
 }
 
 export function enableLocationTap() {
-    geolocation.isEnabled().then(null, function(e) {
-        geolocation.enableLocationRequest();
+    geolocation.isEnabled().then(function (isEnabled) {
+        if (!isEnabled) {
+            geolocation.enableLocationRequest();
+        }
     });
 }
 
 export function buttonGetLocationTap() {
     let location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateTime: 5000, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 })
-        .then(function(loc) {
+        .then(function (loc) {
             if (loc) {
                 model.locations.push(loc);
             }
-        }, function(e) {
+        }, function (e) {
             console.log("Error: " + (e.message || e));
         });
 }
 
 export function buttonStartTap() {
-    watchId = geolocation.watchLocation(
-        function(loc) {
+    watchIds.push(geolocation.watchLocation(
+        function (loc) {
             if (loc) {
                 model.locations.push(loc);
             }
         },
-        function(e) {
+        function (e) {
             console.log("Error: " + e.message);
         },
-        { desiredAccuracy: Accuracy.high, updateDistance: 0.1, minimumUpdateTime: 100 });
+        {
+            desiredAccuracy: Accuracy.high, updateDistance: 0.1, minimumUpdateTime: 100
+        }));
 }
 
 export function buttonStopTap() {
-    if (watchId) {
+    let watchId = watchIds.pop();
+    while (watchId != null) {
         geolocation.clearWatch(watchId);
+        watchId = watchIds.pop();
     }
 }
 

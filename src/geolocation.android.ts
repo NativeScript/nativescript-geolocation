@@ -149,7 +149,7 @@ export function clearWatch(watchId: number): void {
 
 export function enableLocationRequest(always?: boolean): Promise<void> {
     return new Promise<void>(function (resolve, reject) {
-        isEnabled().then(() => {
+        _isEnabled().then(() => {
             resolve();
         }, (ex) => {
             let statusCode = ex.getStatusCode();
@@ -194,7 +194,7 @@ function _isGooglePlayServicesAvailable(): boolean {
     return isLocationServiceEnabled;
 }
 
-export function isEnabled(options?: Options): Promise<boolean> {
+function _isEnabled(options?: Options): Promise<boolean> {
     return new Promise(function (resolve, reject) {
         options = options || { desiredAccuracy: Accuracy.high, updateTime: 0, updateDistance: 0, maximumAge: 0, timeout: 0 };
         let locationRequest = _getLocationRequest(options);
@@ -209,6 +209,17 @@ export function isEnabled(options?: Options): Promise<boolean> {
             .addOnFailureListener(_getTaskFailListener((ex) => {
                 reject(ex);
             }));
+    });
+}
+
+export function isEnabled(options?: Options): Promise<boolean> {
+    return new Promise(function (resolve, reject) {
+        _isEnabled().then(
+            () => {
+                resolve(true);
+            }, () => {
+                resolve(false);
+            });
     });
 }
 
