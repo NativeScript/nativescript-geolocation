@@ -9,7 +9,7 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "lib": ["es6", "dom"],
-        "inlineSourceMap": true,
+        "sourceMap": false,
         "pretty": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,

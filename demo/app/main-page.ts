@@ -27,7 +27,11 @@ export function enableLocationTap() {
 }
 
 export function buttonGetLocationTap() {
-    let location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateTime: 5000, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 })
+    let location = geolocation.getCurrentLocation({
+        desiredAccuracy: Accuracy.high,
+        maximumAge: 5000,
+        timeout: 10000
+    })
         .then(function (loc) {
             if (loc) {
                 model.locations.push(loc);
@@ -48,7 +52,10 @@ export function buttonStartTap() {
             console.log("Error: " + e.message);
         },
         {
-            desiredAccuracy: Accuracy.high, updateDistance: 0.1, minimumUpdateTime: 100
+            desiredAccuracy: Accuracy.high,
+            updateDistance: 0.1,
+            updateTime: 3000,
+            minimumUpdateTime: 100
         }));
 }
 

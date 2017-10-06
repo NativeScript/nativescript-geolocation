@@ -1,10 +1,7 @@
 import { android as androidAppInstance, AndroidApplication } from "application";
-import { AndroidActivityResultEventData, AndroidActivityRequestPermissionsEventData } from "application";
-import { device as PlatformDevice } from "platform";
 import { Accuracy } from "ui/enums";
 import { setTimeout, clearTimeout } from "timer";
-import { write } from "trace";
-import { LocationBase, defaultGetLocationTimeout, minTimeUpdate, minRangeUpdate } from "./geolocation.common";
+import { LocationBase, defaultGetLocationTimeout, fastestTimeUpdate, minTimeUpdate } from "./geolocation.common";
 import { Options, successCallbackType, errorCallbackType } from "./location-monitor";
 import * as permissions from "nativescript-permissions";
 
@@ -27,7 +24,7 @@ androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: an
     if (args.requestCode === REQUEST_ENABLE_LOCATION) {
         if (args.resultCode === 0) {
             if (_onEnableLocationFail) {
-                _onEnableLocationFail('Location not enabled.');
+                _onEnableLocationFail("Location not enabled.");
             }
         } else if (_onEnableLocationSuccess) {
             _onEnableLocationSuccess();
@@ -51,6 +48,11 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                 });
 
                 LocationManager.requestLocationUpdates(locationRequest, locationCallback);
+                const timerId = setTimeout(function() {
+                    clearWatch(watchId);
+                    clearTimeout(timerId);
+                    reject(new Error("Timeout while searching for location!"));
+                }, options.timeout || defaultGetLocationTimeout);
             }
         }, reject);
     });
@@ -82,8 +84,11 @@ function _getLocationCallback(watchId, onLocation): any {
 
 function _getLocationRequest(options: Options): any {
     let mLocationRequest = new com.google.android.gms.location.LocationRequest();
-    mLocationRequest.setInterval(options.updateTime || 0);
-    mLocationRequest.setFastestInterval(options.minimumUpdateTime || 0);
+    let updateTime = options.updateTime === 0 ? 0 : options.updateTime || minTimeUpdate;
+    mLocationRequest.setInterval(updateTime);
+    let minUpdateTime = options.minimumUpdateTime === 0 ?
+        0 : options.minimumUpdateTime || Math.min(updateTime, fastestTimeUpdate);
+    mLocationRequest.setFastestInterval(minUpdateTime);
     if (options.desiredAccuracy === Accuracy.high) {
         mLocationRequest.setPriority(com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY);
     } else {
@@ -172,7 +177,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
                             resolve();
                         }
                     } else {
-                        reject('Cannot enable the location service');
+                        reject(new Error("Cannot enable the location service"));
                     }
                 });
             }, reject);
@@ -237,7 +242,7 @@ export function isEnabled(options?: Options): Promise<boolean> {
             !permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION)) {
             resolve(false);
         } else {
-            _isLocationServiceEnabled().then(
+            _isLocationServiceEnabled(options).then(
                 () => {
                     resolve(true);
                 }, () => {
@@ -257,7 +262,7 @@ export class LocationManager {
         _ensureLocationClient();
         return fusedLocationClient.getLastLocation()
             .addOnSuccessListener(_getLocationListener(maximumAge, resolve, reject))
-            .addOnFailureListener(_getTaskFailListener((e) => reject(e.getMessage())));
+            .addOnFailureListener(_getTaskFailListener((e) => reject(new Error(e.getMessage()))));
     }
 
     static requestLocationUpdates(locationRequest, locationCallback): void {

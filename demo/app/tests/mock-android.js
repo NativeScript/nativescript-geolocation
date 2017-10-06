@@ -34,14 +34,16 @@ MockLocationManager.removeLocationUpdates = function (listener) {
 };
 MockLocationManager.requestLocationUpdates = function (locationRequest, locationCallback) {
     MockLocationManager.removeLocationUpdates(null);
-    MockLocationManager.intervalId = setInterval(function () {
-        locationCallback.onLocationResult({
-            getLastLocation: function () {
-                MockLocationManager._lastKnownLocation = MockLocationManager.getNewLocation();
-                return MockLocationManager._lastKnownLocation;
-            }
-        });
-    }, 500);
+    setTimeout(() => {
+        MockLocationManager.intervalId = setInterval(function () {
+            locationCallback.onLocationResult({
+                getLastLocation: function () {
+                    MockLocationManager._lastKnownLocation = MockLocationManager.getNewLocation();
+                    return MockLocationManager._lastKnownLocation;
+                }
+            });
+        }, 500);
+    }, 50);
 };
 MockLocationManager.shouldSkipChecks = function () {
     return true;
