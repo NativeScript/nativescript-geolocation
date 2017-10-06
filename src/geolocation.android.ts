@@ -36,14 +36,11 @@ androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: an
 });
 
 export function getCurrentLocation(options: Options): Promise<Location> {
-    _ensureLocationClient();
     return new Promise(function (resolve, reject) {
         enableLocationRequest().then(() => {
             if (options.timeout === 0) {
                 // get last known
-                let locationTask = fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(_getLocationListener(options.maximumAge, resolve, reject))
-                    .addOnFailureListener(_getTaskFailListener((e) => reject(e.getMessage())));
+                LocationManager.getLastLocation(options.maximumAge, resolve, reject);
             } else {
                 // wait for the exact location
                 let locationRequest = _getLocationRequest(options);
@@ -53,7 +50,7 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                     resolve(new Location(nativeLocation));
                 });
 
-                _requestLocationUpdates(locationRequest, locationCallback);
+                LocationManager.requestLocationUpdates(locationRequest, locationCallback);
             }
         }, reject);
     });
@@ -62,11 +59,6 @@ export function getCurrentLocation(options: Options): Promise<Location> {
 function _getNextWatchId() {
     let watchId = ++watchIdCounter;
     return watchId;
-}
-
-function _requestLocationUpdates(locationRequest, locationCallback) {
-    _ensureLocationClient();
-    fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */);
 }
 
 function _getLocationCallback(watchId, onLocation): any {
@@ -102,7 +94,13 @@ function _getLocationRequest(options: Options): any {
 }
 
 function _requestLocationPermissions(): Promise<any> {
-    return permissions.requestPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
+    return new Promise<any>(function (resolve, reject) {
+        if (LocationManager.shouldSkipChecks()) {
+            resolve();
+        } else {
+            permissions.requestPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION).then(resolve, reject);
+        }
+    });
 }
 
 function _getLocationListener(maxAge, onLocation, onError) {
@@ -143,26 +141,24 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
         successCallback(new Location(nativeLocation));
     });
 
-    _requestLocationUpdates(locationRequest, locationCallback);
+    LocationManager.requestLocationUpdates(locationRequest, locationCallback);
 
     return watchId;
 }
 
 export function clearWatch(watchId: number): void {
-    _ensureLocationClient();
     let listener = locationListeners[watchId];
     if (listener) {
-        fusedLocationClient.removeLocationUpdates(listener);
+        LocationManager.removeLocationUpdates(listener);
         delete locationListeners[watchId];
     }
 }
 
 export function enableLocationRequest(always?: boolean): Promise<void> {
-    _ensureLocationClient();
     return new Promise<void>(function (resolve, reject) {
         _requestLocationPermissions().then(() => {
             _makeGooglePlayServicesAvailable().then(() => {
-                _isEnabled().then(() => {
+                _isLocationServiceEnabled().then(() => {
                     resolve();
                 }, (ex) => {
                     let statusCode = ex.getStatusCode();
@@ -198,6 +194,10 @@ function _makeGooglePlayServicesAvailable(): Promise<void> {
 }
 
 function _isGooglePlayServicesAvailable(): boolean {
+    if (LocationManager.shouldSkipChecks()) {
+        return true;
+    }
+
     let isLocationServiceEnabled = true;
     let googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
     let resultCode = googleApiAvailability.isGooglePlayServicesAvailable(androidAppInstance.foregroundActivity);
@@ -208,8 +208,13 @@ function _isGooglePlayServicesAvailable(): boolean {
     return isLocationServiceEnabled;
 }
 
-function _isEnabled(options?: Options): Promise<boolean> {
+function _isLocationServiceEnabled(options?: Options): Promise<boolean> {
     return new Promise(function (resolve, reject) {
+        if (LocationManager.shouldSkipChecks()) {
+            resolve(true);
+            return;
+        }
+
         options = options || { desiredAccuracy: Accuracy.high, updateTime: 0, updateDistance: 0, maximumAge: 0, timeout: 0 };
         let locationRequest = _getLocationRequest(options);
         let locationSettingsBuilder = new com.google.android.gms.location.LocationSettingsRequest.Builder();
@@ -232,7 +237,7 @@ export function isEnabled(options?: Options): Promise<boolean> {
             !permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION)) {
             resolve(false);
         } else {
-            _isEnabled().then(
+            _isLocationServiceEnabled().then(
                 () => {
                     resolve(true);
                 }, () => {
@@ -244,6 +249,37 @@ export function isEnabled(options?: Options): Promise<boolean> {
 
 export function distance(loc1: Location, loc2: Location): number {
     return loc1.android.distanceTo(loc2.android);
+}
+
+// absctaction for unit testing
+export class LocationManager {
+    static getLastLocation(maximumAge, resolve, reject): Promise<Location> {
+        _ensureLocationClient();
+        return fusedLocationClient.getLastLocation()
+            .addOnSuccessListener(_getLocationListener(maximumAge, resolve, reject))
+            .addOnFailureListener(_getTaskFailListener((e) => reject(e.getMessage())));
+    }
+
+    static requestLocationUpdates(locationRequest, locationCallback): void {
+        _ensureLocationClient();
+        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null /* Looper */);
+    }
+
+    static removeLocationUpdates(listener) {
+        _ensureLocationClient();
+        fusedLocationClient.removeLocationUpdates(listener);
+    }
+
+    static shouldSkipChecks(): boolean {
+        return false;
+    }
+
+    static setMockLocationManager(MockLocationManager) {
+        LocationManager.getLastLocation = MockLocationManager.getLastLocation;
+        LocationManager.requestLocationUpdates = MockLocationManager.requestLocationUpdates;
+        LocationManager.removeLocationUpdates = MockLocationManager.removeLocationUpdates;
+        LocationManager.shouldSkipChecks = MockLocationManager.shouldSkipChecks;
+    }
 }
 
 export class Location extends LocationBase {
@@ -261,4 +297,9 @@ export class Location extends LocationBase {
         this.direction = androidLocation.getBearing();
         this.timestamp = new Date(androidLocation.getTime());
     }
+}
+
+// used from unit tests
+export function setCustomLocationManager(MockLocationManager) {
+    LocationManager.setMockLocationManager(MockLocationManager);
 }

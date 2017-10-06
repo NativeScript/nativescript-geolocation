@@ -4,22 +4,25 @@ var MockLocationManager = require(mockLocationManagerPath).MockLocationManager;
 
 describe("location class", function () {
     it("can be instantiated", function () {
-
-        var geolocation = require("nativescript-geolocation");
-        var Location = geolocation.Location;
+        var geoLocation = require("nativescript-geolocation");
+        var Location = geoLocation.Location;
+        var nativeLocation = null;
+        if (MockLocationManager.getNewLocation) {
+            nativeLocation = MockLocationManager.getNewLocation();
+        }
 
         expect(function () {
-            return new Location();
+            return new Location(nativeLocation);
         }).not.toThrow();
 
-        expect(new Location()).toBeDefined();
+        expect(new Location(nativeLocation)).toBeDefined();
     });
 });
 
 describe("geolocation", function () {
     beforeEach(function () {
         geolocation = require("nativescript-geolocation");
-        geolocation.setCustomLocationManager(new MockLocationManager());
+        geolocation.setCustomLocationManager(MockLocationManager);
     });
 
     it("getCurrentLocation returns fresh location when timeout > 0", function (done) {

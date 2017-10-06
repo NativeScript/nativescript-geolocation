@@ -74,4 +74,4 @@ function locationFromCLLocation(clLocation) {
     return location;
 };
 
-exports.MockLocationManager = MockLocationManager;
+exports.MockLocationManager = new MockLocationManager();
