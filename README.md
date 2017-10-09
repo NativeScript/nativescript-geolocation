@@ -45,7 +45,7 @@ geolocation.enableLocationRequest();
 
 ````
 // Get current location with high accuracy
-geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 })
+geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 5000, timeout: 20000 })
 ````
 
 ## API

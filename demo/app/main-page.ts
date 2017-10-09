@@ -42,21 +42,25 @@ export function buttonGetLocationTap() {
 }
 
 export function buttonStartTap() {
-    watchIds.push(geolocation.watchLocation(
-        function (loc) {
-            if (loc) {
-                model.locations.push(loc);
-            }
-        },
-        function (e) {
-            console.log("Error: " + e.message);
-        },
-        {
-            desiredAccuracy: Accuracy.high,
-            updateDistance: 0.1,
-            updateTime: 3000,
-            minimumUpdateTime: 100
-        }));
+    try {
+        watchIds.push(geolocation.watchLocation(
+            function (loc) {
+                if (loc) {
+                    model.locations.push(loc);
+                }
+            },
+            function (e) {
+                console.log("Error: " + e.message);
+            },
+            {
+                desiredAccuracy: Accuracy.high,
+                updateDistance: 0.1,
+                updateTime: 3000,
+                minimumUpdateTime: 100
+            }));
+    } catch (ex) {
+        console.log("Error: " + ex.message);
+    }
 }
 
 export function buttonStopTap() {

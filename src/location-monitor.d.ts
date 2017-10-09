@@ -13,12 +13,12 @@ export interface Options {
      * Update distance filter in meters. Specifies how often to update. Default on iOS is no filter  (ignored on Android)
      */
     updateDistance?: number;
-    
+
     /**
      * Interval between location updates, in milliseconds (ignored on iOS)
      */
     updateTime?: number;
-    
+
     /**
      * Minimum time interval between location updates, in milliseconds (ignored on iOS)
      */

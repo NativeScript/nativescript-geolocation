@@ -140,6 +140,11 @@ function _getTaskFailListener(done: (exception) => void) {
 }
 
 export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number {
+    if (!permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION) ||
+        !_isGooglePlayServicesAvailable()) {
+            throw new Error('Cannot watch location. Call "enableLocationRequest" first');
+    }
+
     let locationRequest = _getLocationRequest(options);
     let watchId = _getNextWatchId();
     const locationCallback = _getLocationCallback(watchId, (nativeLocation) => {
