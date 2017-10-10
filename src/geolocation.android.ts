@@ -140,8 +140,8 @@ function _getTaskFailListener(done: (exception) => void) {
 }
 
 export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number {
-    if (!permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION) ||
-        !_isGooglePlayServicesAvailable()) {
+    if ((!permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION) ||
+        !_isGooglePlayServicesAvailable()) && !LocationManager.shouldSkipChecks()) {
             throw new Error('Cannot watch location. Call "enableLocationRequest" first');
     }
 
