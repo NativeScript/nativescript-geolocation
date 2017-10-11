@@ -7,7 +7,6 @@ import {
     minRangeUpdate
 } from "./geolocation.common";
 import {
-    LocationMonitor as LocationMonitorDef,
     Options,
     successCallbackType,
     errorCallbackType
@@ -166,7 +165,7 @@ export function getCurrentLocation(options: Options): Promise<Location> {
     }
 
     return new Promise(function (resolve, reject) {
-        if (!isEnabled()) {
+        if (!_isEnabled()) {
             reject(new Error("Location service is disabled"));
         }
 
@@ -234,7 +233,7 @@ export function clearWatch(_watchId: number): void {
 
 export function enableLocationRequest(always?: boolean): Promise<void> {
     return new Promise<void>(function (resolve, reject) {
-        if (isEnabled()) {
+        if (_isEnabled()) {
             resolve();
             return;
         }
@@ -254,7 +253,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
     });
 }
 
-export function isEnabled(): boolean {
+function _isEnabled(options?: Options): boolean {
     if (CLLocationManager.locationServicesEnabled()) {
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse and
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways are options that are available in iOS 8.0+
@@ -268,6 +267,12 @@ export function isEnabled(): boolean {
     return false;
 }
 
+export function isEnabled(): Promise<boolean> {
+    return new Promise(function (resolve, reject) {
+        resolve(_isEnabled());
+    });
+}
+
 export function distance(loc1: Location, loc2: Location): number {
     if (!loc1.ios) {
         loc1.ios = clLocationFromLocation(loc1);
@@ -278,7 +283,7 @@ export function distance(loc1: Location, loc2: Location): number {
     return loc1.ios.distanceFromLocation(loc2.ios);
 }
 
-export class LocationMonitor implements LocationMonitorDef {
+export class LocationMonitor {
     static getLastKnownLocation(): Location {
         let iosLocation: CLLocation;
         for (let locManagerId in locationManagers) {

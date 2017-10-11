@@ -4,31 +4,34 @@ var MockLocationManager = require(mockLocationManagerPath).MockLocationManager;
 
 describe("location class", function () {
     it("can be instantiated", function () {
-
-        var geolocation = require("nativescript-geolocation");
-        var Location = geolocation.Location;
+        var geoLocation = require("nativescript-geolocation");
+        var Location = geoLocation.Location;
+        var nativeLocation = null;
+        if (MockLocationManager.getNewLocation) {
+            nativeLocation = MockLocationManager.getNewLocation();
+        }
 
         expect(function () {
-            return new Location();
+            return new Location(nativeLocation);
         }).not.toThrow();
 
-        expect(new Location()).toBeDefined();
+        expect(new Location(nativeLocation)).toBeDefined();
     });
 });
 
 describe("geolocation", function () {
     beforeEach(function () {
         geolocation = require("nativescript-geolocation");
-        geolocation.setCustomLocationManager(new MockLocationManager());
+        geolocation.setCustomLocationManager(MockLocationManager);
     });
 
     it("getCurrentLocation returns fresh location when timeout > 0", function (done) {
         var location = geolocation.getCurrentLocation({
-                desiredAccuracy: Accuracy.high,
-                updateDistance: 0.1,
-                maximumAge: 5000,
-                timeout: 20000
-            })
+            desiredAccuracy: Accuracy.high,
+            updateDistance: 0.1,
+            maximumAge: 5000,
+            timeout: 20000
+        })
             .then(function (loc) {
                 expect(loc).toBeDefined();
                 expect(180 > loc.latitude > -180).toBeTruthy();
@@ -36,6 +39,21 @@ describe("geolocation", function () {
                 done();
             }, function (e) {
                 done.fail("Error: " + e.message);
+            });
+    });
+
+    it("getCurrentLocation returns timeout when timeout = 20", function (done) {
+        var location = geolocation.getCurrentLocation({
+            desiredAccuracy: Accuracy.high,
+            updateDistance: 0.1,
+            maximumAge: 5000,
+            timeout: 20
+        })
+            .then(function (loc) {
+                done.fail("Got location instead of timeout: " + loc);
+            }, function (e) {
+                expect(e.message).toEqual('Timeout while searching for location!');
+                done();
             });
     });
 

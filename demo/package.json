@@ -5,7 +5,7 @@
       "version": "3.0.1"
     },
     "tns-android": {
-      "version": "3.0.0"
+      "version": "3.2.0"
     }
   },
   "dependencies": {
@@ -29,9 +29,11 @@
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
     "nativescript-dev-typescript": "libs",
-    "nativescript-dev-webpack": "^0.7.3",
+    "nativescript-dev-webpack": "0.8.0",
+    "nativescript-worker-loader": "~0.8.1",
     "raw-loader": "~0.5.1",
     "resolve-url-loader": "~2.1.0",
+    "tns-platform-declarations": "^3.2.0",
     "tslint": "~5.4.3",
     "typescript": "2.3.4",
     "webpack": "~3.2.0",

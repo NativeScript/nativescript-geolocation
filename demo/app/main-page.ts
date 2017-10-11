@@ -6,7 +6,7 @@ import { MainViewModel } from "./main-view-model";
 
 let page: Page;
 let model = new MainViewModel();
-let watchId;
+let watchIds = [];
 
 export function pageLoaded(args: EventData) {
     page = <Page>args.object;
@@ -14,38 +14,60 @@ export function pageLoaded(args: EventData) {
 }
 
 export function enableLocationTap() {
-    if (!geolocation.isEnabled()) {
-        geolocation.enableLocationRequest();
-    }
+    geolocation.isEnabled().then(function (isEnabled) {
+        if (!isEnabled) {
+            geolocation.enableLocationRequest().then(function () {
+            }, function (e) {
+                console.log("Error: " + (e.message || e));
+            });
+        }
+    }, function (e) {
+        console.log("Error: " + (e.message || e));
+    });
 }
 
 export function buttonGetLocationTap() {
-    let location = geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 })
-        .then(function(loc) {
+    let location = geolocation.getCurrentLocation({
+        desiredAccuracy: Accuracy.high,
+        maximumAge: 5000,
+        timeout: 10000
+    })
+        .then(function (loc) {
             if (loc) {
                 model.locations.push(loc);
             }
-        }, function(e) {
-            console.log("Error: " + e.message);
+        }, function (e) {
+            console.log("Error: " + (e.message || e));
         });
 }
 
 export function buttonStartTap() {
-    watchId = geolocation.watchLocation(
-        function(loc) {
-            if (loc) {
-                model.locations.push(loc);
-            }
-        },
-        function(e) {
-            console.log("Error: " + e.message);
-        },
-        { desiredAccuracy: Accuracy.high, updateDistance: 0.1, minimumUpdateTime: 100 });
+    try {
+        watchIds.push(geolocation.watchLocation(
+            function (loc) {
+                if (loc) {
+                    model.locations.push(loc);
+                }
+            },
+            function (e) {
+                console.log("Error: " + e.message);
+            },
+            {
+                desiredAccuracy: Accuracy.high,
+                updateDistance: 0.1,
+                updateTime: 3000,
+                minimumUpdateTime: 100
+            }));
+    } catch (ex) {
+        console.log("Error: " + ex.message);
+    }
 }
 
 export function buttonStopTap() {
-    if (watchId) {
+    let watchId = watchIds.pop();
+    while (watchId != null) {
         geolocation.clearWatch(watchId);
+        watchId = watchIds.pop();
     }
 }
 

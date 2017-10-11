@@ -1,6 +1,6 @@
 {
     "name": "nativescript-geolocation",
-    "version": "3.0.1",
+    "version": "4.0.0",
     "description": "Provides API for getting and monitoring location for NativeScript app.",
     "main": "geolocation",
     "nativescript": {
@@ -47,6 +47,8 @@
         "rimraf": "^2.5.0",
         "tslint": "~5.4.3"
     },
-    "dependencies": {},
+    "dependencies": {
+        "nativescript-permissions": "~1.2.3"
+    },
     "bootstrapper": "nativescript-plugin-seed"
 }

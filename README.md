@@ -45,7 +45,7 @@ geolocation.enableLocationRequest();
 
 ````
 // Get current location with high accuracy
-geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance: 0.1, maximumAge: 5000, timeout: 20000 })
+geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 5000, timeout: 20000 })
 ````
 
 ## API
@@ -69,10 +69,11 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance:
 | Property | Default | Description |
 | --- | --- | --- |
 | desiredAccuracy? | Accuracy.high | Specifies desired accuracy in meters. |
-| updateDistance | iOS - no filter, Android - 0 meters | Update distance filter in meters. Specifies how often to update the location. |
-| minimumUpdateTime | - | Minimum time interval between location updates, in milliseconds (ignored on iOS). |
+| updateDistance | iOS - no filter | Update distance filter in meters. Specifies how often to update the location (ignored on Android). |
+| updateTime | 1 minute | Interval between location updates, in milliseconds (ignored on iOS). |
+| minimumUpdateTime | 5 secs | Minimum time interval between location updates, in milliseconds (ignored on iOS). |
 | maximumAge | - | How old locations to receive in ms.  |
-| timeout | - | How long to wait for a location in ms.  |
+| timeout | 5 minutes | How long to wait for a location in ms.  |
 
 ### Methods
 
@@ -81,8 +82,8 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, updateDistance:
 | getCurrentLocation(options: Options) | Promise<Location> | Get current location applying the specified options (if any). |
 | watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options) | number | Monitor for location change. |
 | clearWatch(watchId: number) | void | Stop monitoring for location change. Parameter expected is the watchId returned from `watchLocation`. |
-| enableLocationRequest(always?: boolean) | Promise<void> | Ask for permissions to use location services. The option `always` is application for iOS only. [Read more about its usage](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization) . |
-| isEnabled | boolean| Returns `true` if location services are enabled.  |
+| enableLocationRequest(always?: boolean) | Promise\<void\> | Ask for permissions to use location services. The option `always` is application for iOS only. [Read more about its usage](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization) . |
+| isEnabled | Promise\<boolean\>| Resolves `true` or `false` based on the location services availability.  |
 | distance(loc1: Location, loc2: Location) | number | Calculate the distance between two locations. Returns the distance in meters. |
 
 ## License

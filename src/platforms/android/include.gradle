@@ -1,0 +1,20 @@
+allprojects {
+    repositories {
+        jcenter()
+        maven {
+            url "https://maven.google.com"
+        }
+    }
+}
+
+android {
+	productFlavors {
+		"nativescript-geolocation" {
+			dimension "nativescript-geolocation"
+		}
+	}
+}
+
+dependencies {
+	compile "com.google.android.gms:play-services-location:11.4.0"
+}

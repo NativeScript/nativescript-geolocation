@@ -2,61 +2,51 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
-var MockLocationManager = (function () {
-    function MockLocationManager() {
-        this.MOCK_PROVIDER_NAME = "mockLocationProvider";
-    }
-    MockLocationManager.prototype._lastKnownLocation = null;
-    MockLocationManager.prototype.requestSingleUpdate = function (options, locListener, looper) {
-        var newLocation = new android.location.Location(this.MOCK_PROVIDER_NAME);
-        newLocation.setLatitude(this._getRandomCoordinate());
-        newLocation.setLongitude(this._getRandomCoordinate());
-        newLocation.setTime((new Date()).getTime());
-        newLocation.setAccuracy(500);
+var geoLocation = require("nativescript-geolocation");
+var MockLocationManager = {
+};
+MockLocationManager.intervalId = null;
+MockLocationManager._lastKnownLocation = null;
+MockLocationManager._getRandomCoordinate = function () {
+    var min = -180;
+    var max = 180;
+    return Math.floor(Math.random() * (max - min + 1) + min);
+};
+MockLocationManager.getNewLocation = function () {
+    var newLocation = new android.location.Location("mockLocationProvider");
+    var latitude = MockLocationManager._getRandomCoordinate();
+    var longitude = MockLocationManager._getRandomCoordinate();
+    newLocation.setLatitude(latitude);
+    newLocation.setLongitude(longitude);
+    newLocation.setTime((new Date()).getTime());
+    newLocation.setAccuracy(500);
 
-        MockLocationManager.prototype._lastKnownLocation = newLocation;
+    return newLocation;
+};
+MockLocationManager.getLastLocation = function (maximumAge, resolve, reject) {
+    var lastLocation = MockLocationManager._lastKnownLocation ?
+        new geoLocation.Location(MockLocationManager._lastKnownLocation) : null;
 
-        locListener.onLocationChanged(newLocation);
-    };
-    MockLocationManager.prototype.getProviders = function (criteria, enabledOnly) {
-        var providers = [this.MOCK_PROVIDER_NAME];
-        providers.index = 0;
-        providers.size = function () {
-            return providers.length;
-        };
-        providers.iterator = function () {
-            return {
-                hasNext: function () {
-                    return providers.index < providers.length;
-                },
-                next: function () {
-                    var next = providers[providers.index];
-                    providers.index += 1;
-                    return next;
-                }
-            };
-        }
-        return providers;
-    };
-    MockLocationManager.prototype.removeUpdates = function (listener) {
-        clearInterval(MockLocationManager.intervalId);
-    };
-    MockLocationManager.prototype.requestLocationUpdates = function (minTime, minDistance, criteria, listener, looper) {
-        var _this = this;
-        this.removeUpdates(null);
+    resolve(lastLocation);
+};
+MockLocationManager.removeLocationUpdates = function (listener) {
+    clearInterval(MockLocationManager.intervalId);
+};
+MockLocationManager.requestLocationUpdates = function (locationRequest, locationCallback) {
+    MockLocationManager.removeLocationUpdates(null);
+    setTimeout(() => {
         MockLocationManager.intervalId = setInterval(function () {
-            return _this.requestSingleUpdate(null, listener, null);
+            locationCallback.onLocationResult({
+                getLastLocation: function () {
+                    MockLocationManager._lastKnownLocation = MockLocationManager.getNewLocation();
+                    return MockLocationManager._lastKnownLocation;
+                }
+            });
         }, 500);
-    };
-    MockLocationManager.prototype.getLastKnownLocation = function () {
-        return MockLocationManager.prototype._lastKnownLocation;
-    };
-    MockLocationManager.prototype._getRandomCoordinate = function () {
-        var min = -180;
-        var max = 180;
-        return Math.floor(Math.random() * (max - min + 1) + min);
-    };
-    return MockLocationManager;
-}());
+    }, 50);
+};
+MockLocationManager.shouldSkipChecks = function () {
+    return true;
+}
 
 exports.MockLocationManager = MockLocationManager;
