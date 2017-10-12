@@ -74,6 +74,16 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 | minimumUpdateTime | 5 secs | Minimum time interval between location updates, in milliseconds (ignored on iOS). |
 | maximumAge | - | How old locations to receive in ms.  |
 | timeout | 5 minutes | How long to wait for a location in ms.  |
+| iosAllowsBackgroundLocationUpdates | false |  If enabled, UIBackgroundModes key in info.plist is required (check the hint below). Allow the application to receive location updates in background (ignored on Android) |
+| iosPausesLocationUpdatesAutomatically | true | Allow deactivation of the automatic pause of location updates (ignored on Android) |
+
+> If iosAllowsBackgroundLocationUpdates is set to true, the following code is required in the info.plist file:
+>```
+><key>UIBackgroundModes</key>
+><array>
+>    <string>location</string>
+></array>
+>```
 
 ### Methods
 

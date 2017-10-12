@@ -11,6 +11,7 @@ import {
     successCallbackType,
     errorCallbackType
 } from "./location-monitor";
+import * as Platform from "platform";
 
 const locationManagers = {};
 const locationListeners = {};
@@ -329,6 +330,14 @@ export class LocationMonitor {
         iosLocManager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
         locationManagers[locListener.id] = iosLocManager;
         locationListeners[locListener.id] = locListener;
+        if (parseInt(Platform.device.osVersion.split(".")[0]) >= 9) {
+            iosLocManager.allowsBackgroundLocationUpdates =
+                options && options.iosAllowsBackgroundLocationUpdates != null ?
+                options.iosAllowsBackgroundLocationUpdates : false;
+        }
+        iosLocManager.pausesLocationUpdatesAutomatically =
+            options && options.iosPausesLocationUpdatesAutomatically != null ?
+            options.iosPausesLocationUpdatesAutomatically : true;
         return iosLocManager;
     }
 }

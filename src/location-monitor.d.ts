@@ -33,6 +33,22 @@ export interface Options {
      * How long to wait for a location in ms.
      */
     timeout?: number;
+
+    /**
+     * A Boolean value which has to be set to true on iOS versions > 9.0 to allow the application to receive location updates in
+     * background in combination with the UIBackgroundModes key 'location' in the Info.plist. An exception is thrown if the
+     * property is enabled without the UIBackgroundModes key set to true. The value is ignored on Android.
+     * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates|allowsBackgroundLocationUpdates}
+     */
+    iosAllowsBackgroundLocationUpdates?: boolean;
+
+    /**
+     * A Boolean value which has to be set to false on iOS to deactivate the automatic pause of location updates. The location manager might pause
+     * location updates for a period of time to improve battery life. This behavior may stop a long-running background task. Set this flag to false
+     * to prevent this behavior. The value is ignored on Android.
+     * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical|pausesLocationUpdatesAutomatically}
+     */
+    iosPausesLocationUpdatesAutomatically?: boolean;
 }
 
 declare type successCallbackType = (location: Location) => void;
