@@ -48,7 +48,7 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                 });
 
                 LocationManager.requestLocationUpdates(locationRequest, locationCallback);
-                const timerId = setTimeout(function() {
+                const timerId = setTimeout(function () {
                     clearWatch(watchId);
                     clearTimeout(timerId);
                     reject(new Error("Timeout while searching for location!"));
@@ -142,7 +142,7 @@ function _getTaskFailListener(done: (exception) => void) {
 export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number {
     if ((!permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION) ||
         !_isGooglePlayServicesAvailable()) && !LocationManager.shouldSkipChecks()) {
-            throw new Error('Cannot watch location. Call "enableLocationRequest" first');
+        throw new Error('Cannot watch location. Call "enableLocationRequest" first');
     }
 
     let locationRequest = _getLocationRequest(options);
@@ -258,7 +258,39 @@ export function isEnabled(options?: Options): Promise<boolean> {
 }
 
 export function distance(loc1: Location, loc2: Location): number {
+    if (!loc1.android) {
+        loc1.android = androidLocationFromLocation(loc1);
+    }
+
+    if (!loc2.android) {
+        loc2.android = androidLocationFromLocation(loc2);
+    }
+
     return loc1.android.distanceTo(loc2.android);
+}
+
+function androidLocationFromLocation(location: Location): android.location.Location {
+    let androidLocation = new android.location.Location("custom");
+    androidLocation.setLatitude(location.latitude);
+    androidLocation.setLongitude(location.longitude);
+    if (location.altitude) {
+        androidLocation.setAltitude(location.altitude);
+    }
+    if (location.speed) {
+        androidLocation.setSpeed(float(location.speed));
+    }
+    if (location.direction) {
+        androidLocation.setBearing(float(location.direction));
+    }
+    if (location.timestamp) {
+        try {
+            androidLocation.setTime(long(location.timestamp.getTime()));
+        } catch (e) {
+            console.error("invalid location timestamp");
+        }
+    }
+
+    return androidLocation;
 }
 
 // absctaction for unit testing
@@ -297,15 +329,17 @@ export class Location extends LocationBase {
 
     constructor(androidLocation: android.location.Location) {
         super();
-        this.android = androidLocation;
-        this.latitude = androidLocation.getLatitude();
-        this.longitude = androidLocation.getLongitude();
-        this.altitude = androidLocation.getAltitude();
-        this.horizontalAccuracy = androidLocation.getAccuracy();
-        this.verticalAccuracy = androidLocation.getAccuracy();
-        this.speed = androidLocation.getSpeed();
-        this.direction = androidLocation.getBearing();
-        this.timestamp = new Date(androidLocation.getTime());
+        if (androidLocation) {
+            this.android = androidLocation;
+            this.latitude = androidLocation.getLatitude();
+            this.longitude = androidLocation.getLongitude();
+            this.altitude = androidLocation.getAltitude();
+            this.horizontalAccuracy = androidLocation.getAccuracy();
+            this.verticalAccuracy = androidLocation.getAccuracy();
+            this.speed = androidLocation.getSpeed();
+            this.direction = androidLocation.getBearing();
+            this.timestamp = new Date(androidLocation.getTime());
+        }
     }
 }
 
