@@ -96,6 +96,23 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 | isEnabled | Promise\<boolean\>| Resolves `true` or `false` based on the location services availability.  |
 | distance(loc1: Location, loc2: Location) | number | Calculate the distance between two locations. Returns the distance in meters. |
 
+## Known Issues
+
+### Version Conflicts – Google Play Services
+
+If you have installed multiple plugins that use the Google Play Services you might run into version conflicts. 
+In order to fix this you might pin the version number in your `app/App_Resources/Android/app.gradle` file:
+
+```gradle
+android {  
+  // other stuff here
+
+  project.ext {
+    googlePlayServicesVersion = "11.2.+"
+  }
+}
+```
+
 ## License
 
 Apache License Version 2.0, January 2004
