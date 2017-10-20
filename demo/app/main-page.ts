@@ -3,14 +3,21 @@ import { Accuracy } from "ui/enums";
 import { EventData } from "data/observable";
 import { Page } from "ui/page";
 import { MainViewModel } from "./main-view-model";
+const utils = require("utils/utils");
+let locationService = require('./background-service');
 
 let page: Page;
 let model = new MainViewModel();
 let watchIds = [];
+declare var com: any;
 
 export function pageLoaded(args: EventData) {
     page = <Page>args.object;
     page.bindingContext = model;
+
+    let context = utils.ad.getApplicationContext();
+    let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
+    context.startService(intent);
 }
 
 export function enableLocationTap() {
