@@ -70,8 +70,8 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 | --- | --- | --- |
 | desiredAccuracy? | Accuracy.high | Specifies desired accuracy in meters. |
 | updateDistance | iOS - no filter | Update distance filter in meters. Specifies how often to update the location (ignored on Android). |
-| updateTime | 1 minute | Interval between location updates, in milliseconds (ignored on iOS). |
-| minimumUpdateTime | 5 secs | Minimum time interval between location updates, in milliseconds (ignored on iOS). |
+| updateTime | 1 minute | Interval between location updates, in milliseconds (ignored on iOS). Read more in [Google document](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest#setInterval(long)).|
+| minimumUpdateTime | 5 secs | Minimum time interval between location updates, in milliseconds (ignored on iOS). Read more in [Google document](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest#setFastestInterval(long)).|
 | maximumAge | - | How old locations to receive in ms.  |
 | timeout | 5 minutes | How long to wait for a location in ms.  |
 | iosAllowsBackgroundLocationUpdates | false |  If enabled, UIBackgroundModes key in info.plist is required (check the hint below). Allow the application to receive location updates in background (ignored on Android) |
