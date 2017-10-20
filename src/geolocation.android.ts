@@ -140,6 +140,11 @@ function _getTaskFailListener(done: (exception) => void) {
 }
 
 export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number {
+    // wrap in zoned callback in order to avoid UI glitches in Angular applications
+    // check https://github.com/NativeScript/NativeScript/issues/2229
+    const zonedSuccessCallback = zonedCallback(successCallback);
+    const zonedErrorCallback = zonedCallback(errorCallback);
+
     if ((!permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION) ||
         !_isGooglePlayServicesAvailable()) && !LocationManager.shouldSkipChecks()) {
         throw new Error('Cannot watch location. Call "enableLocationRequest" first');
@@ -148,7 +153,7 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
     let locationRequest = _getLocationRequest(options);
     let watchId = _getNextWatchId();
     const locationCallback = _getLocationCallback(watchId, (nativeLocation) => {
-        successCallback(new Location(nativeLocation));
+        zonedSuccessCallback(new Location(nativeLocation));
     });
 
     LocationManager.requestLocationUpdates(locationRequest, locationCallback);
