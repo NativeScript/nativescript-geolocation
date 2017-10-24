@@ -8,36 +8,35 @@ matrix:
       os: linux
       node_js: "6"
       script: cd src && npm run ci.tslint && cd ../demo && npm run ci.tslint
-    - stage: "WebPack"
+    - stage: "Build webpack and Test"
       os: osx
       env:
-        - Platform="iOS"
-      osx_image: xcode8.3
+        - Webpack="iOS"
+      osx_image: xcode9.1
       language: node_js 
       node_js: "6"
       jdk: oraclejdk8
       script: cd demo && npm run build.plugin && npm i && npm run build-ios-bundle
-    - language: android
-      os: linux
+    - os: linux
+      language: android
       env:
-        - Platform="Android"
+        - Webpack="Android"
       jdk: oraclejdk8
       before_install: nvm install 6.10.3
       script: cd demo && npm run build.plugin && npm i && npm run build-android-bundle
-    - stage: "Build and Test"
+    - os: linux
       env: 
-        - BuildAndroid="25"
+        - BuildAndroid="26"
       language: android
-      os: linux
       jdk: oraclejdk8
       before_install: nvm install stable
       script:
         - cd src && npm i && npm run tsc && cd ../demo && tns build android
     - os: osx
       env: 
-        - BuildiOS="10.3"
-        - Xcode="8.3"
-      osx_image: xcode8.3
+        - BuildiOS="11"
+        - Xcode="9.1"
+      osx_image: xcode9.1
       language: node_js 
       node_js: "6"
       jdk: oraclejdk8
@@ -47,26 +46,35 @@ matrix:
       language: android
       dist: precise
       jdk: oraclejdk8
+      env: 
+        - Android="UnitTests"
       before_script:
         - echo no | android create avd --force -n test -t android-21 -b armeabi-v7a
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
       before_install:
         - nvm install 6
-      script: cd src && npm run test.android
+      script:
+        - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build android
+        - travis_wait travis_retry tns test android --justlaunch
     - os: osx
       language: node_js
       node_js: "6"
       jdk: oraclejdk8
+      env: 
+        - iOS="UnitTests"
       osx_image: xcode8.3
-      script: cd src && npm run test.ios
+      script: 
+        - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
+        - travis_wait travis_retry tns test ios --justlaunch
 
 android:
   components:
     - tools
+    - tools
     - platform-tools
-    - build-tools-25.0.2
-    - android-25
+    - build-tools-26.0.1
+    - android-26
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-21
 
