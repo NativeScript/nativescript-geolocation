@@ -46,9 +46,9 @@
     "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
     "generate-android-snapshot": "generate-android-snapshot --targetArchs arm,arm64,ia32 --install",
     "build.plugin": "cd ../src && npm run build",
-    "start-android-bundle": "npm run ns-bundle --android --run-app",
-    "start-ios-bundle": "npm run ns-bundle --ios --run-app",
-    "build-android-bundle": "npm run ns-bundle --android --build-app",
-    "build-ios-bundle": "npm run ns-bundle --ios --build-app"
+    "start-android-bundle": "npm run ns-bundle --android --run-app --uglify --snapshot",
+    "start-ios-bundle": "npm run ns-bundle --ios --run-app --uglify",
+    "build-android-bundle": "npm run ns-bundle --android --build-app --uglify --snapshot",
+    "build-ios-bundle": "npm run ns-bundle --ios --build-app --uglify"
   }
 }
