@@ -215,7 +215,7 @@ function _isGooglePlayServicesAvailable(): boolean {
 
     let isLocationServiceEnabled = true;
     let googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
-    let resultCode = googleApiAvailability.isGooglePlayServicesAvailable(androidAppInstance.foregroundActivity);
+    let resultCode = googleApiAvailability.isGooglePlayServicesAvailable(androidAppInstance.context);
     if (resultCode !== com.google.android.gms.common.ConnectionResult.SUCCESS) {
         isLocationServiceEnabled = false;
     }

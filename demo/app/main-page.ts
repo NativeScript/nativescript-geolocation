@@ -3,7 +3,8 @@ import { Accuracy } from "ui/enums";
 import { EventData } from "data/observable";
 import { Page } from "ui/page";
 import { MainViewModel } from "./main-view-model";
-const utils = require("utils/utils");
+const utils = require("tns-core-modules/utils/utils");
+import * as application from "tns-core-modules/application";
 let locationService = require('./background-service');
 
 let page: Page;
@@ -14,10 +15,14 @@ declare var com: any;
 export function pageLoaded(args: EventData) {
     page = <Page>args.object;
     page.bindingContext = model;
+}
 
-    let context = utils.ad.getApplicationContext();
-    let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
-    context.startService(intent);
+export function startBackgroundTap() {
+    if (application.android) {
+        let context = utils.ad.getApplicationContext();
+        let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
+        context.startService(intent);
+    }
 }
 
 export function enableLocationTap() {
