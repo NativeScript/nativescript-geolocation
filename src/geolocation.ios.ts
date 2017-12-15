@@ -182,16 +182,13 @@ export function getCurrentLocation(options: Options): Promise<Location> {
         };
 
         let successCallback = function (location: Location) {
-            stopTimerAndMonitor(locListener.id);
-            if (typeof options.maximumAge === "number") {
-                if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
-                    resolve(location);
-                } else {
-                    reject(new Error("New location is older than requested maximum age!"));
-                }
-            } else {
-                resolve(location);
+            if (typeof options.maximumAge === "number" && location.timestamp.valueOf() + options.maximumAge < new Date().valueOf()) {
+                // returned location is too old, but we still have some time before the timeout so maybe wait a bit?
+                return;
             }
+
+            stopTimerAndMonitor(locListener.id);
+            resolve(location);
         };
 
         locListener = LocationListenerImpl.initWithLocationError(successCallback);
