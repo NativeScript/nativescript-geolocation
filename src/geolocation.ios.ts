@@ -15,6 +15,7 @@ import * as Platform from "platform";
 
 const locationManagers = {};
 const locationListeners = {};
+let dateStarted = new Date().valueOf();
 let watchId = 0;
 
 class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate {
@@ -182,16 +183,18 @@ export function getCurrentLocation(options: Options): Promise<Location> {
         };
 
         let successCallback = function (location: Location) {
-            stopTimerAndMonitor(locListener.id);
             if (typeof options.maximumAge === "number") {
-                if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
-                    resolve(location);
-                } else {
-                    reject(new Error("New location is older than requested maximum age!"));
+                if ((dateStarted && location.timestamp.valueOf() < dateStarted) ||
+                    (location.timestamp.valueOf() + options.maximumAge < new Date().valueOf())) {
+                    // returned location is too old, but we still have some time before the timeout so maybe wait a bit?
+                    return;
                 }
-            } else {
-                resolve(location);
             }
+
+            stopTimerAndMonitor(locListener.id);
+            // clear date value that was set on startup as we don't need it anymore
+            dateStarted = 0;
+            resolve(location);
         };
 
         locListener = LocationListenerImpl.initWithLocationError(successCallback);
