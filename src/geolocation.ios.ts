@@ -15,7 +15,6 @@ import * as Platform from "platform";
 
 const locationManagers = {};
 const locationListeners = {};
-let dateStarted = new Date().valueOf();
 let watchId = 0;
 
 class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate {
@@ -183,17 +182,12 @@ export function getCurrentLocation(options: Options): Promise<Location> {
         };
 
         let successCallback = function (location: Location) {
-            if (typeof options.maximumAge === "number") {
-                if ((dateStarted && location.timestamp.valueOf() < dateStarted) ||
-                    (location.timestamp.valueOf() + options.maximumAge < new Date().valueOf())) {
-                    // returned location is too old, but we still have some time before the timeout so maybe wait a bit?
-                    return;
-                }
+            if (typeof options.maximumAge === "number" && location.timestamp.valueOf() + options.maximumAge < new Date().valueOf()) {
+                // returned location is too old, but we still have some time before the timeout so maybe wait a bit?
+                return;
             }
 
             stopTimerAndMonitor(locListener.id);
-            // clear date value that was set on startup as we don't need it anymore
-            dateStarted = 0;
             resolve(location);
         };
 
