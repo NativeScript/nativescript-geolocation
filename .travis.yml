@@ -12,7 +12,7 @@ matrix:
       os: osx
       env:
         - Webpack="iOS"
-      osx_image: xcode9.1
+      osx_image: xcode9.2
       language: node_js 
       node_js: "6"
       jdk: oraclejdk8
@@ -35,8 +35,8 @@ matrix:
     - os: osx
       env: 
         - BuildiOS="11"
-        - Xcode="9.1"
-      osx_image: xcode9.1
+        - Xcode="9.2"
+      osx_image: xcode9.2
       language: node_js 
       node_js: "6"
       jdk: oraclejdk8
@@ -63,7 +63,7 @@ matrix:
       jdk: oraclejdk8
       env: 
         - iOS="UnitTests"
-      osx_image: xcode8.3
+      osx_image: xcode8.3 # Can't run the tests using the latest xcode for now
       script: 
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
