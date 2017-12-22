@@ -16,14 +16,14 @@ matrix:
       language: node_js 
       node_js: "6"
       jdk: oraclejdk8
-      script: cd demo && npm run build.plugin && npm i && npm run ns-bundle --ios --build-app --uglify
+      script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
       env:
         - Webpack="Android"
       jdk: oraclejdk8
       before_install: nvm install 6.10.3
-      script: cd demo && npm run build.plugin && npm i && npm run ns-bundle --android --build-app --uglify --snapshot
+      script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
         - BuildAndroid="26"
