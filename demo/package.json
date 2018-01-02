@@ -1,11 +1,11 @@
 {
   "nativescript": {
     "id": "org.nativescript.demo",
-    "tns-ios": {
-      "version": "3.0.1"
-    },
     "tns-android": {
-      "version": "3.2.0"
+      "version": "3.4.0"
+    },
+    "tns-ios": {
+      "version": "3.4.0"
     }
   },
   "dependencies": {
@@ -13,7 +13,7 @@
     "nativescript-theme-core": "^1.0.4",
     "nativescript-toast": "^1.4.6",
     "nativescript-unit-test-runner": "^0.3.4",
-    "tns-core-modules": "^3.0.0"
+    "tns-core-modules": "^3.4.0"
   },
   "devDependencies": {
     "awesome-typescript-loader": "~3.1.3",
@@ -21,6 +21,7 @@
     "babel-types": "6.11.1",
     "babylon": "6.8.4",
     "copy-webpack-plugin": "~4.0.1",
+    "css-loader": "~0.28.7",
     "extract-text-webpack-plugin": "~3.0.0",
     "filewalker": "0.1.2",
     "jasmine-core": "^2.5.2",
@@ -30,14 +31,14 @@
     "lazy": "1.0.11",
     "nativescript-css-loader": "~0.26.0",
     "nativescript-dev-typescript": "libs",
-    "nativescript-dev-webpack": "0.8.0",
+    "nativescript-dev-webpack": "^0.9.0",
     "nativescript-worker-loader": "~0.8.1",
     "raw-loader": "~0.5.1",
     "resolve-url-loader": "~2.1.0",
     "tns-platform-declarations": "^3.2.0",
     "tslint": "~5.4.3",
     "typescript": "2.3.4",
-    "webpack": "~3.2.0",
+    "webpack": "~3.8.1",
     "webpack-bundle-analyzer": "^2.8.2",
     "webpack-sources": "~1.0.1"
   },
@@ -47,9 +48,9 @@
     "publish-ios-bundle": "npm run ns-bundle --ios --publish-app",
     "generate-android-snapshot": "generate-android-snapshot --targetArchs arm,arm64,ia32 --install",
     "build.plugin": "cd ../src && npm run build",
-    "start-android-bundle": "npm run ns-bundle --android --run-app --uglify --snapshot",
-    "start-ios-bundle": "npm run ns-bundle --ios --run-app --uglify",
-    "build-android-bundle": "npm run ns-bundle --android --build-app --uglify --snapshot",
-    "build-ios-bundle": "npm run ns-bundle --ios --build-app --uglify"
+    "start-android-bundle": "npm run ns-bundle --android --run-app",
+    "start-ios-bundle": "npm run ns-bundle --ios --run-app",
+    "build-android-bundle": "npm run ns-bundle --android --build-app",
+    "build-ios-bundle": "npm run ns-bundle --ios --build-app"
   }
 }
