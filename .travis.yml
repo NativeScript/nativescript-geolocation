@@ -17,7 +17,7 @@ matrix:
       node_js: "6"
       jdk: oraclejdk8
       before_script:
-        - cd ../demo && tns platform add ios@next
+        - cd demo && tns platform add ios@next
       script: npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
@@ -26,7 +26,7 @@ matrix:
       jdk: oraclejdk8
       before_install: nvm install 6.10.3
       before_script:
-        - cd ../demo && tns platform add android@next
+        - cd demo && tns platform add android@next
       script: npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
@@ -35,7 +35,7 @@ matrix:
       jdk: oraclejdk8
       before_install: nvm install stable
       before_script:
-        - cd ../demo && tns platform add android@next
+        - cd demo && tns platform add android@next
       script:
         - npm run build.plugin && tns build android
     - os: osx
@@ -47,7 +47,7 @@ matrix:
       node_js: "6"
       jdk: oraclejdk8
       before_script:
-        - cd ../demo && tns platform add ios@next
+        - cd demo && tns platform add ios@next
       script: 
         - npm run build.plugin && tns build ios
     - os: linux
@@ -60,7 +60,7 @@ matrix:
         - echo no | android create avd --force -n test -t android-21 -b armeabi-v7a
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
-        - cd ../demo && tns platform add android@next
+        - cd demo && tns platform add android@next
       before_install:
         - nvm install 6
       script:
@@ -74,7 +74,7 @@ matrix:
         - iOS="UnitTests"
       osx_image: xcode8.3 # Can't run the tests using the latest xcode for now
       before_script:
-        - cd ../demo && tns platform add ios@next
+        - cd demo && tns platform add ios@next
       script: 
         - npm run build.plugin && npm run tslint && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
