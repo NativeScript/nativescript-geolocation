@@ -7,7 +7,7 @@ matrix:
       language: node_js
       os: linux
       node_js: "6"
-      script: cd src && npm run ci.tslint && cd ../demo && npm run ci.tslint
+      script: cd demo && npm run build.plugin && npm run ci.tslint
     - stage: "Build webpack and Test"
       os: osx
       env:
@@ -18,7 +18,7 @@ matrix:
       jdk: oraclejdk8
       before_script:
         - cd ../demo && tns platform add ios@next
-      script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
+      script: npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
       env:
@@ -27,7 +27,7 @@ matrix:
       before_install: nvm install 6.10.3
       before_script:
         - cd ../demo && tns platform add android@next
-      script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
+      script: npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
         - BuildAndroid="26"
@@ -37,7 +37,7 @@ matrix:
       before_script:
         - cd ../demo && tns platform add android@next
       script:
-        - cd src && npm i && npm run tsc && cd ../demo && tns build android
+        - npm run build.plugin && tns build android
     - os: osx
       env: 
         - BuildiOS="11"
@@ -49,7 +49,7 @@ matrix:
       before_script:
         - cd ../demo && tns platform add ios@next
       script: 
-        - cd src && npm i && npm run tsc && cd ../demo && tns build ios
+        - npm run build.plugin && tns build ios
     - os: linux
       language: android
       dist: precise
@@ -64,7 +64,7 @@ matrix:
       before_install:
         - nvm install 6
       script:
-        - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build android
+        - npm run build.plugin && npm run tslint && tns build android
         - travis_wait travis_retry tns test android --justlaunch
     - os: osx
       language: node_js
@@ -76,7 +76,7 @@ matrix:
       before_script:
         - cd ../demo && tns platform add ios@next
       script: 
-        - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
+        - npm run build.plugin && npm run tslint && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
 
 android:
@@ -100,4 +100,3 @@ install:
     - npm uninstall tns-core-modules -P && npm install tns-core-modules@next -P
     - npm uninstall nativescript-dev-webpack -D && npm install nativescript-dev-webpack@next -D
     - npm uninstall nativescript-dev-typescript -D && npm install nativescript-dev-typescript@next -D
-    - npm run update-webpack
