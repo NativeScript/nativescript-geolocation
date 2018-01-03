@@ -1,6 +1,6 @@
 branches:
   only: 
-    - master
+    - next
 matrix:
   include:
     - stage: "Lint"
@@ -16,6 +16,8 @@ matrix:
       language: node_js 
       node_js: "6"
       jdk: oraclejdk8
+      before_script:
+        - cd ../demo && tns platform add ios@next
       script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
@@ -23,6 +25,8 @@ matrix:
         - Webpack="Android"
       jdk: oraclejdk8
       before_install: nvm install 6.10.3
+      before_script:
+        - cd ../demo && tns platform add android@next
       script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
@@ -30,6 +34,8 @@ matrix:
       language: android
       jdk: oraclejdk8
       before_install: nvm install stable
+      before_script:
+        - cd ../demo && tns platform add android@next
       script:
         - cd src && npm i && npm run tsc && cd ../demo && tns build android
     - os: osx
@@ -40,6 +46,8 @@ matrix:
       language: node_js 
       node_js: "6"
       jdk: oraclejdk8
+      before_script:
+        - cd ../demo && tns platform add ios@next
       script: 
         - cd src && npm i && npm run tsc && cd ../demo && tns build ios
     - os: linux
@@ -52,6 +60,7 @@ matrix:
         - echo no | android create avd --force -n test -t android-21 -b armeabi-v7a
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
+        - cd ../demo && tns platform add android@next
       before_install:
         - nvm install 6
       script:
@@ -64,6 +73,8 @@ matrix:
       env: 
         - iOS="UnitTests"
       osx_image: xcode8.3 # Can't run the tests using the latest xcode for now
+      before_script:
+        - cd ../demo && tns platform add ios@next
       script: 
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
@@ -80,6 +91,13 @@ android:
     - sys-img-armeabi-v7a-android-21
 
 install:
-    - echo no | npm install -g nativescript
+    - echo no | npm install -g nativescript@next
     - tns usage-reporting disable
     - tns error-reporting disable
+    - cd src
+    - npm uninstall tns-core-modules -D && npm install tns-core-modules@next -D
+    - cd ../demo
+    - npm uninstall tns-core-modules -P && npm install tns-core-modules@next -P
+    - npm uninstall nativescript-dev-webpack -D && npm install nativescript-dev-webpack@next -D
+    - npm uninstall nativescript-dev-typescript -D && npm install nativescript-dev-typescript@next -D
+    - npm run update-webpack
