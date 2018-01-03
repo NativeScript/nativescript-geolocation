@@ -100,3 +100,4 @@ install:
     - npm uninstall tns-core-modules -P && npm install tns-core-modules@next -P
     - npm uninstall nativescript-dev-webpack -D && npm install nativescript-dev-webpack@next -D
     - npm uninstall nativescript-dev-typescript -D && npm install nativescript-dev-typescript@next -D
+    - cd ..
