@@ -3,7 +3,7 @@
 
 [![npm](https://img.shields.io/npm/v/nativescript-geolocation.svg)](https://www.npmjs.com/package/nativescript-geolocation)
 [![npm](https://img.shields.io/npm/dm/nativescript-geolocation.svg)](https://www.npmjs.com/package/nativescript-geolocation)
-[![Build Status](https://travis-ci.org/NativeScript/nativescript-geolocation.svg?branch=master)](https://travis-ci.org/NativeScript/nativescript-geolocation)
+[![Build Status](https://travis-ci.org/NativeScript/nativescript-geolocation.svg?branch=next)](https://travis-ci.org/NativeScript/nativescript-geolocation)
 
 Geolocation plugin to use for getting current location, monitor movement, etc.
 
