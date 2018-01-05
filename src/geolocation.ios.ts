@@ -144,67 +144,63 @@ function clLocationFromLocation(location: Location): CLLocation {
 
 // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
 export function getCurrentLocation(options: Options): Promise<Location> {
-    options = options || {};
-    if (options.timeout === 0) {
-        // we should take any cached location e.g. lastKnownLocation
-        return new Promise(function (resolve, reject) {
-            let lastLocation = LocationMonitor.getLastKnownLocation();
-            if (lastLocation) {
-                if (typeof options.maximumAge === "number") {
-                    if (lastLocation.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
-                        resolve(lastLocation);
+    return new Promise(function (resolve, reject) {
+        enableLocationRequest().then(() => {
+            options = options || {};
+            if (options.timeout === 0) {
+                // we should take any cached location e.g. lastKnownLocation
+                let lastLocation = LocationMonitor.getLastKnownLocation();
+                if (lastLocation) {
+                    if (typeof options.maximumAge === "number") {
+                        if (lastLocation.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
+                            resolve(lastLocation);
+                        } else {
+                            reject(new Error("Last known location too old!"));
+                        }
                     } else {
-                        reject(new Error("Last known location too old!"));
+                        resolve(lastLocation);
                     }
                 } else {
-                    resolve(lastLocation);
+                    reject(new Error("There is no last known location!"));
                 }
             } else {
-                reject(new Error("There is no last known location!"));
+                let timerId;
+                let locListener;
+
+                let stopTimerAndMonitor = function (locListenerId) {
+                    if (timerId !== undefined) {
+                        clearTimeout(timerId);
+                    }
+
+                    LocationMonitor.stopLocationMonitoring(locListenerId);
+                };
+
+                let successCallback = function (location: Location) {
+                    if (typeof options.maximumAge === "number" && location.timestamp.valueOf() + options.maximumAge < new Date().valueOf()) {
+                        // returned location is too old, but we still have some time before the timeout so maybe wait a bit?
+                        return;
+                    }
+
+                    stopTimerAndMonitor(locListener.id);
+                    resolve(location);
+                };
+
+                locListener = LocationListenerImpl.initWithLocationError(successCallback);
+                try {
+                    LocationMonitor.startLocationMonitoring(options, locListener);
+                } catch (e) {
+                    stopTimerAndMonitor(locListener.id);
+                    reject(e);
+                }
+
+                if (typeof options.timeout === "number") {
+                    timerId = setTimeout(function () {
+                        LocationMonitor.stopLocationMonitoring(locListener.id);
+                        reject(new Error("Timeout while searching for location!"));
+                    }, options.timeout || defaultGetLocationTimeout);
+                }
             }
-        });
-    }
-
-    return new Promise(function (resolve, reject) {
-        if (!_isEnabled()) {
-            reject(new Error("Location service is disabled"));
-        }
-
-        let timerId;
-        let locListener;
-
-        let stopTimerAndMonitor = function (locListenerId) {
-            if (timerId !== undefined) {
-                clearTimeout(timerId);
-            }
-
-            LocationMonitor.stopLocationMonitoring(locListenerId);
-        };
-
-        let successCallback = function (location: Location) {
-            if (typeof options.maximumAge === "number" && location.timestamp.valueOf() + options.maximumAge < new Date().valueOf()) {
-                // returned location is too old, but we still have some time before the timeout so maybe wait a bit?
-                return;
-            }
-
-            stopTimerAndMonitor(locListener.id);
-            resolve(location);
-        };
-
-        locListener = LocationListenerImpl.initWithLocationError(successCallback);
-        try {
-            LocationMonitor.startLocationMonitoring(options, locListener);
-        } catch (e) {
-            stopTimerAndMonitor(locListener.id);
-            reject(e);
-        }
-
-        if (typeof options.timeout === "number") {
-            timerId = setTimeout(function () {
-                LocationMonitor.stopLocationMonitoring(locListener.id);
-                reject(new Error("Timeout while searching for location!"));
-            }, options.timeout || defaultGetLocationTimeout);
-        }
+        }, reject);
     });
 }
 
