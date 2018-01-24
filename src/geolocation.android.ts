@@ -176,9 +176,12 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
                 _isLocationServiceEnabled().then(() => {
                     resolve();
                 }, (ex) => {
-                    let statusCode = ex.getStatusCode();
-                    if (statusCode === com.google.android.gms.common.api.CommonStatusCodes.RESOLUTION_REQUIRED) {
+                    if (typeof ex.getStatusCode === "function" &&
+                            ex.getStatusCode() === com.google.android.gms.common.api.CommonStatusCodes.RESOLUTION_REQUIRED) {
+
                         try {
+                            // cache resolve and reject callbacks in order to call them
+                            // on REQUEST_ENABLE_LOCATION Activity Result
                             _onEnableLocationSuccess = resolve;
                             _onEnableLocationFail = reject;
                             ex.startResolutionForResult(androidAppInstance.foregroundActivity, REQUEST_ENABLE_LOCATION);
@@ -215,7 +218,7 @@ function _isGooglePlayServicesAvailable(): boolean {
 
     let isLocationServiceEnabled = true;
     let googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
-    let resultCode = googleApiAvailability.isGooglePlayServicesAvailable(androidAppInstance.foregroundActivity);
+    let resultCode = googleApiAvailability.isGooglePlayServicesAvailable(androidAppInstance.context);
     if (resultCode !== com.google.android.gms.common.ConnectionResult.SUCCESS) {
         isLocationServiceEnabled = false;
     }
