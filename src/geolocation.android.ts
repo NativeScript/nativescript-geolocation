@@ -4,8 +4,11 @@ import { setTimeout, clearTimeout } from "timer";
 import { LocationBase, defaultGetLocationTimeout, fastestTimeUpdate, minTimeUpdate } from "./geolocation.common";
 import { Options, successCallbackType, errorCallbackType } from "./location-monitor";
 import * as permissions from "nativescript-permissions";
+import System = android.provider.Settings.System;
+import Context = android.content.Context;
 
 declare var com: any;
+const LocationSettingsStatusCodes = com.google.android.gms.location.LocationSettingsStatusCodes;
 let REQUEST_ENABLE_LOCATION = 4269; // random number
 let _onEnableLocationSuccess = null;
 let _onEnableLocationFail = null;
@@ -31,6 +34,20 @@ androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: an
         }
     }
 });
+
+function isAirplaneModeOn(): boolean {
+    return System.getInt(androidAppInstance.context.getContentResolver(), System.AIRPLANE_MODE_ON) !== 0;
+}
+
+function isProviderEnabled(provider: string): boolean {
+    try {
+        const locationManager: android.location.LocationManager = (<Context>androidAppInstance.context)
+            .getSystemService(Context.LOCATION_SERVICE);
+        return locationManager.isProviderEnabled(provider);
+    } catch (ex) {
+        return false;
+    }
+}
 
 export function getCurrentLocation(options: Options): Promise<Location> {
     return new Promise(function (resolve, reject) {
@@ -176,22 +193,26 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
                 _isLocationServiceEnabled().then(() => {
                     resolve();
                 }, (ex) => {
-                    if (typeof ex.getStatusCode === "function" &&
-                            ex.getStatusCode() === com.google.android.gms.common.api.CommonStatusCodes.RESOLUTION_REQUIRED) {
-
-                        try {
-                            // cache resolve and reject callbacks in order to call them
-                            // on REQUEST_ENABLE_LOCATION Activity Result
-                            _onEnableLocationSuccess = resolve;
-                            _onEnableLocationFail = reject;
-                            ex.startResolutionForResult(androidAppInstance.foregroundActivity, REQUEST_ENABLE_LOCATION);
-                        } catch (sendEx) {
-                            // Ignore the error.
-                            resolve();
+                    if (typeof ex.getStatusCode === "function") {
+                        const statusCode = ex.getStatusCode();
+                        if (statusCode === LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                            try {
+                                // cache resolve and reject callbacks in order to call them
+                                // on REQUEST_ENABLE_LOCATION Activity Result
+                                _onEnableLocationSuccess = resolve;
+                                _onEnableLocationFail = reject;
+                                return ex.startResolutionForResult(androidAppInstance.foregroundActivity, REQUEST_ENABLE_LOCATION);
+                            } catch (sendEx) {
+                                // Ignore the error.
+                                return resolve();
+                            }
+                        } else if (statusCode === LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE
+                            && isAirplaneModeOn()
+                            && isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+                            return resolve();
                         }
-                    } else {
-                        reject(new Error("Cannot enable the location service"));
                     }
+                    reject(new Error("Cannot enable the location service"));
                 });
             }, reject);
         }, reject);
@@ -258,7 +279,13 @@ export function isEnabled(options?: Options): Promise<boolean> {
             _isLocationServiceEnabled(options).then(
                 () => {
                     resolve(true);
-                }, () => {
+                }, (ex) => {
+                    if (typeof ex.getStatusCode === "function"
+                        && ex.getStatusCode() === LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE
+                        && isAirplaneModeOn()
+                        && isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+                        return resolve(true);
+                    }
                     resolve(false);
                 });
         }
