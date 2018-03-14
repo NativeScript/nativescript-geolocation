@@ -6,7 +6,6 @@ import { Options, successCallbackType, errorCallbackType } from "./location-moni
 import * as permissions from "nativescript-permissions";
 
 declare var com: any;
-const LocationSettingsStatusCodes = com.google.android.gms.location.LocationSettingsStatusCodes;
 let REQUEST_ENABLE_LOCATION = 4269; // random number
 let _onEnableLocationSuccess = null;
 let _onEnableLocationFail = null;
@@ -194,7 +193,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
                 }, (ex) => {
                     if (typeof ex.getStatusCode === "function") {
                         const statusCode = ex.getStatusCode();
-                        if (statusCode === LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
+                        if (statusCode === com.google.android.gms.location.LocationSettingsStatusCodes.RESOLUTION_REQUIRED) {
                             try {
                                 // cache resolve and reject callbacks in order to call them
                                 // on REQUEST_ENABLE_LOCATION Activity Result
@@ -205,7 +204,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
                                 // Ignore the error.
                                 return resolve();
                             }
-                        } else if (statusCode === LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE
+                        } else if (statusCode === com.google.android.gms.location.LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE
                             && isAirplaneModeOn()
                             && isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
                             return resolve();
@@ -280,7 +279,7 @@ export function isEnabled(options?: Options): Promise<boolean> {
                     resolve(true);
                 }, (ex) => {
                     if (typeof ex.getStatusCode === "function"
-                        && ex.getStatusCode() === LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE
+                        && ex.getStatusCode() === com.google.android.gms.location.LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE
                         && isAirplaneModeOn()
                         && isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
                         return resolve(true);
