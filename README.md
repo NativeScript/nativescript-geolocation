@@ -68,7 +68,7 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 
 | Property | Default | Description |
 | --- | --- | --- |
-| desiredAccuracy? | Accuracy.high | Specifies desired accuracy in meters. |
+| desiredAccuracy? | Accuracy.high | This will return the finest location available but use more power than `any` option. `Accuracy.any` is considered to be about 100 meter accuracy. Using a coarse accuracy such as this often consumes less power. |
 | updateDistance | iOS - no filter | Update distance filter in meters. Specifies how often to update the location (ignored on Android). |
 | updateTime | 1 minute | Interval between location updates, in milliseconds (ignored on iOS). Read more in [Google document](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest#setInterval(long)).|
 | minimumUpdateTime | 5 secs | Minimum time interval between location updates, in milliseconds (ignored on iOS). Read more in [Google document](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest#setFastestInterval(long)).|
