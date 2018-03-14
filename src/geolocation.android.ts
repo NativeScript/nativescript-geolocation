@@ -4,8 +4,6 @@ import { setTimeout, clearTimeout } from "timer";
 import { LocationBase, defaultGetLocationTimeout, fastestTimeUpdate, minTimeUpdate } from "./geolocation.common";
 import { Options, successCallbackType, errorCallbackType } from "./location-monitor";
 import * as permissions from "nativescript-permissions";
-import System = android.provider.Settings.System;
-import Context = android.content.Context;
 
 declare var com: any;
 const LocationSettingsStatusCodes = com.google.android.gms.location.LocationSettingsStatusCodes;
@@ -36,13 +34,14 @@ androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: an
 });
 
 function isAirplaneModeOn(): boolean {
-    return System.getInt(androidAppInstance.context.getContentResolver(), System.AIRPLANE_MODE_ON) !== 0;
+    return android.provider.Settings.System.getInt(androidAppInstance.context.getContentResolver(),
+        android.provider.Settings.System.AIRPLANE_MODE_ON) !== 0;
 }
 
 function isProviderEnabled(provider: string): boolean {
     try {
-        const locationManager: android.location.LocationManager = (<Context>androidAppInstance.context)
-            .getSystemService(Context.LOCATION_SERVICE);
+        const locationManager: android.location.LocationManager = (<android.content.Context>androidAppInstance.context)
+            .getSystemService(android.content.Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(provider);
     } catch (ex) {
         return false;
