@@ -210,7 +210,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
                             return resolve();
                         }
                     }
-                    reject(new Error("Cannot enable the location service"));
+                    reject(new Error("Cannot enable the location service. " + ex));
                 });
             }, reject);
         }, reject);
