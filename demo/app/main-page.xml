@@ -6,8 +6,9 @@
             <Button text="Start Monitoring" col="2" textWrap="true" tap="buttonStartTap"/>
             <Button text="Stop Monitoring" col="3" textWrap="true" tap="buttonStopTap"/>
         </GridLayout>
-        <GridLayout row="1" columns="*" >
+        <GridLayout row="1" columns="*, *" >
             <Button text="Start Background thread monitoring" col="0" ios:visibility="collapsed" textWrap="true" tap="startBackgroundTap"/>
+            <Button text="Stop Background thread monitoring" col="1" ios:visibility="collapsed" textWrap="true" tap="stopBackgroundTap"/>
         </GridLayout>
         <ListView row="2" items="{{ locations }}">
             <ListView.itemTemplate>

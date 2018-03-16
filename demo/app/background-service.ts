@@ -10,8 +10,9 @@ if (application.android) {
             return android.app.Service.START_STICKY;
         },
         onCreate: function () {
+            let that = this;
             geolocation.enableLocationRequest().then(function () {
-                geolocation.watchLocation(
+                that.id = geolocation.watchLocation(
                     function (loc) {
                         if (loc) {
                             let toast = Toast.makeText('Background Location: ' + loc.latitude + ' ' + loc.longitude);
@@ -40,6 +41,7 @@ if (application.android) {
         },
         onDestroy: function() {
             console.log('service onDestroy');
+            geolocation.clearWatch(this.id);
         }
     });
 }
