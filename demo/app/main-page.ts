@@ -25,6 +25,14 @@ export function startBackgroundTap() {
     }
 }
 
+export function stopBackgroundTap() {
+    if (application.android) {
+        let context = utils.ad.getApplicationContext();
+        let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
+        context.stopService(intent);
+    }
+}
+
 export function enableLocationTap() {
     geolocation.isEnabled().then(function (isEnabled) {
         if (!isEnabled) {
