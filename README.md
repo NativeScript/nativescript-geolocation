@@ -69,13 +69,13 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 | Property | Default | Description |
 | --- | --- | --- |
 | desiredAccuracy? | Accuracy.high | This will return the finest location available but use more power than `any` option. `Accuracy.any` is considered to be about 100 meter accuracy. Using a coarse accuracy such as this often consumes less power. |
-| updateDistance | iOS - no filter | Update distance filter in meters. Specifies how often to update the location (ignored on Android). |
+| updateDistance | iOS - no filter | Update distance filter in meters. Specifies how often to update the location (ignored on Android). Read more in [Apple document](https://developer.apple.com/documentation/corelocation/cllocationmanager/1423500-distancefilter?language=objc) |
 | updateTime | 1 minute | Interval between location updates, in milliseconds (ignored on iOS). Read more in [Google document](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest#setInterval(long)).|
 | minimumUpdateTime | 5 secs | Minimum time interval between location updates, in milliseconds (ignored on iOS). Read more in [Google document](https://developers.google.com/android/reference/com/google/android/gms/location/LocationRequest#setFastestInterval(long)).|
 | maximumAge | - | How old locations to receive in ms.  |
 | timeout | 5 minutes | How long to wait for a location in ms.  |
-| iosAllowsBackgroundLocationUpdates | false |  If enabled, UIBackgroundModes key in info.plist is required (check the hint below). Allow the application to receive location updates in background (ignored on Android) |
-| iosPausesLocationUpdatesAutomatically | true | Allow deactivation of the automatic pause of location updates (ignored on Android) |
+| iosAllowsBackgroundLocationUpdates | false |  If enabled, UIBackgroundModes key in info.plist is required (check the hint below). Allow the application to receive location updates in background (ignored on Android). Read more in [Apple document](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates?language=objc) |
+| iosPausesLocationUpdatesAutomatically | true | Allow deactivation of the automatic pause of location updates (ignored on Android). Read more in [Apple document](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical?language=objc)|
 
 > If iosAllowsBackgroundLocationUpdates is set to true, the following code is required in the info.plist file:
 >```
