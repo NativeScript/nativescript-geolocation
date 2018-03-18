@@ -54,7 +54,7 @@ git checkout -b <my-fix-branch> master
 
 4. The fun part! Make your code changes. Make sure you:
     - Follow the [code conventions guide](https://github.com/NativeScript/NativeScript/blob/master/CodingConvention.md).
-    - Follow the [commit message guidelines](https://github.com/NativeScript/NativeScript/blob/pr-template/CONTRIBUTING.md#commit-messages)
+    - Follow the [commit message guidelines](https://github.com/NativeScript/NativeScript/blob/master/CONTRIBUTING.md#-commit-message-guidelines)
     - Update the README if you make changes to the plugin API
 
 5. Before you submit your PR:
