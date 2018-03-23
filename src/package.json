@@ -1,6 +1,6 @@
 {
     "name": "nativescript-geolocation",
-    "version": "4.2.5",
+    "version": "4.2.6",
     "description": "Provides API for getting and monitoring location for NativeScript app.",
     "main": "geolocation",
     "nativescript": {
