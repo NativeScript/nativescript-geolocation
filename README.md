@@ -92,7 +92,7 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 | getCurrentLocation(options: Options) | Promise<Location> | Get current location applying the specified options (if any). |
 | watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options) | number | Monitor for location change. |
 | clearWatch(watchId: number) | void | Stop monitoring for location change. Parameter expected is the watchId returned from `watchLocation`. |
-| enableLocationRequest(always?: boolean) | Promise\<void\> | Ask for permissions to use location services. The option `always` is application for iOS only. For a custom prompt message on IOS, the following keys are required. NSLocationAlwaysUsageDescription, NSLocationUsageDescription and NSLocationWhenInUseUsageDescription [Read more about its usage](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization) . |
+| enableLocationRequest(always?: boolean) | Promise\<void\> | Ask for permissions to use location services. The option `always` is applicable only for iOS. For a custom prompt message on IOS, the following keys are required. NSLocationAlwaysUsageDescription, NSLocationUsageDescription and NSLocationWhenInUseUsageDescription [Read more about its usage](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization) . |
 | isEnabled | Promise\<boolean\>| Resolves `true` or `false` based on the location services availability.  |
 | distance(loc1: Location, loc2: Location) | number | Calculate the distance between two locations. Returns the distance in meters. |
 
