@@ -3,6 +3,7 @@
     "version": "4.2.6",
     "description": "Provides API for getting and monitoring location for NativeScript app.",
     "main": "geolocation",
+    "typings": "index.d.ts",
     "nativescript": {
         "platforms": {
             "android": "3.0.0",
