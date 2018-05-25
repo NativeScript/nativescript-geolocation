@@ -1,4 +1,6 @@
 *.map
 *.ts
 !*.d.ts
-tsconfig.json 
+tsconfig.json
+!platforms/android/include.gradle
+!platforms/android/nativescript_geolocation.aar
