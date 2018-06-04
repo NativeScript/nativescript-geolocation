@@ -9,13 +9,14 @@
         "experimentalDecorators": true,
         "lib": [
             "es6",
-            "dom"
+            "dom",
+            "es2015.iterable"
         ],
         "pretty": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "noEmitHelpers": true,
-        "noEmitOnError": true,
+        "noEmitOnError": false,
         "noImplicitAny": false,
         "noImplicitReturns": true,
         "noImplicitUseStrict": false,
@@ -25,10 +26,18 @@
             "*": [
                 "./node_modules/tns-core-modules/*",
                 "./node_modules/*"
+            ],
+            "~/*": [
+                "app/*"
             ]
         }
     },
+    "include": [
+        "../src",
+        "**/*"
+    ],
     "exclude": [
+        "../src/node_modules",
         "node_modules",
         "platforms"
     ],

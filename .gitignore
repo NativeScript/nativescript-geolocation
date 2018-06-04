@@ -4,12 +4,10 @@
 *.js
 *.js.map
 *.log
+*.esm.json
 logs
 !src/scripts/*.js
-!seed-tests/*.js
-seed-tests/seed-copy/**/*.*
-seed-tests/seed-copy-new-git-repo/**/*.*
-demo/app/*.js
+demo/**/*.js
 !demo/karma.conf.js
 !demo/app/tests/*.js
 demo/*.d.ts
@@ -20,5 +18,4 @@ demo/node_modules
 node_modules
 publish/src
 publish/package
-/src/platforms/android/nativescript-geolocation.aar
-/src/*.tgz
+src/platforms/android/nativescript_geolocation.aar

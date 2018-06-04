@@ -63,7 +63,7 @@ matrix:
       jdk: oraclejdk8
       env: 
         - iOS="UnitTests"
-      osx_image: xcode8.3 # Can't run the tests using the latest xcode for now
+      osx_image: xcode9.3
       script: 
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
@@ -73,7 +73,7 @@ android:
     - tools
     - tools
     - platform-tools
-    - build-tools-26.0.2
+    - build-tools-27.0.3
     - android-26
     - android-23
     - extra-android-m2repository
