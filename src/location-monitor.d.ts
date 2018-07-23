@@ -10,7 +10,7 @@ export interface Options {
     desiredAccuracy?: number;
 
     /**
-     * Update distance filter in meters. Specifies how often to update. Default on iOS is no filter  (ignored on Android)
+     * Update distance filter in meters. Specifies how often to update. Default is no filter
      */
     updateDistance?: number;
 

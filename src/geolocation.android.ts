@@ -104,8 +104,9 @@ function _getLocationRequest(options: Options): any {
     let minUpdateTime = options.minimumUpdateTime === 0 ?
         0 : options.minimumUpdateTime || Math.min(updateTime, fastestTimeUpdate);
     mLocationRequest.setFastestInterval(minUpdateTime);
-    if (options.updateDistance)
+    if (options.updateDistance) {
         mLocationRequest.setSmallestDisplacement(options.updateDistance);
+    }
     if (options.desiredAccuracy === Accuracy.high) {
         mLocationRequest.setPriority(com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY);
     } else {
