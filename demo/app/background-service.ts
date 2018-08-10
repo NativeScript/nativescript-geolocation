@@ -36,10 +36,10 @@ if (application.android) {
         onBind: function (intent) {
             console.log("on Bind Services");
         },
-        onUnbind: function(intent){
+        onUnbind: function (intent) {
             console.log('UnBind Service');
         },
-        onDestroy: function() {
+        onDestroy: function () {
             console.log('service onDestroy');
             geolocation.clearWatch(this.id);
         }
