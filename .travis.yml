@@ -18,7 +18,7 @@ matrix:
       jdk: oraclejdk8
       before_script:
         - cd demo && tns platform add ios@next
-        - cd demo-angular && tns platform add ios@next
+        - cd ../demo-angular && tns platform add ios@next
       script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
@@ -28,7 +28,7 @@ matrix:
       before_install: nvm install 8.11.4
       before_script:
         - cd demo && tns platform add android@next
-        - cd demo-angular && tns platform add android@next
+        - cd ../demo-angular && tns platform add android@next
       script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
@@ -38,7 +38,7 @@ matrix:
       before_install: nvm install 8.11.4
       before_script:
         - cd demo && tns platform add android@next
-        - cd demo-angular && tns platform add android@next
+        - cd ../demo-angular && tns platform add android@next
       script:
         - cd src && npm i && npm run tsc && cd ../demo && tns build android
     - os: osx
@@ -51,7 +51,7 @@ matrix:
       jdk: oraclejdk8
       before_script:
         - cd demo && tns platform add ios@next
-        - cd demo-angular && tns platform add ios@next
+        - cd ../demo-angular && tns platform add ios@next
       script: 
         - cd src && npm i && npm run tsc && cd ../demo && tns build ios
     - os: linux
