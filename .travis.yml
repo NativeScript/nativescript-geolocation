@@ -12,7 +12,7 @@ matrix:
       os: osx
       env:
         - Webpack="iOS"
-      osx_image: xcode9.2
+      osx_image: xcode9.4
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
@@ -44,8 +44,8 @@ matrix:
     - os: osx
       env: 
         - BuildiOS="11"
-        - Xcode="9.2"
-      osx_image: xcode9.2
+        - Xcode="9.4"
+      osx_image: xcode9.4
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
@@ -75,7 +75,7 @@ matrix:
       jdk: oraclejdk8
       env: 
         - iOS="UnitTests"
-      osx_image: xcode9.2
+      osx_image: xcode9.4
       script: 
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
@@ -95,3 +95,4 @@ install:
     - echo no | npm install -g nativescript
     - tns usage-reporting disable
     - tns error-reporting disable
+    - pip install six
