@@ -1,6 +1,6 @@
 branches:
   only: 
-    - master
+    - next
 matrix:
   include:
     - stage: "Lint"
@@ -12,36 +12,46 @@ matrix:
       os: osx
       env:
         - Webpack="iOS"
-      osx_image: xcode9.2
+      osx_image: xcode9.4
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
-      script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
+      before_script:
+        - pip install six
+        - cd demo && tns platform add ios@next
+      script: npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
       env:
         - Webpack="Android"
       jdk: oraclejdk8
       before_install: nvm install 8.11.4
-      script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
+      before_script:
+        - cd demo && tns platform add android@next
+      script: npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
         - BuildAndroid="26"
       language: android
       jdk: oraclejdk8
       before_install: nvm install 8.11.4
+      before_script:
+        - cd demo && tns platform add android@next
       script:
-        - cd src && npm i && npm run tsc && cd ../demo && tns build android
+        - cd ../src && npm i && npm run tsc && cd ../demo && tns build android
     - os: osx
       env: 
         - BuildiOS="11"
-        - Xcode="9.2"
-      osx_image: xcode9.2
+        - Xcode="9.4"
+      osx_image: xcode9.4
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
+      before_script:
+        - pip install six
+        - cd demo && tns platform add ios@next
       script: 
-        - cd src && npm i && npm run tsc && cd ../demo && tns build ios
+        - cd ../src && npm i && npm run tsc && cd ../demo && tns build ios
     - os: linux
       language: android
       dist: precise
@@ -53,7 +63,7 @@ matrix:
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
       before_install:
-        - nvm install 8
+        - nvm install 8.11.4
       script:
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build android
         - travis_wait travis_retry tns test android --justlaunch
@@ -63,7 +73,9 @@ matrix:
       jdk: oraclejdk8
       env: 
         - iOS="UnitTests"
-      osx_image: xcode9.2
+      osx_image: xcode9.4
+      before_script:
+        - pip install six
       script: 
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
