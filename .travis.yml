@@ -17,6 +17,7 @@ matrix:
       node_js: "8"
       jdk: oraclejdk8
       before_script:
+        - pip install six
         - cd demo && tns platform add ios@next
       script: npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
@@ -47,6 +48,7 @@ matrix:
       node_js: "8"
       jdk: oraclejdk8
       before_script:
+        - pip install six
         - cd demo && tns platform add ios@next
       script: 
         - cd ../src && npm i && npm run tsc && cd ../demo && tns build ios
@@ -72,6 +74,8 @@ matrix:
       env: 
         - iOS="UnitTests"
       osx_image: xcode9.4
+      before_script:
+        - pip install six
       script: 
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
@@ -91,4 +95,3 @@ install:
     - echo no | npm install -g nativescript
     - tns usage-reporting disable
     - tns error-reporting disable
-    - pip install six
