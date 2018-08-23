@@ -29,6 +29,7 @@ matrix:
       before_script:
         - cd demo && tns platform add android@next
         - cd ../demo-angular && tns platform add android@next
+
       script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
