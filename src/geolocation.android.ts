@@ -1,4 +1,4 @@
-import { android as androidAppInstance, AndroidApplication } from "application";
+import { on as applicationOn, android as androidAppInstance, AndroidApplication, uncaughtErrorEvent, UnhandledErrorEventData } from "application";
 import { Accuracy } from "ui/enums";
 import { setTimeout, clearTimeout } from "timer";
 import { LocationBase, defaultGetLocationTimeout, fastestTimeUpdate, minTimeUpdate } from "./geolocation.common";
@@ -13,6 +13,7 @@ let _onEnableLocationFail = null;
 const locationListeners = {};
 let watchIdCounter = 0;
 let fusedLocationClient;
+let attachedForErrorHandling = false;
 
 function _ensureLocationClient() {
     // Wrapped in a function as we should not access java object there because of the snapshots.
@@ -44,6 +45,13 @@ function isProviderEnabled(provider: string): boolean {
         return locationManager.isProviderEnabled(provider);
     } catch (ex) {
         return false;
+    }
+}
+
+function errorHandler(errData: UnhandledErrorEventData) {
+    while (watchIdCounter !== 0) {
+        clearWatch(watchIdCounter);
+        watchIdCounter--;
     }
 }
 
@@ -166,6 +174,11 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
     if ((!permissions.hasPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION) ||
         !_isGooglePlayServicesAvailable()) && !LocationManager.shouldSkipChecks()) {
         throw new Error('Cannot watch location. Call "enableLocationRequest" first');
+    }
+
+    if (!attachedForErrorHandling) {
+        attachedForErrorHandling = true;
+        applicationOn(uncaughtErrorEvent, errorHandler.bind(this));
     }
 
     let locationRequest = _getLocationRequest(options);

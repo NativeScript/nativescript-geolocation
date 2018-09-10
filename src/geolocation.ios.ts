@@ -1,6 +1,8 @@
 import { Accuracy } from "ui/enums";
 import { setTimeout, clearTimeout } from "timer";
 import { write } from "trace";
+import { on as applicationOn, uncaughtErrorEvent, UnhandledErrorEventData } from "application";
+
 import {
     LocationBase,
     defaultGetLocationTimeout,
@@ -16,6 +18,7 @@ import * as Platform from "platform";
 const locationManagers = {};
 const locationListeners = {};
 let watchId = 0;
+let attachedForErrorHandling = false;
 
 class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate {
     public static ObjCProtocols = [CLLocationManagerDelegate]; // tslint:disable-line:variable-name
@@ -131,15 +134,22 @@ function clLocationFromLocation(location: Location): CLLocation {
     let timestamp = location.timestamp ? location.timestamp : null;
     let iosLocation = CLLocation.alloc()
         .initWithCoordinateAltitudeHorizontalAccuracyVerticalAccuracyCourseSpeedTimestamp(
-        CLLocationCoordinate2DMake(location.latitude, location.longitude),
-        altitude,
-        hAccuracy,
-        vAccuracy,
-        course,
-        speed,
-        timestamp
+            CLLocationCoordinate2DMake(location.latitude, location.longitude),
+            altitude,
+            hAccuracy,
+            vAccuracy,
+            course,
+            speed,
+            timestamp
         );
     return iosLocation;
+}
+
+function errorHandler(errData: UnhandledErrorEventData) {
+    while (watchId !== 0) {
+        clearWatch(watchId);
+        watchId--;
+    }
 }
 
 // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
@@ -207,6 +217,11 @@ export function getCurrentLocation(options: Options): Promise<Location> {
 export function watchLocation(successCallback: successCallbackType,
     errorCallback: errorCallbackType,
     options: Options): number {
+    if (!attachedForErrorHandling) {
+        attachedForErrorHandling = true;
+        applicationOn(uncaughtErrorEvent, errorHandler.bind(this));
+    }
+
     let zonedSuccessCallback = (<any>global).zonedCallback(successCallback);
     let zonedErrorCallback = (<any>global).zonedCallback(errorCallback);
     let locListener = LocationListenerImpl.initWithLocationError(zonedSuccessCallback, zonedErrorCallback);
@@ -326,11 +341,11 @@ export class LocationMonitor {
         if (parseInt(Platform.device.osVersion.split(".")[0]) >= 9) {
             iosLocManager.allowsBackgroundLocationUpdates =
                 options && options.iosAllowsBackgroundLocationUpdates != null ?
-                options.iosAllowsBackgroundLocationUpdates : false;
+                    options.iosAllowsBackgroundLocationUpdates : false;
         }
         iosLocManager.pausesLocationUpdatesAutomatically =
             options && options.iosPausesLocationUpdatesAutomatically != null ?
-            options.iosPausesLocationUpdatesAutomatically : true;
+                options.iosPausesLocationUpdatesAutomatically : true;
         return iosLocManager;
     }
 }
