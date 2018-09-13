@@ -80,6 +80,7 @@ if (application.android) {
             },
 
             onStopJob() {
+                geolocation.clearWatch(this.id);
                 return true;
             },
         });
