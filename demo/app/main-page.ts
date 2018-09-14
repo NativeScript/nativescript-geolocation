@@ -15,6 +15,16 @@ let watchIds = [];
 let backgroundIds = [];
 declare var com: any;
 
+application.on(application.exitEvent, function (args: any) {
+    if (application.android && backgroundIds.length > 0) {
+        let context = utils.ad.getApplicationContext();
+        const jobScheduler = context.getSystemService((<any>android.content.Context).JOB_SCHEDULER_SERVICE);
+        const service = backgroundIds.pop();
+        jobScheduler.cancel(service);
+        console.log(`Job Canceled: ${service}`);
+    }
+});
+
 export function pageLoaded(args: EventData) {
     page = <Page>args.object;
     page.bindingContext = model;

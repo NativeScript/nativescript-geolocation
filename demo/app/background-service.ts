@@ -4,6 +4,13 @@ import * as application from "tns-core-modules/application";
 import { device } from "tns-core-modules/platform";
 import * as Toast from "nativescript-toast";
 
+let watchId;
+application.on(application.exitEvent, function (args: any) {
+    if (watchId) {
+        geolocation.clearWatch(watchId);
+    }
+});
+
 if (application.android) {
     if (device.sdkVersion < "26") {
         (<any>android.app.Service).extend("com.nativescript.location.BackgroundService", {
@@ -50,10 +57,9 @@ if (application.android) {
     else {
         (<any>android.app).job.JobService.extend("com.nativescript.location.BackgroundService26", {
             onStartJob(params) {
-                let that = this;
                 let executed = false;
                 geolocation.enableLocationRequest().then(function () {
-                    that.id = geolocation.watchLocation(
+                    watchId = geolocation.watchLocation(
                         function (loc) {
                             if (loc) {
                                 let toast = Toast.makeText('Background Location: ' + loc.latitude + ' ' + loc.longitude);
@@ -80,7 +86,8 @@ if (application.android) {
             },
 
             onStopJob() {
-                geolocation.clearWatch(this.id);
+                console.log('service onStopJob');
+                geolocation.clearWatch(watchId);
                 return true;
             },
         });
