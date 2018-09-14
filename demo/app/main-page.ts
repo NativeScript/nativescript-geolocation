@@ -5,12 +5,25 @@ import { Page } from "ui/page";
 import { MainViewModel } from "./main-view-model";
 const utils = require("tns-core-modules/utils/utils");
 import * as application from "tns-core-modules/application";
+import { device } from "tns-core-modules/platform";
+
 let locationService = require('./background-service');
 
 let page: Page;
 let model = new MainViewModel();
 let watchIds = [];
+let backgroundIds = [];
 declare var com: any;
+
+application.on(application.exitEvent, function (args: any) {
+    if (application.android && backgroundIds.length > 0) {
+        let context = utils.ad.getApplicationContext();
+        const jobScheduler = context.getSystemService((<any>android.content.Context).JOB_SCHEDULER_SERVICE);
+        const service = backgroundIds.pop();
+        jobScheduler.cancel(service);
+        console.log(`Job Canceled: ${service}`);
+    }
+});
 
 export function pageLoaded(args: EventData) {
     page = <Page>args.object;
@@ -21,7 +34,17 @@ export function startBackgroundTap() {
     if (application.android) {
         let context = utils.ad.getApplicationContext();
         let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
-        context.startService(intent);
+        if (device.sdkVersion >= "26") {
+            const component = new android.content.ComponentName(context, com.nativescript.location.BackgroundService26.class);
+            const builder = new (<any>android.app).job.JobInfo.Builder(1, component);
+            builder.setRequiredNetworkType((<any>android.app).job.JobInfo.NETWORK_TYPE_ANY);
+            builder.setPeriodic(15 * 60 * 1000);
+            const jobScheduler = context.getSystemService((<any>android.content.Context).JOB_SCHEDULER_SERVICE);
+            const service = jobScheduler.schedule(builder.build());
+            backgroundIds.push(service);
+        } else {
+            context.startService(intent);
+        }
     }
 }
 
@@ -29,7 +52,16 @@ export function stopBackgroundTap() {
     if (application.android) {
         let context = utils.ad.getApplicationContext();
         let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
-        context.stopService(intent);
+        if (device.sdkVersion >= "26") {
+            if (backgroundIds.length > 0) {
+                const jobScheduler = context.getSystemService((<any>android.content.Context).JOB_SCHEDULER_SERVICE);
+                const service = backgroundIds.pop();
+                jobScheduler.cancel(service);
+                console.log(`Job Canceled: ${service}`);
+            }
+        } else {
+            context.stopService(intent);
+        }
     }
 }
 
