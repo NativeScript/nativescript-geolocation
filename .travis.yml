@@ -12,7 +12,7 @@ matrix:
       os: osx
       env:
         - Webpack="iOS"
-      osx_image: xcode9.4
+      osx_image: xcode10.0
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
@@ -41,9 +41,9 @@ matrix:
         - cd ../src && npm i && npm run tsc && cd ../demo && tns build android
     - os: osx
       env: 
-        - BuildiOS="11"
-        - Xcode="9.4"
-      osx_image: xcode9.4
+        - BuildiOS="12.0"
+        - Xcode="10.0"
+      osx_image: xcode10.0
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
@@ -73,7 +73,7 @@ matrix:
       jdk: oraclejdk8
       env: 
         - iOS="UnitTests"
-      osx_image: xcode9.4
+      osx_image: xcode10.0
       before_script:
         - pip install six
       script: 
@@ -86,6 +86,7 @@ android:
     - tools
     - platform-tools
     - build-tools-28.0.2
+    - build-tools-27.0.3
     - android-28
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-21
