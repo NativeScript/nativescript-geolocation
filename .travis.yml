@@ -38,7 +38,7 @@ matrix:
       before_script:
         - cd demo && tns platform add android@next
       script:
-        - cd ../src && npm i && npm run tsc && cd ../demo && tns build android
+        - npm run build.plugin && npm i && tns build android
     - os: osx
       env: 
         - BuildiOS="12.0"
@@ -51,7 +51,7 @@ matrix:
         - pip install six
         - cd demo && tns platform add ios@next
       script: 
-        - cd ../src && npm i && npm run tsc && cd ../demo && tns build ios
+        - npm run build.plugin && npm i && tns build ios
     - os: linux
       language: android
       dist: precise
@@ -92,6 +92,14 @@ android:
     - sys-img-armeabi-v7a-android-21
 
 install:
-    - echo no | npm install -g nativescript
+    - echo no | npm install -g nativescript@next
     - tns usage-reporting disable
     - tns error-reporting disable
+    - cd src
+    - npm install tns-core-modules@next -D
+    - cd ../demo
+    - npm install nativescript-dev-webpack@next -D
+    - ./node_modules/.bin/update-ns-webpack --deps
+    - npm install tns-core-modules@next -P
+    - npm install nativescript-dev-typescript@next -D
+    - cd ..
