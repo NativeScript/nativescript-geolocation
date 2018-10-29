@@ -1,6 +1,5 @@
-import { Accuracy } from "ui/enums";
+import { Accuracy } from "tns-core-modules/ui/enums";
 import { setTimeout, clearTimeout } from "timer";
-import { write } from "trace";
 import { on as applicationOn, uncaughtErrorEvent, UnhandledErrorEventData } from "application";
 
 import {
