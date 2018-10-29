@@ -1,5 +1,5 @@
 import { on as applicationOn, android as androidAppInstance, AndroidApplication, uncaughtErrorEvent, UnhandledErrorEventData } from "application";
-import { Accuracy } from "ui/enums";
+import { Accuracy } from "tns-core-modules/ui/enums";
 import { setTimeout, clearTimeout } from "timer";
 import { LocationBase, defaultGetLocationTimeout, fastestTimeUpdate, minTimeUpdate } from "./geolocation.common";
 import { Options, successCallbackType, errorCallbackType } from "./location-monitor";

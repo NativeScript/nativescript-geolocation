@@ -27,7 +27,7 @@ In short here are the steps:
 *TypeScript*
 ``` 
 import * as geolocation from "nativescript-geolocation";
-import { Accuracy } from "ui/enums"; // used to describe at what accuracy the location should be get
+import { Accuracy } from "tns-core-modules/ui/enums"; // used to describe at what accuracy the location should be get
 ```
 
 *Javascript*

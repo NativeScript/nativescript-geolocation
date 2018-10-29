@@ -1,7 +1,7 @@
 import * as geolocation from "nativescript-geolocation";
-import { Accuracy } from "ui/enums";
-import { EventData } from "data/observable";
-import { Page } from "ui/page";
+import { Accuracy } from "tns-core-modules/ui/enums";
+import { EventData } from "tns-core-modules/data/observable";
+import { Page } from "tns-core-modules/ui/page";
 import { MainViewModel } from "./main-view-model";
 const utils = require("tns-core-modules/utils/utils");
 import * as application from "tns-core-modules/application";
