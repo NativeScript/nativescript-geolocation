@@ -40,12 +40,12 @@
     "homepage": "https://github.com/NativeScript/nativescript-geolocation",
     "readmeFilename": "README.md",
     "devDependencies": {
-        "tns-core-modules": "^3.0.0",
-        "tns-platform-declarations": "^3.0.0",
-        "typescript": "~2.7.2",
+        "tns-core-modules": "^5.0.1",
+        "tns-platform-declarations": "^5.0.0",
+        "typescript": "~2.8.2",
         "prompt": "~1.0.0",
         "rimraf": "~2.6.2",
-        "tslint": "~5.4.3"
+        "tslint": "~5.11.0"
     },
     "dependencies": {
         "nativescript-permissions": "~1.2.3"

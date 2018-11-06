@@ -5,6 +5,7 @@
 *.js.map
 *.log
 *.esm.json
+*.tns.json
 logs
 !src/scripts/*.js
 demo/**/*.js
