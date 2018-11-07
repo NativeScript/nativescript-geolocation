@@ -31,7 +31,7 @@ matrix:
       script: npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
-        - BuildAndroid="26"
+        - BuildAndroid="28"
       language: android
       jdk: oraclejdk8
       before_install: nvm install 8.11.4
@@ -85,10 +85,8 @@ matrix:
 android:
   components:
     - tools
-    - tools
     - platform-tools
     - build-tools-28.0.2
-    - build-tools-27.0.3
     - android-28
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-21
