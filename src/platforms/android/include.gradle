@@ -8,11 +8,6 @@ allprojects {
 }
 
 android {
-	productFlavors {
-		"nativescript-geolocation" {
-			dimension "nativescript-geolocation"
-		}
-	}
 }
 
 dependencies {
