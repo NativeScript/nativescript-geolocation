@@ -30,7 +30,7 @@
     "requireModules": ["nativescript-geolocation"]
   },
   "devDependencies": {
-    "nativescript-dev-typescript": "^0.3.0"
+    "nativescript-dev-typescript": "^0.7.5"
   },
   "_id": "tns-template-hello-world-ts@1.6.0",
   "_shasum": "a567c2b9a56024818c06596dab9629d155c5b8a8",
