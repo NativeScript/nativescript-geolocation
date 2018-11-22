@@ -98,10 +98,10 @@ install:
     - cd src
     - npm install tns-core-modules@next -D
     - cd ../demo
+    - npm install nativescript-dev-typescript@next -D
     - npm install nativescript-dev-webpack@next -D
     - ./node_modules/.bin/update-ns-webpack --deps
     - npm install tns-core-modules@next -P
-    - npm install nativescript-dev-typescript@next -D
     - rm -rf node_modules/
     - npm i
     - cd ..
