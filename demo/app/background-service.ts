@@ -5,11 +5,40 @@ import { device } from "tns-core-modules/platform";
 import * as Toast from "nativescript-toast";
 
 let watchId;
-application.on(application.exitEvent, function (args: any) {
+
+function _clearWatch() {
     if (watchId) {
         geolocation.clearWatch(watchId);
+        watchId = null;
     }
-});
+}
+
+function _startWatch() {
+    geolocation.enableLocationRequest().then(function () {
+        _clearWatch();
+        watchId = geolocation.watchLocation(
+            function (loc) {
+                if (loc) {
+                    let toast = Toast.makeText('Background Location: \n' + loc.latitude + ', ' + loc.longitude);
+                    toast.show();
+                    console.log('Background Location: ' + loc.latitude + ' ' + loc.longitude);
+                }
+            },
+            function (e) {
+                console.log("Background watchLocation error: " + (e.message || e));
+            },
+            {
+                desiredAccuracy: Accuracy.high,
+                updateDistance: 1.0,
+                updateTime: 3000,
+                minimumUpdateTime: 100
+            });
+    }, function (e) {
+        console.log("Background enableLocationRequest error: " + (e.message || e));
+    });
+}
+
+application.on(application.exitEvent, _clearWatch);
 
 if (application.android) {
     if (device.sdkVersion < "26") {
@@ -19,28 +48,7 @@ if (application.android) {
                 return android.app.Service.START_STICKY;
             },
             onCreate: function () {
-                let that = this;
-                geolocation.enableLocationRequest().then(function () {
-                    that.id = geolocation.watchLocation(
-                        function (loc) {
-                            if (loc) {
-                                let toast = Toast.makeText('Background Location: ' + loc.latitude + ' ' + loc.longitude);
-                                toast.show();
-                                console.log('Background Location: ' + loc.latitude + ' ' + loc.longitude);
-                            }
-                        },
-                        function (e) {
-                            console.log("Background watchLocation error: " + (e.message || e));
-                        },
-                        {
-                            desiredAccuracy: Accuracy.high,
-                            updateDistance: 0.1,
-                            updateTime: 3000,
-                            minimumUpdateTime: 100
-                        });
-                }, function (e) {
-                    console.log("Background enableLocationRequest error: " + (e.message || e));
-                });
+                _startWatch();
             },
             onBind: function (intent) {
                 console.log("on Bind Services");
@@ -50,45 +58,22 @@ if (application.android) {
             },
             onDestroy: function () {
                 console.log('service onDestroy');
-                geolocation.clearWatch(this.id);
+                geolocation.clearWatch(watchId);
             }
         });
     }
     else {
         (<any>android.app).job.JobService.extend("com.nativescript.location.BackgroundService26", {
-            onStartJob(params) {
-                let executed = false;
-                geolocation.enableLocationRequest().then(function () {
-                    watchId = geolocation.watchLocation(
-                        function (loc) {
-                            if (loc) {
-                                let toast = Toast.makeText('Background Location: ' + loc.latitude + ' ' + loc.longitude);
-                                toast.show();
-                                console.log('Background Location: ' + loc.latitude + ' ' + loc.longitude);
-                            }
-                            executed = true;
-                        },
-                        function (e) {
-                            console.log("Background watchLocation error: " + (e.message || e));
-                            executed = true;
-                        },
-                        {
-                            desiredAccuracy: Accuracy.high,
-                            updateDistance: 0.1,
-                            updateTime: 3000,
-                            minimumUpdateTime: 100
-                        });
-                }, function (e) {
-                    console.log("Background enableLocationRequest error: " + (e.message || e));
-                });
-
-                return executed;
-            },
-
-            onStopJob() {
-                console.log('service onStopJob');
-                geolocation.clearWatch(watchId);
+            onStartJob() {
+                console.log('service onStartJob');
+                _startWatch();
                 return true;
+            },
+            onStopJob(jobParameters: any) {
+                console.log('service onStopJob');
+                this.jobFinished(jobParameters, false);
+                _clearWatch();
+                return false;
             },
         });
     }
