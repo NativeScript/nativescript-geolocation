@@ -7,23 +7,23 @@ const utils = require("tns-core-modules/utils/utils");
 import * as application from "tns-core-modules/application";
 import { device } from "tns-core-modules/platform";
 
-let locationService = require('./background-service');
-
 let page: Page;
 let model = new MainViewModel();
 let watchIds = [];
-let backgroundIds = [];
+const jobId = 308; // the id should be unique for each background job. We only use one, so we set the id to be the same each time.
 declare var com: any;
 
-application.on(application.exitEvent, function (args: any) {
-    if (application.android && backgroundIds.length > 0) {
+function _stopBackgroundJob() {
+    if (application.android) {
         let context = utils.ad.getApplicationContext();
         const jobScheduler = context.getSystemService((<any>android.content.Context).JOB_SCHEDULER_SERVICE);
-        const service = backgroundIds.pop();
-        jobScheduler.cancel(service);
-        console.log(`Job Canceled: ${service}`);
+        if (jobScheduler.getPendingJob(jobId) !== null) {
+            jobScheduler.cancel(jobId);
+            console.log(`Job Canceled: ${jobId}`);
+        }
     }
-});
+}
+application.on(application.exitEvent, _stopBackgroundJob);
 
 export function pageLoaded(args: EventData) {
     page = <Page>args.object;
@@ -33,16 +33,14 @@ export function pageLoaded(args: EventData) {
 export function startBackgroundTap() {
     if (application.android) {
         let context = utils.ad.getApplicationContext();
-        let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
         if (device.sdkVersion >= "26") {
-            const component = new android.content.ComponentName(context, com.nativescript.location.BackgroundService26.class);
-            const builder = new (<any>android.app).job.JobInfo.Builder(1, component);
-            builder.setRequiredNetworkType((<any>android.app).job.JobInfo.NETWORK_TYPE_ANY);
-            builder.setPeriodic(15 * 60 * 1000);
             const jobScheduler = context.getSystemService((<any>android.content.Context).JOB_SCHEDULER_SERVICE);
-            const service = jobScheduler.schedule(builder.build());
-            backgroundIds.push(service);
+            const component = new android.content.ComponentName(context, com.nativescript.location.BackgroundService26.class);
+            const builder = new (<any>android.app).job.JobInfo.Builder(jobId, component);
+            builder.setOverrideDeadline(0);
+            return jobScheduler.schedule(builder.build());
         } else {
+            let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
             context.startService(intent);
         }
     }
@@ -50,16 +48,11 @@ export function startBackgroundTap() {
 
 export function stopBackgroundTap() {
     if (application.android) {
-        let context = utils.ad.getApplicationContext();
-        let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
         if (device.sdkVersion >= "26") {
-            if (backgroundIds.length > 0) {
-                const jobScheduler = context.getSystemService((<any>android.content.Context).JOB_SCHEDULER_SERVICE);
-                const service = backgroundIds.pop();
-                jobScheduler.cancel(service);
-                console.log(`Job Canceled: ${service}`);
-            }
+            _stopBackgroundJob();
         } else {
+            let context = utils.ad.getApplicationContext();
+            let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
             context.stopService(intent);
         }
     }
@@ -79,18 +72,17 @@ export function enableLocationTap() {
 }
 
 export function buttonGetLocationTap() {
-    let location = geolocation.getCurrentLocation({
+    geolocation.getCurrentLocation({
         desiredAccuracy: Accuracy.high,
         maximumAge: 5000,
         timeout: 10000
-    })
-        .then(function (loc) {
-            if (loc) {
-                model.locations.push(loc);
-            }
-        }, function (e) {
-            console.log("Error: " + (e.message || e));
-        });
+    }).then(function (loc) {
+        if (loc) {
+            model.locations.push(loc);
+        }
+    }, function (e) {
+        console.log("Error: " + (e.message || e));
+    });
 }
 
 export function buttonStartTap() {
@@ -106,7 +98,7 @@ export function buttonStartTap() {
             },
             {
                 desiredAccuracy: Accuracy.high,
-                updateDistance: 0.1,
+                updateDistance: 1,
                 updateTime: 3000,
                 minimumUpdateTime: 100
             }));
