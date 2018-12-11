@@ -58,7 +58,7 @@ if (application.android) {
             },
             onDestroy: function () {
                 console.log('service onDestroy');
-                geolocation.clearWatch(watchId);
+                _clearWatch();
             }
         });
     }
