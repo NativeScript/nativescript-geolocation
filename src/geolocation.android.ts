@@ -275,12 +275,8 @@ function _isLocationServiceEnabled(options?: Options): Promise<boolean> {
         locationSettingsBuilder.setAlwaysShow(true);
         let locationSettingsClient = com.google.android.gms.location.LocationServices.getSettingsClient(androidAppInstance.context);
         locationSettingsClient.checkLocationSettings(locationSettingsBuilder.build())
-            .addOnSuccessListener(_getTaskSuccessListener((a) => {
-                resolve();
-            }))
-            .addOnFailureListener(_getTaskFailListener((ex) => {
-                reject(ex);
-            }));
+            .addOnSuccessListener(_getTaskSuccessListener(resolve))
+            .addOnFailureListener(_getTaskFailListener(reject));
     });
 }
 
@@ -342,7 +338,7 @@ function androidLocationFromLocation(location: Location): android.location.Locat
     return androidLocation;
 }
 
-// absctaction for unit testing
+// abstraction for unit testing
 export class LocationManager {
     static getLastLocation(maximumAge, resolve, reject): Promise<Location> {
         _ensureLocationClient();
