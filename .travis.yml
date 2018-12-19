@@ -7,7 +7,7 @@ matrix:
       language: node_js
       os: linux
       node_js: "8"
-      script: cd src && npm run ci.tslint && cd ../demo && npm run ci.tslint
+      script: cd ../src && npm run ci.tslint && cd ../demo && npm run ci.tslint
     - stage: "Build webpack and Test"
       os: osx
       env:
@@ -17,8 +17,7 @@ matrix:
       node_js: "8"
       jdk: oraclejdk8
       before_script:
-        - pip install six
-        - cd demo && tns platform add ios@next
+        - cd ../demo && tns platform add ios@next
       script: npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
@@ -27,7 +26,7 @@ matrix:
       jdk: oraclejdk8
       before_install: nvm install 8.11.4
       before_script:
-        - cd demo && tns platform add android@next
+        - cd ../demo && tns platform add android@next
       script: npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
@@ -36,7 +35,7 @@ matrix:
       jdk: oraclejdk8
       before_install: nvm install 8.11.4
       before_script:
-        - cd demo && tns platform add android@next
+        - cd ../demo && tns platform add android@next
       script:
         - npm run build.plugin && npm i && tns build android
     - os: osx
@@ -48,8 +47,7 @@ matrix:
       node_js: "8"
       jdk: oraclejdk8
       before_script:
-        - pip install six
-        - cd demo && tns platform add ios@next
+        - cd ../demo && tns platform add ios@next
       script: 
         - npm run build.plugin && npm i && tns build ios
     - os: linux
@@ -62,7 +60,7 @@ matrix:
         - echo no | android create avd --force -n test -t android-21 -b armeabi-v7a
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
-        - cd demo && tns platform add android@next
+        - cd ../demo && tns platform add android@next
       before_install:
         - nvm install 8.11.4
       script:
@@ -76,8 +74,7 @@ matrix:
         - iOS="UnitTests"
       osx_image: xcode10.0
       before_script:
-        - pip install six
-        - cd demo && tns platform add ios@next
+        - cd ../demo && tns platform add ios@next
       script: 
         - npm run build.plugin && npm i && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
@@ -91,6 +88,10 @@ android:
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-21
 
+before_install:
+    - sudo pip install --upgrade pip
+    - sudo pip install six
+
 install:
     - echo no | npm install -g nativescript@next
     - tns usage-reporting disable
@@ -98,10 +99,8 @@ install:
     - cd src
     - npm install tns-core-modules@next -D
     - cd ../demo
-    - npm install nativescript-dev-typescript@next -D
-    - npm install nativescript-dev-webpack@next -D
-    - ./node_modules/.bin/update-ns-webpack --deps
     - npm install tns-core-modules@next -P
-    - rm -rf node_modules/
-    - npm i
-    - cd ..
+    - npm install nativescript-dev-webpack@next -D
+    - npm install nativescript-dev-typescript@next -D
+    - ./node_modules/.bin/update-ns-webpack --deps --configs
+    - npm install -D wd@latest
