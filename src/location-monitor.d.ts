@@ -73,7 +73,7 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
 export function clearWatch(watchId: number): void;
 
 /**
- * Ask for permissions to use location services. The option `always` is application for iOS only. Read more: https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization.
+ * Ask for permissions to use location services. The option 'always' is applicable to iOS only. Read more: https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization.
  * @param always iOS only. https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization
  */
 export function enableLocationRequest(always?: boolean): Promise<void>;
