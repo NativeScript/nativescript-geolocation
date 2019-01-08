@@ -1,6 +1,6 @@
 import { Accuracy } from "tns-core-modules/ui/enums";
-import { setTimeout, clearTimeout } from "timer";
-import { on as applicationOn, uncaughtErrorEvent, UnhandledErrorEventData } from "application";
+import { setTimeout, clearTimeout } from "tns-core-modules/timer";
+import { on as applicationOn, uncaughtErrorEvent, UnhandledErrorEventData } from "tns-core-modules/application";
 
 import {
     LocationBase,
