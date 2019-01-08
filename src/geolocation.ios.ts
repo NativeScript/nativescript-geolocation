@@ -1,11 +1,13 @@
 import { Accuracy } from "tns-core-modules/ui/enums";
 import { setTimeout, clearTimeout } from "tns-core-modules/timer";
 import { on as applicationOn, uncaughtErrorEvent, UnhandledErrorEventData } from "tns-core-modules/application";
+import * as utils from "tns-core-modules/utils/utils";
 
 import {
     LocationBase,
     defaultGetLocationTimeout,
-    minRangeUpdate
+    minRangeUpdate,
+    IsEnabledOptions
 } from "./geolocation.common";
 import {
     Options,
@@ -275,9 +277,18 @@ function _isEnabled(options?: Options): boolean {
     return false;
 }
 
-export function isEnabled(): Promise<boolean> {
+export function isEnabled(options: IsEnabledOptions): Promise<boolean> {
     return new Promise(function (resolve, reject) {
-        resolve(_isEnabled());
+        const isEnabledResult = _isEnabled();
+        if (isEnabledResult === false) {
+            if (options &&
+                options.ios && 
+                options.ios.openSettingsIfLocationIsDisabled === true
+            ) {
+                utils.ios.getter(UIApplication, UIApplication.sharedApplication).openURL(NSURL.URLWithString(UIApplicationOpenSettingsURLString));
+            }
+        }
+        resolve(isEnabledResult);
     });
 }
 
