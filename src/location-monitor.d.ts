@@ -51,10 +51,10 @@ export interface Options {
   iosPausesLocationUpdatesAutomatically?: boolean;
 
   /**
-   * A boolean value which if set to true, the application will open the Settings app
-   * on iOS so the user can change the permission for location when the isEnabled method is invoked.
+   * A boolean value which if set to true, the application will open the Settings 
+   * app only after the user has previously denied the location permission.
    */
-  iosOpenSettingsIfLocationIsDisabled?: boolean;
+  iosOpenSettingsIfLocationHasBeenDenied?: boolean;
 }
 
 declare type successCallbackType = (location: Location) => void;
@@ -91,7 +91,7 @@ export function enableLocationRequest(always?: boolean): Promise<void>;
 /**
  * Check if location services are enabled
  * @param options Check the availability based on the specified options. 
- * ** iOS Only ** utilizes the iosOpenSettingsIfLocationIsDisabled value **
+ * ** iOS Only ** utilizes the iosOpenSettingsIfLocationHasBeenDenied value **
  * @returns {boolean} True if location services are enabled
  */
 export function isEnabled(options?: Options): Promise<boolean>;
@@ -103,3 +103,10 @@ export function isEnabled(options?: Options): Promise<boolean>;
  * @returns {number} The calculated distance in meters.
  */
 export function distance(loc1: Location, loc2: Location): number;
+
+/**
+ * ** iOS Only **
+ * Returns the value for the CLLocationManager on iOS.
+ * @returns {CLAuthorizationStatus} The status of the Location Authorization permission.
+ */
+export function getIOSLocationManagerStatus(): CLAuthorizationStatus;

@@ -279,15 +279,23 @@ function _isEnabled(options?: Options): boolean {
 export function isEnabled(options: Options): Promise<boolean> {
     return new Promise(function (resolve, reject) {
         const isEnabledResult = _isEnabled();
-        if (isEnabledResult === false) {
-            if (options &&
-                options.iosOpenSettingsIfLocationIsDisabled === true
-            ) {
-                utils.ios.getter(UIApplication, UIApplication.sharedApplication).openURL(NSURL.URLWithString(UIApplicationOpenSettingsURLString));
-            }
+        const status = CLLocationManager.authorizationStatus();
+        // checking if the status for location has been denied previously
+        // checking if the function has been provided the options and the `iosOpenSettingsIfLocationHasBeenDenied` value as true
+        if (isEnabledResult === false &&
+            status === CLAuthorizationStatus.kCLAuthorizationStatusDenied &&
+            options &&
+            options.iosOpenSettingsIfLocationHasBeenDenied === true
+        ) {
+            // now open the Settings so the user can toggle the Location permission
+            utils.ios.getter(UIApplication, UIApplication.sharedApplication).openURL(NSURL.URLWithString(UIApplicationOpenSettingsURLString));
         }
         resolve(isEnabledResult);
     });
+}
+
+export function getIOSLocationManagerStatus(): CLAuthorizationStatus {
+    return CLLocationManager.authorizationStatus();
 }
 
 export function distance(loc1: Location, loc2: Location): number {
