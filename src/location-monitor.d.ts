@@ -90,7 +90,8 @@ export function enableLocationRequest(always?: boolean): Promise<void>;
 
 /**
  * Check if location services are enabled
- * @param options android only. Check the availability based on the specified options.
+ * @param options Check the availability based on the specified options. 
+ * ** iOS Only ** utilizes the iosOpenSettingsIfLocationIsDisabled value **
  * @returns {boolean} True if location services are enabled
  */
 export function isEnabled(options?: Options): Promise<boolean>;
