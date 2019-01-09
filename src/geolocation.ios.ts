@@ -6,8 +6,7 @@ import * as utils from "tns-core-modules/utils/utils";
 import {
     LocationBase,
     defaultGetLocationTimeout,
-    minRangeUpdate,
-    IsEnabledOptions
+    minRangeUpdate
 } from "./geolocation.common";
 import {
     Options,
@@ -277,13 +276,12 @@ function _isEnabled(options?: Options): boolean {
     return false;
 }
 
-export function isEnabled(options: IsEnabledOptions): Promise<boolean> {
+export function isEnabled(options: Options): Promise<boolean> {
     return new Promise(function (resolve, reject) {
         const isEnabledResult = _isEnabled();
         if (isEnabledResult === false) {
             if (options &&
-                options.ios && 
-                options.ios.openSettingsIfLocationIsDisabled === true
+                options.iosOpenSettingsIfLocationIsDisabled === true
             ) {
                 utils.ios.getter(UIApplication, UIApplication.sharedApplication).openURL(NSURL.URLWithString(UIApplicationOpenSettingsURLString));
             }

@@ -1,54 +1,60 @@
 import { Location } from "./location";
 
 /**
-* Provides options for location monitoring.
-*/
+ * Provides options for location monitoring.
+ */
 export interface Options {
-    /**
-     * Specifies desired accuracy in meters. Defaults to DesiredAccuracy.HIGH
-     */
-    desiredAccuracy?: number;
+  /**
+   * Specifies desired accuracy in meters. Defaults to DesiredAccuracy.HIGH
+   */
+  desiredAccuracy?: number;
 
-    /**
-     * Update distance filter in meters. Specifies how often to update. Default is no filter
-     */
-    updateDistance?: number;
+  /**
+   * Update distance filter in meters. Specifies how often to update. Default is no filter
+   */
+  updateDistance?: number;
 
-    /**
-     * Interval between location updates, in milliseconds (ignored on iOS)
-     */
-    updateTime?: number;
+  /**
+   * Interval between location updates, in milliseconds (ignored on iOS)
+   */
+  updateTime?: number;
 
-    /**
-     * Minimum time interval between location updates, in milliseconds (ignored on iOS)
-     */
-    minimumUpdateTime?: number;
+  /**
+   * Minimum time interval between location updates, in milliseconds (ignored on iOS)
+   */
+  minimumUpdateTime?: number;
 
-    /**
-     * How old locations to receive in ms.
-     */
-    maximumAge?: number;
+  /**
+   * How old locations to receive in ms.
+   */
+  maximumAge?: number;
 
-    /**
-     * How long to wait for a location in ms.
-     */
-    timeout?: number;
+  /**
+   * How long to wait for a location in ms.
+   */
+  timeout?: number;
 
-    /**
-     * A Boolean value which has to be set to true on iOS versions > 9.0 to allow the application to receive location updates in
-     * background in combination with the UIBackgroundModes key 'location' in the Info.plist. An exception is thrown if the
-     * property is enabled without the UIBackgroundModes key set to true. The value is ignored on Android.
-     * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates|allowsBackgroundLocationUpdates}
-     */
-    iosAllowsBackgroundLocationUpdates?: boolean;
+  /**
+   * A Boolean value which has to be set to true on iOS versions > 9.0 to allow the application to receive location updates in
+   * background in combination with the UIBackgroundModes key 'location' in the Info.plist. An exception is thrown if the
+   * property is enabled without the UIBackgroundModes key set to true. The value is ignored on Android.
+   * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates|allowsBackgroundLocationUpdates}
+   */
+  iosAllowsBackgroundLocationUpdates?: boolean;
 
-    /**
-     * A Boolean value which has to be set to false on iOS to deactivate the automatic pause of location updates. The location manager might pause
-     * location updates for a period of time to improve battery life. This behavior may stop a long-running background task. Set this flag to false
-     * to prevent this behavior. The value is ignored on Android.
-     * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical|pausesLocationUpdatesAutomatically}
-     */
-    iosPausesLocationUpdatesAutomatically?: boolean;
+  /**
+   * A Boolean value which has to be set to false on iOS to deactivate the automatic pause of location updates. The location manager might pause
+   * location updates for a period of time to improve battery life. This behavior may stop a long-running background task. Set this flag to false
+   * to prevent this behavior. The value is ignored on Android.
+   * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical|pausesLocationUpdatesAutomatically}
+   */
+  iosPausesLocationUpdatesAutomatically?: boolean;
+
+  /**
+   * A boolean value which if set to true, the application will open the Settings app
+   * on iOS so the user can change the permission for location when the isEnabled method is invoked.
+   */
+  iosOpenSettingsIfLocationIsDisabled?: boolean;
 }
 
 declare type successCallbackType = (location: Location) => void;
@@ -64,7 +70,11 @@ export function getCurrentLocation(options: Options): Promise<Location>;
  * Monitor for location change.
  * @returns {number} The watch id
  */
-export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
+export function watchLocation(
+  successCallback: successCallbackType,
+  errorCallback: errorCallbackType,
+  options: Options
+): number;
 
 /**
  * Stop monitoring for location change. Parameter expected is the watchId returned from `watchLocation`.
