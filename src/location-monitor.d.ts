@@ -86,7 +86,7 @@ export function clearWatch(watchId: number): void;
  * Ask for permissions to use location services. The option 'always' is applicable to iOS only. Read more: https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization.
  * @param always iOS only. https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization
  */
-export function enableLocationRequest(always?: boolean): Promise<void>;
+export function enableLocationRequest(always?: boolean, iosOpenSettingsIfLocationHasBeenDenied?: boolean): Promise<void>;
 
 /**
  * Check if location services are enabled

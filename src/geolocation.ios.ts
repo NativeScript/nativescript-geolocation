@@ -240,38 +240,49 @@ export function clearWatch(_watchId: number): void {
     LocationMonitor.stopLocationMonitoring(_watchId);
 }
 
-export function enableLocationRequest(always?: boolean): Promise<void> {
+export function enableLocationRequest(always?: boolean, iosOpenSettingsIfLocationHasBeenDenied?: boolean): Promise<void> {
     return new Promise<void>(function (resolve, reject) {
-        if (_isEnabled()) {
+        const locationIsEnabled = _isEnabled();
+
+        if (locationIsEnabled) {
             resolve();
             return;
-        }
-
-        let listener = LocationListenerImpl.initWithPromiseCallbacks(resolve, reject, always);
-        try {
-            let manager = getIOSLocationManager(listener, null);
-            if (always) {
-                manager.requestAlwaysAuthorization();
+        } else {
+            const status = getIOSLocationManagerStatus();
+            if (status === CLAuthorizationStatus.kCLAuthorizationStatusDenied &&
+                iosOpenSettingsIfLocationHasBeenDenied) {
+                // now open the Settings so the user can toggle the Location permission
+                utils.ios.getter(UIApplication, UIApplication.sharedApplication).openURL(NSURL.URLWithString(UIApplicationOpenSettingsURLString));
             } else {
-                manager.requestWhenInUseAuthorization();
+                let listener = LocationListenerImpl.initWithPromiseCallbacks(resolve, reject, always);
+                try {
+                    let manager = getIOSLocationManager(listener, null);
+                    if (always) {
+                        manager.requestAlwaysAuthorization();
+                    } else {
+                        manager.requestWhenInUseAuthorization();
+                    }
+                } catch (e) {
+                    LocationMonitor.stopLocationMonitoring(listener.id);
+                    reject(e);
+                }
             }
-        } catch (e) {
-            LocationMonitor.stopLocationMonitoring(listener.id);
-            reject(e);
         }
     });
 }
 
-function _isEnabled(options?: Options): boolean {
+function _isEnabled(): boolean {
     if (CLLocationManager.locationServicesEnabled()) {
+        const status = getIOSLocationManagerStatus();
+
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse and
         // CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways are options that are available in iOS 8.0+
         // while CLAuthorizationStatus.kCLAuthorizationStatusAuthorized is here to support iOS 8.0-.
-        const AUTORIZED_WHEN_IN_USE = CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse;
-
-        return (CLLocationManager.authorizationStatus() === AUTORIZED_WHEN_IN_USE
-            || CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways
-            || CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorized);
+        // const AUTORIZED_WHEN_IN_USE = CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse;
+        return (status === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse
+            || status === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways
+            // @ts-ignore: Types have no overlap error
+            || status === CLAuthorizationStatus.kCLAuthorizationStatusAuthorized);
     }
     return false;
 }
@@ -279,17 +290,7 @@ function _isEnabled(options?: Options): boolean {
 export function isEnabled(options: Options): Promise<boolean> {
     return new Promise(function (resolve, reject) {
         const isEnabledResult = _isEnabled();
-        const status = CLLocationManager.authorizationStatus();
-        // checking if the status for location has been denied previously
-        // checking if the function has been provided the options and the `iosOpenSettingsIfLocationHasBeenDenied` value as true
-        if (isEnabledResult === false &&
-            status === CLAuthorizationStatus.kCLAuthorizationStatusDenied &&
-            options &&
-            options.iosOpenSettingsIfLocationHasBeenDenied === true
-        ) {
-            // now open the Settings so the user can toggle the Location permission
-            utils.ios.getter(UIApplication, UIApplication.sharedApplication).openURL(NSURL.URLWithString(UIApplicationOpenSettingsURLString));
-        }
+       
         resolve(isEnabledResult);
     });
 }

@@ -76,8 +76,7 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 | timeout | 5 minutes | How long to wait for a location in ms.  |
 | iosAllowsBackgroundLocationUpdates | false |  If enabled, UIBackgroundModes key in info.plist is required (check the hint below). Allow the application to receive location updates in background (ignored on Android). Read more in [Apple document](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates?language=objc) |
 | iosPausesLocationUpdatesAutomatically | true | Allow deactivation of the automatic pause of location updates (ignored on Android). Read more in [Apple document](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical?language=objc)|
-| iosOpenSettingsIfLocationIsDisabled | false | If true when the `isEnabled` method is invoked, the settings app will open on iOS so the user can change the location services permission.  |
-
+| iosOpenSettingsIfLocationHasBeenDenied | false | Argument on the `enableLocationRequest`. If true, the settings app will open on iOS so the user can change the location services permission.  |
 
 > If iosAllowsBackgroundLocationUpdates is set to true, the following code is required in the info.plist file:
 >```
