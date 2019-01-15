@@ -290,7 +290,7 @@ function _isEnabled(): boolean {
 export function isEnabled(options: Options): Promise<boolean> {
     return new Promise(function (resolve, reject) {
         const isEnabledResult = _isEnabled();
-       
+
         resolve(isEnabledResult);
     });
 }

@@ -51,7 +51,7 @@ export interface Options {
   iosPausesLocationUpdatesAutomatically?: boolean;
 
   /**
-   * A boolean value which if set to true, the application will open the Settings 
+   * A boolean value which if set to true, the application will open the Settings
    * app only after the user has previously denied the location permission.
    */
   iosOpenSettingsIfLocationHasBeenDenied?: boolean;
@@ -90,7 +90,7 @@ export function enableLocationRequest(always?: boolean, iosOpenSettingsIfLocatio
 
 /**
  * Check if location services are enabled
- * @param options Check the availability based on the specified options. 
+ * @param options Check the availability based on the specified options.
  * ** iOS Only ** utilizes the iosOpenSettingsIfLocationHasBeenDenied value **
  * @returns {boolean} True if location services are enabled
  */
