@@ -42,7 +42,7 @@ application.on(application.exitEvent, _clearWatch);
 
 if (application.android) {
     if (device.sdkVersion < "26") {
-        (<any>android.app.Service).extend("com.nativescript.location.BackgroundService", {
+        android.app.Service.extend("com.nativescript.location.BackgroundService", {
             onStartCommand: function (intent, flags, startId) {
                 this.super.onStartCommand(intent, flags, startId);
                 return android.app.Service.START_STICKY;
@@ -62,7 +62,7 @@ if (application.android) {
             }
         });
     } else {
-        (<any>android.app).job.JobService.extend("com.nativescript.location.BackgroundService26", {
+        android.app.job.JobService.extend("com.nativescript.location.BackgroundService26", {
             onStartJob() {
                 console.log('service onStartJob');
                 _startWatch();
