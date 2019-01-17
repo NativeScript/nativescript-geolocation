@@ -32,9 +32,9 @@ export class HomeComponent implements OnInit {
             console.log("Error: " + (e.message || e));
         });
     }
-    
+
     public buttonGetLocationTap() {
-        var that = this;
+        let that = this;
         geolocation.getCurrentLocation({
             desiredAccuracy: Accuracy.high,
             maximumAge: 5000,
@@ -47,10 +47,10 @@ export class HomeComponent implements OnInit {
             console.log("Error: " + (e.message || e));
         });
     }
-    
+
     public buttonStartTap() {
         try {
-            var that = this;
+            let that = this;
             this.watchIds.push(geolocation.watchLocation(
                 function (loc) {
                     if (loc) {
@@ -70,7 +70,7 @@ export class HomeComponent implements OnInit {
             console.log("Error: " + ex.message);
         }
     }
-    
+
     public buttonStopTap() {
         let watchId = this.watchIds.pop();
         while (watchId != null) {
@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit {
             watchId = this.watchIds.pop();
         }
     }
-    
+
     public buttonClearTap() {
         this.locations.splice(0, this.locations.length);
     }

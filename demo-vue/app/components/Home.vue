@@ -45,7 +45,7 @@
                 });
             },
             buttonGetLocationTap: function() {
-                var that = this;
+                let that = this;
                 geolocation.getCurrentLocation({
                     desiredAccuracy: Accuracy.high,
                     maximumAge: 5000,
@@ -60,7 +60,7 @@
             },
             buttonStartTap: function() {
                 try {
-                    var that = this;
+                    let that = this;
                     this.watchIds.push(geolocation.watchLocation(
                         function (loc) {
                             if (loc) {
