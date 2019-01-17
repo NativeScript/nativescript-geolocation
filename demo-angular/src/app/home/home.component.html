@@ -9,10 +9,6 @@
         <Button text="Start Monitoring" col="2" textWrap="true" (tap)="buttonStartTap()"></Button>
         <Button text="Stop Monitoring" col="3" textWrap="true" (tap)="buttonStopTap()"></Button>
     </GridLayout>
-    <GridLayout row="1" columns="*, *" >
-        <Button text="Start Background thread monitoring" col="0" ios:visibility="collapsed" textWrap="true" (tap)="startBackgroundTap()"></Button>
-        <Button text="Stop Background thread monitoring" col="1" ios:visibility="collapsed" textWrap="true" (tap)="stopBackgroundTap()"></Button>
-    </GridLayout>
     <ListView row="2" [items]="locations">
         <ng-template let-item="item">
             <Label text="{{ item.latitude + ', ' + item.longitude + ', ' + item.altitude }}" ></Label>

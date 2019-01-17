@@ -11,10 +11,6 @@
                 <Button text="Start Monitoring" col="2" textWrap="true" @tap="buttonStartTap"/>
                 <Button text="Stop Monitoring" col="3" textWrap="true" @tap="buttonStopTap"/>
             </GridLayout>
-            <!-- <GridLayout row="1" columns="*, *" >
-                <Button text="Start Background thread monitoring" col="0" ios:visibility="collapsed" textWrap="true" @tap="startBackgroundTap"/>
-                <Button text="Stop Background thread monitoring" col="1" ios:visibility="collapsed" textWrap="true" @tap="stopBackgroundTap"/>
-            </GridLayout> -->
             <ListView row="2" for="item in locations">
                 <v-template>
                     <Label :text="item.latitude + ', ' + item.longitude + ', ' + item.altitude" />
@@ -28,23 +24,6 @@
 <script>
     import * as geolocation from "nativescript-geolocation";
     import { Accuracy } from "tns-core-modules/ui/enums";
-    import * as application from "tns-core-modules/application";
-    import { device } from "tns-core-modules/platform";
-
-    const utils = require("tns-core-modules/utils/utils");
-    const jobId = 308; // the id should be unique for each background job. We only use one, so we set the id to be the same each time.
-
-    function _stopBackgroundJob() {
-        if (application.android) {
-            let context = utils.ad.getApplicationContext();
-            const jobScheduler = context.getSystemService(android.content.Context.JOB_SCHEDULER_SERVICE);
-            if (jobScheduler.getPendingJob(jobId) !== null) {
-                jobScheduler.cancel(jobId);
-                console.log(`Job Canceled: ${jobId}`);
-            }
-        }
-    }
-    application.on(application.exitEvent, _stopBackgroundJob);
 
     export default {
         data() {
@@ -106,32 +85,6 @@
                 while (watchId != null) {
                     geolocation.clearWatch(watchId);
                     watchId = this.watchIds.pop();
-                }
-            },
-            startBackgroundTap: function() {
-                if (application.android) {
-                    let context = utils.ad.getApplicationContext();
-                    if (device.sdkVersion >= "26") {
-                        const jobScheduler = context.getSystemService(android.content.Context.JOB_SCHEDULER_SERVICE);
-                        const component = new android.content.ComponentName(context, com.nativescript.location.BackgroundService26.class);
-                        const builder = new android.app.job.JobInfo.Builder(jobId, component);
-                        builder.setOverrideDeadline(0);
-                        return jobScheduler.schedule(builder.build());
-                    } else {
-                        let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
-                        context.startService(intent);
-                    }
-                }
-            },
-            stopBackgroundTap: function() {
-                if (application.android) {
-                    if (device.sdkVersion >= "26") {
-                        _stopBackgroundJob();
-                    } else {
-                        let context = utils.ad.getApplicationContext();
-                        let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
-                        context.stopService(intent);
-                    }
                 }
             },
             buttonClearTap: function() {
