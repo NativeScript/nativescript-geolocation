@@ -61,7 +61,7 @@ export function stopBackgroundTap() {
 export function enableLocationTap() {
     geolocation.isEnabled().then(function (isEnabled) {
         if (!isEnabled) {
-            geolocation.enableLocationRequest().then(function () {
+            geolocation.enableLocationRequest(false, true).then(function () {
             }, function (e) {
                 console.log("Error: " + (e.message || e));
             });

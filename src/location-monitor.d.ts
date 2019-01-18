@@ -1,54 +1,60 @@
 import { Location } from "./location";
 
 /**
-* Provides options for location monitoring.
-*/
+ * Provides options for location monitoring.
+ */
 export interface Options {
-    /**
-     * Specifies desired accuracy in meters. Defaults to DesiredAccuracy.HIGH
-     */
-    desiredAccuracy?: number;
+  /**
+   * Specifies desired accuracy in meters. Defaults to DesiredAccuracy.HIGH
+   */
+  desiredAccuracy?: number;
 
-    /**
-     * Update distance filter in meters. Specifies how often to update. Default is no filter
-     */
-    updateDistance?: number;
+  /**
+   * Update distance filter in meters. Specifies how often to update. Default is no filter
+   */
+  updateDistance?: number;
 
-    /**
-     * Interval between location updates, in milliseconds (ignored on iOS)
-     */
-    updateTime?: number;
+  /**
+   * Interval between location updates, in milliseconds (ignored on iOS)
+   */
+  updateTime?: number;
 
-    /**
-     * Minimum time interval between location updates, in milliseconds (ignored on iOS)
-     */
-    minimumUpdateTime?: number;
+  /**
+   * Minimum time interval between location updates, in milliseconds (ignored on iOS)
+   */
+  minimumUpdateTime?: number;
 
-    /**
-     * How old locations to receive in ms.
-     */
-    maximumAge?: number;
+  /**
+   * How old locations to receive in ms.
+   */
+  maximumAge?: number;
 
-    /**
-     * How long to wait for a location in ms.
-     */
-    timeout?: number;
+  /**
+   * How long to wait for a location in ms.
+   */
+  timeout?: number;
 
-    /**
-     * A Boolean value which has to be set to true on iOS versions > 9.0 to allow the application to receive location updates in
-     * background in combination with the UIBackgroundModes key 'location' in the Info.plist. An exception is thrown if the
-     * property is enabled without the UIBackgroundModes key set to true. The value is ignored on Android.
-     * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates|allowsBackgroundLocationUpdates}
-     */
-    iosAllowsBackgroundLocationUpdates?: boolean;
+  /**
+   * A Boolean value which has to be set to true on iOS versions > 9.0 to allow the application to receive location updates in
+   * background in combination with the UIBackgroundModes key 'location' in the Info.plist. An exception is thrown if the
+   * property is enabled without the UIBackgroundModes key set to true. The value is ignored on Android.
+   * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620568-allowsbackgroundlocationupdates|allowsBackgroundLocationUpdates}
+   */
+  iosAllowsBackgroundLocationUpdates?: boolean;
 
-    /**
-     * A Boolean value which has to be set to false on iOS to deactivate the automatic pause of location updates. The location manager might pause
-     * location updates for a period of time to improve battery life. This behavior may stop a long-running background task. Set this flag to false
-     * to prevent this behavior. The value is ignored on Android.
-     * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical|pausesLocationUpdatesAutomatically}
-     */
-    iosPausesLocationUpdatesAutomatically?: boolean;
+  /**
+   * A Boolean value which has to be set to false on iOS to deactivate the automatic pause of location updates. The location manager might pause
+   * location updates for a period of time to improve battery life. This behavior may stop a long-running background task. Set this flag to false
+   * to prevent this behavior. The value is ignored on Android.
+   * @see {@link https://developer.apple.com/reference/corelocation/cllocationmanager/1620553-pauseslocationupdatesautomatical|pausesLocationUpdatesAutomatically}
+   */
+  iosPausesLocationUpdatesAutomatically?: boolean;
+
+  /**
+   * A boolean value which if set to true, the application will open the Settings
+   * app only after the user has previously denied the location permission.
+   */
+  iosOpenSettingsIfLocationHasBeenDenied?: boolean;
 }
 
 declare type successCallbackType = (location: Location) => void;
@@ -64,7 +70,11 @@ export function getCurrentLocation(options: Options): Promise<Location>;
  * Monitor for location change.
  * @returns {number} The watch id
  */
-export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
+export function watchLocation(
+  successCallback: successCallbackType,
+  errorCallback: errorCallbackType,
+  options: Options
+): number;
 
 /**
  * Stop monitoring for location change. Parameter expected is the watchId returned from `watchLocation`.
@@ -76,11 +86,12 @@ export function clearWatch(watchId: number): void;
  * Ask for permissions to use location services. The option 'always' is applicable to iOS only. Read more: https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization.
  * @param always iOS only. https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization
  */
-export function enableLocationRequest(always?: boolean): Promise<void>;
+export function enableLocationRequest(always?: boolean, iosOpenSettingsIfLocationHasBeenDenied?: boolean): Promise<void>;
 
 /**
  * Check if location services are enabled
- * @param options android only. Check the availability based on the specified options.
+ * @param options Check the availability based on the specified options.
+ * ** iOS Only ** utilizes the iosOpenSettingsIfLocationHasBeenDenied value **
  * @returns {boolean} True if location services are enabled
  */
 export function isEnabled(options?: Options): Promise<boolean>;
@@ -92,3 +103,10 @@ export function isEnabled(options?: Options): Promise<boolean>;
  * @returns {number} The calculated distance in meters.
  */
 export function distance(loc1: Location, loc2: Location): number;
+
+/**
+ * ** iOS Only **
+ * Returns the value for the CLLocationManager on iOS.
+ * @returns {CLAuthorizationStatus} The status of the Location Authorization permission.
+ */
+export function getIOSLocationManagerStatus(): CLAuthorizationStatus;
