@@ -20,3 +20,4 @@ node_modules
 publish/src
 publish/package
 src/platforms/android/nativescript_geolocation.aar
+!demo-vue/app/app.js

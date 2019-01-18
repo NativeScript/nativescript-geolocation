@@ -61,8 +61,7 @@ if (application.android) {
                 _clearWatch();
             }
         });
-    }
-    else {
+    } else {
         (<any>android.app).job.JobService.extend("com.nativescript.location.BackgroundService26", {
             onStartJob() {
                 console.log('service onStartJob');
