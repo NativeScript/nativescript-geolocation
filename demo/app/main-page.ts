@@ -62,6 +62,7 @@ export function enableLocationTap() {
     geolocation.isEnabled().then(function (isEnabled) {
         if (!isEnabled) {
             geolocation.enableLocationRequest(false, true).then(function () {
+                console.log("allowed location usage");
             }, function (e) {
                 console.log("Error: " + (e.message || e));
             });
