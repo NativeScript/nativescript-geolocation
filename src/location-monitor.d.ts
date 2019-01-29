@@ -106,7 +106,7 @@ export function distance(loc1: Location, loc2: Location): number;
 
 /**
  * ** iOS Only **
- * Returns the value for the CLLocationManager on iOS.
- * @returns {CLAuthorizationStatus} The status of the Location Authorization permission.
+ * Returns the value for the CLAuthorizationStatus on iOS.
+ * @returns {any} representing the CLAuthorizationStatus value. The status of the Location Authorization permission.
  */
-export function getIOSLocationManagerStatus(): CLAuthorizationStatus;
+export function getIOSLocationManagerStatus(): any;
