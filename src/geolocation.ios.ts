@@ -85,22 +85,10 @@ class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate
                 break;
 
             case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways:
-                if (this.authorizeAlways && this._resolve) {
-                    LocationMonitor.stopLocationMonitoring(this.id);
-                    this._resolve();
-                } else if (this._reject) {
-                    LocationMonitor.stopLocationMonitoring(this.id);
-                    this._reject(new Error("Authorization Denied."));
-                }
-                break;
-
             case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse:
-                if (!this.authorizeAlways && this._resolve) {
+                if (this._resolve) {
                     LocationMonitor.stopLocationMonitoring(this.id);
                     this._resolve();
-                } else if (this._reject) {
-                    LocationMonitor.stopLocationMonitoring(this.id);
-                    this._reject(new Error("Authorization Denied."));
                 }
                 break;
 
