@@ -140,6 +140,10 @@ function errorHandler(errData: UnhandledErrorEventData) {
     }
 }
 
+function getVersionMaj () {
+    return parseInt(Platform.device.osVersion.split(".")[0]);
+}
+
 // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
 export function getCurrentLocation(options: Options): Promise<Location> {
     return new Promise(function (resolve, reject) {
@@ -164,6 +168,7 @@ export function getCurrentLocation(options: Options): Promise<Location> {
             } else {
                 let timerId;
                 let locListener;
+                let initLocation;
 
                 let stopTimerAndMonitor = function (locListenerId) {
                     if (timerId !== undefined) {
@@ -174,18 +179,31 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                 };
 
                 let successCallback = function (location: Location) {
-                    if (typeof options.maximumAge === "number" && location.timestamp.valueOf() + options.maximumAge < new Date().valueOf()) {
-                        // returned location is too old, but we still have some time before the timeout so maybe wait a bit?
-                        return;
+                    if (getVersionMaj() < 9) {
+                        if (typeof options.maximumAge === "number" && location.timestamp.valueOf() + options.maximumAge < new Date().valueOf()) {
+                            // returned location is too old, but we still have some time before the timeout so maybe wait a bit?
+                            return;
+                        }
+
+                        if (options.desiredAccuracy !== Accuracy.any && !initLocation) {                            
+                            // regardless of desired accuracy ios returns first location as quick as possible even if not as accurate as requested
+                            initLocation = location;
+                            return;
+                            
+                        }
                     }
 
                     stopTimerAndMonitor(locListener.id);
                     resolve(location);
                 };
-
-                locListener = LocationListenerImpl.initWithLocationError(successCallback);
+                
+                locListener = LocationListenerImpl.initWithLocationError(successCallback, reject);
                 try {
-                    LocationMonitor.startLocationMonitoring(options, locListener);
+                    if (getVersionMaj() >= 9) {
+                        LocationMonitor.requestLocation(options, locListener);
+                    } else {
+                        LocationMonitor.startLocationMonitoring(options, locListener);
+                    }
                 } catch (e) {
                     stopTimerAndMonitor(locListener.id);
                     reject(e);
@@ -196,7 +214,7 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                         LocationMonitor.stopLocationMonitoring(locListener.id);
                         reject(new Error("Timeout while searching for location!"));
                     }, options.timeout || defaultGetLocationTimeout);
-                }
+                }         
             }
         }, reject);
     });
@@ -321,6 +339,11 @@ export class LocationMonitor {
         return null;
     }
 
+    static requestLocation(options: Options, locListener: any): void {
+        let iosLocManager = getIOSLocationManager(locListener, options);
+        iosLocManager.requestLocation();
+    }
+
     static startLocationMonitoring(options: Options, locListener: any): void {
         let iosLocManager = getIOSLocationManager(locListener, options);
         iosLocManager.startUpdatingLocation();
@@ -342,7 +365,7 @@ export class LocationMonitor {
         iosLocManager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
         locationManagers[locListener.id] = iosLocManager;
         locationListeners[locListener.id] = locListener;
-        if (parseInt(Platform.device.osVersion.split(".")[0]) >= 9) {
+        if (getVersionMaj() >= 9) {
             iosLocManager.allowsBackgroundLocationUpdates =
                 options && options.iosAllowsBackgroundLocationUpdates != null ?
                     options.iosAllowsBackgroundLocationUpdates : false;
