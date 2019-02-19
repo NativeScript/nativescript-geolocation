@@ -185,18 +185,17 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                             return;
                         }
 
-                        if (options.desiredAccuracy !== Accuracy.any && !initLocation) {                            
+                        if (options.desiredAccuracy !== Accuracy.any && !initLocation) {
                             // regardless of desired accuracy ios returns first location as quick as possible even if not as accurate as requested
                             initLocation = location;
                             return;
-                            
                         }
                     }
 
                     stopTimerAndMonitor(locListener.id);
                     resolve(location);
                 };
-                
+
                 locListener = LocationListenerImpl.initWithLocationError(successCallback, reject);
                 try {
                     if (getVersionMaj() >= 9) {
@@ -214,7 +213,7 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                         LocationMonitor.stopLocationMonitoring(locListener.id);
                         reject(new Error("Timeout while searching for location!"));
                     }, options.timeout || defaultGetLocationTimeout);
-                }         
+                }
             }
         }, reject);
     });
