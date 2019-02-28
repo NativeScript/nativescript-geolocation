@@ -19,6 +19,14 @@ var MockLocationManager = (function () {
             return _this._requestSingleUpdate(_this.delegate, _this);
         }, 500);
     };
+    MockLocationManager.prototype.requestLocation = function () {
+        var _this = this;
+        this.removeUpdates(null);
+        MockLocationManager.intervalId = setTimeout(function () {
+            // this.delegate is the location listener
+            return _this._requestSingleUpdate(_this.delegate, _this);
+        }, 500);
+    };
     MockLocationManager.prototype._requestSingleUpdate = function (locListener, instance) {
         var newLocation = {
             coordinate: {
