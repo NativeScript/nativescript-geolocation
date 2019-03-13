@@ -90,7 +90,7 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 
 | Method | Returns | Description |
 | --- | --- | --- |
-| getCurrentLocation(options: Options) | Promise<Location> | Get current location applying the specified options (if any). |
+| getCurrentLocation(options: Options) | Promise<Location> | Get current location applying the specified options (if any). Since version 5.0 of the plugin, it will use [requestLocation](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620548-requestlocation?language=objc) API for devices using iOS 9.0+. In situation of poor or no GPS signal, but available Wi-Fi it will take 10 sec to return location. |
 | watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options) | number | Monitor for location change. |
 | clearWatch(watchId: number) | void | Stop monitoring for location change. Parameter expected is the watchId returned from `watchLocation`. |
 | enableLocationRequest(always?: boolean) | Promise\<void\> | Ask for permissions to use location services. The option `always` is applicable only for iOS. For a custom prompt message on IOS, the following keys are required. NSLocationAlwaysUsageDescription, NSLocationUsageDescription and NSLocationWhenInUseUsageDescription [Read more about its usage](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620551-requestalwaysauthorization) . |
