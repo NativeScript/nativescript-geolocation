@@ -15,7 +15,7 @@
         "nativescript-geolocation": "../src",
         "nativescript-theme-core": "~1.0.4",
         "nativescript-toast": "^1.4.6",
-        "nativescript-vue": "~2.0.0",
+        "nativescript-vue": "^2.0.0",
         "tns-core-modules": "~5.2.0"
     },
     "devDependencies": {
@@ -24,7 +24,7 @@
         "babel-loader": "~8.0.0",
         "nativescript-dev-webpack": "~0.20.0",
         "nativescript-dev-typescript": "~0.8.0",
-        "nativescript-vue-template-compiler": "~2.0.0",
+        "nativescript-vue-template-compiler": "^2.0.0",
         "node-sass": "~4.9.0",
         "vue-loader": "~15.4.0"
     }
