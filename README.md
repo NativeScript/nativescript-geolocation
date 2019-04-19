@@ -101,18 +101,23 @@ geolocation.getCurrentLocation({ desiredAccuracy: Accuracy.high, maximumAge: 500
 
 ### Version Conflicts – Google Play Services
 
-If you have installed multiple plugins that use the Google Play Services you might run into version conflicts. 
-In order to fix this you might pin the version number in your `app/App_Resources/Android/app.gradle` file:
+If you have installed multiple plugins that use the Google Play Services you might run into version conflicts. For example, you may encounter the error below when using the [nativescript-google-maps-sdk](https://github.com/dapriett/nativescript-google-maps-sdk) plugin:
+
+```
+Cannot enable the location service. Error: java.lang.NoClassDefFoundError: Failed resolution of: Lcom/google/android/gms/internal/zzbck;
+```
+
+In order to fix this you might pin the version number in your `app/App_Resources/Android/before-plugins.gradle` file (if the file does not exist, just create it):
 
 ```gradle
 android {  
   // other stuff here
 
   project.ext {
-    googlePlayServicesVersion = "11.2.+"
+    googlePlayServicesVersion = "16.+"
   }
 }
-```
+``` 
 
 ## Contribute
 We love PRs! Check out the [contributing guidelines](CONTRIBUTING.md). If you want to contribute, but you are not sure where to start - look for [issues labeled `help wanted`](https://github.com/NativeScript/nativescript-geolocation/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22).
