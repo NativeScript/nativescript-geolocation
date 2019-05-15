@@ -2,10 +2,10 @@
     "nativescript": {
         "id": "org.nativescript.demovue",
         "tns-android": {
-            "version": "5.3.0"
+            "version": "5.4.0"
         },
         "tns-ios": {
-            "version": "5.3.0"
+            "version": "5.4.0"
         }
     },
     "scripts": {
@@ -15,16 +15,16 @@
         "nativescript-geolocation": "../src",
         "nativescript-theme-core": "~1.0.4",
         "nativescript-toast": "^1.4.6",
-        "nativescript-vue": "^2.0.0",
+        "nativescript-vue": "~2.2.0",
         "tns-core-modules": "^5.0.0"
     },
     "devDependencies": {
         "@babel/core": "~7.1.0",
         "@babel/preset-env": "~7.1.0",
         "babel-loader": "~8.0.0",
-        "nativescript-dev-webpack": "~0.21.0",
+        "nativescript-dev-webpack": "~0.22.0",
         "nativescript-dev-typescript": "~0.9.0",
-        "nativescript-vue-template-compiler": "^2.0.0",
+        "nativescript-vue-template-compiler": "~2.2.0",
         "node-sass": "~4.9.0",
         "vue-loader": "~15.4.0"
     }
