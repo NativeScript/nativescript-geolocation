@@ -16,6 +16,7 @@ matrix:
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
+      before_script: pod repo update
       script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
@@ -40,6 +41,7 @@ matrix:
       language: node_js 
       node_js: "8"
       jdk: oraclejdk8
+      before_script: pod repo update
       script: 
         - cd src && npm i && npm run tsc && cd ../demo && tns build ios
     - os: linux
@@ -63,6 +65,7 @@ matrix:
       env: 
         - iOS="UnitTests"
       osx_image: xcode10.0
+      before_script: pod repo update
       script: 
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
