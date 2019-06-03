@@ -6,7 +6,7 @@ matrix:
     - stage: "Lint"
       language: node_js
       os: linux
-      node_js: "8"
+      node_js: "10"
       script: cd src && npm run ci.tslint && cd ../demo && npm run ci.tslint
     - stage: "Build webpack and Test"
       os: osx
@@ -14,23 +14,25 @@ matrix:
         - Webpack="iOS"
       osx_image: xcode10.0
       language: node_js 
-      node_js: "8"
+      node_js: "10"
       jdk: oraclejdk8
       before_script: pod repo update
       script: cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
+      dist: trusty
       env:
         - Webpack="Android"
       jdk: oraclejdk8
-      before_install: nvm install 8.11.4
+      before_install: nvm install 10
       script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       env: 
         - BuildAndroid="28"
       language: android
+      dist: trusty
       jdk: oraclejdk8
-      before_install: nvm install 8.11.4
+      before_install: nvm install 10
       script:
         - cd src && npm i && npm run tsc && cd ../demo && tns build android
     - os: osx
@@ -39,13 +41,14 @@ matrix:
         - Xcode="10.0"
       osx_image: xcode10.0
       language: node_js 
-      node_js: "8"
+      node_js: "10"
       jdk: oraclejdk8
       before_script: pod repo update
       script: 
         - cd src && npm i && npm run tsc && cd ../demo && tns build ios
     - os: linux
       language: android
+      dist: trusty
       jdk: oraclejdk8
       env: 
         - Android="UnitTests"
@@ -54,13 +57,13 @@ matrix:
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
       before_install:
-        - nvm install 8
+        - nvm install 10
       script:
         - cd src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build android
         - travis_wait travis_retry tns test android --justlaunch
     - os: osx
       language: node_js
-      node_js: "8"
+      node_js: "10"
       jdk: oraclejdk8
       env: 
         - iOS="UnitTests"
