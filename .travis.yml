@@ -27,28 +27,19 @@ matrix:
       env:
         - Webpack="Android"
       jdk: oraclejdk8
-<<<<<<< HEAD
-      before_install: nvm install 8.11.4
+      before_install: nvm install 10
       before_script:
         - cd demo && tns platform add android@next
       script: npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
-=======
-      before_install: nvm install 10
-      script: cd demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
->>>>>>> master
     - os: linux
       env: 
         - BuildAndroid="28"
       language: android
       dist: trusty
       jdk: oraclejdk8
-<<<<<<< HEAD
-      before_install: nvm install 8.11.4
+      before_install: nvm install 10
       before_script:
         - cd demo && tns platform add android@next
-=======
-      before_install: nvm install 10
->>>>>>> master
       script:
         - npm run build.plugin && npm i && tns build android
     - os: osx
@@ -77,11 +68,7 @@ matrix:
         - android-wait-for-emulator
         - cd demo && tns platform add android@next
       before_install:
-<<<<<<< HEAD
-        - nvm install 8.11.4
-=======
         - nvm install 10
->>>>>>> master
       script:
         - npm run build.plugin && npm i && tns build android
         - travis_wait travis_retry tns test android --justlaunch
