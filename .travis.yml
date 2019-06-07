@@ -12,10 +12,9 @@ matrix:
       node_js: "10"
       jdk: oraclejdk8
       before_script:
-        - pip install six
         - pod repo update
-        - cd demo && tns platform add ios@next
-      script: npm run build.plugin && npm i && tns build ios --bundle --env.uglify
+        - cd ../demo && tns platform add ios@next
+      script: ../cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
       dist: trusty
@@ -24,8 +23,8 @@ matrix:
       jdk: oraclejdk8
       before_install: nvm install 10
       before_script:
-        - cd demo && tns platform add android@next
-      script: npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
+        - cd ../demo && tns platform add android@next
+      script: cd ../demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
     - os: linux
       language: android
       dist: trusty
@@ -36,11 +35,11 @@ matrix:
         - echo no | android create avd --force -n test -t android-21 -b armeabi-v7a
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
-        - cd demo && tns platform add android@next
+        - cd ../demo && tns platform add android@next
       before_install:
         - nvm install 10
       script:
-        - npm run build.plugin && npm i && tns build android
+        - cd ../src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build android
         - travis_wait travis_retry tns test android --justlaunch
     - os: osx
       language: node_js
@@ -51,10 +50,9 @@ matrix:
       osx_image: xcode10.0
       before_script:
         - pod repo update
-        - pip install six
         - cd demo && tns platform add ios@next
       script: 
-        - npm run build.plugin && npm i && tns build ios
+        - cd ../src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
 
 android:
@@ -67,6 +65,10 @@ android:
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-21
 
+before_install:
+    - sudo pip install --upgrade pip
+    - sudo pip install six
+
 install:
     - echo no | npm install -g nativescript@next
     - tns usage-reporting disable
@@ -74,10 +76,8 @@ install:
     - cd src
     - npm install tns-core-modules@next -D
     - cd ../demo
-    - npm install nativescript-dev-typescript@next -D
-    - npm install nativescript-dev-webpack@next -D
-    - ./node_modules/.bin/update-ns-webpack --deps
     - npm install tns-core-modules@next -P
-    - rm -rf node_modules/
-    - npm i
-    - cd ..
+    - npm install nativescript-dev-webpack@next -D
+    - npm install nativescript-dev-typescript@next -D
+    - ./node_modules/.bin/update-ns-webpack --deps --configs
+    - npx rimraf -- hooks node_modules platforms package-lock.json
