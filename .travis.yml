@@ -14,7 +14,7 @@ matrix:
       before_script:
         - pod repo update
         - cd ../demo && tns platform add ios@next
-      script: ../cd demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
+      script: cd ../demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
     - os: linux
       language: android
       dist: trusty
