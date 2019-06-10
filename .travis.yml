@@ -73,11 +73,10 @@ install:
     - echo no | npm install -g nativescript@next
     - tns usage-reporting disable
     - tns error-reporting disable
-    - cd src
-    - npm install tns-core-modules@next -D
-    - cd ../demo
-    - npm install tns-core-modules@next -P
+    - cd demo
+    - npm install tns-core-modules@next -P --save-exact
+    - npm install tns-platform-declarations@next -D --save-exact
     - npm install nativescript-dev-webpack@next -D --save-exact
-    - npm install nativescript-dev-typescript@next -D
+    - npm install nativescript-dev-typescript@next -D --save-exact
     - ./node_modules/.bin/update-ns-webpack --deps --configs
     - npx rimraf -- hooks node_modules platforms package-lock.json
