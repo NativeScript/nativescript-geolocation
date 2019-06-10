@@ -50,7 +50,7 @@ matrix:
       osx_image: xcode10.0
       before_script:
         - pod repo update
-        - cd demo && tns platform add ios@next
+        - cd ../demo && tns platform add ios@next
       script: 
         - cd ../src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
