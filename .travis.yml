@@ -3,67 +3,105 @@ branches:
     - next
 matrix:
   include:
-    - stage: "Build webpack and Test"
+    - stage: "WebPack, Build and Test"
       os: osx
       env:
-        - Webpack="iOS"
+        - WebPack="iOS"
+        - Type="TypeScript"
       osx_image: xcode10.2
       language: node_js 
       node_js: "10"
       jdk: oraclejdk8
       before_script:
-        - pod repo update
         - cd ../demo && tns platform add ios@next
-      script: cd ../demo && npm run build.plugin && npm i && tns build ios --bundle --env.uglify
-    - os: linux
-      language: android
+      script: 
+        - cd ../demo && npm run build.plugin
+        - tns build ios --bundle --env.uglify  
+    - os: osx
+      env:
+        - WebPack="iOS"
+        - Type="Angular"
+      osx_image: xcode10.2
+      language: node_js 
+      node_js: "10"
+      jdk: oraclejdk8
+      before_script:
+        - cd ../demo-angular && tns platform add ios@next
+      script:
+        - cd src && npm run build 
+        - cd ../publish && sh pack.sh
+        - cd ../demo-angular 
+        - tns plugin add ../publish/package/*.tgz
+        - tns build ios --bundle --env.uglify --env.aot
+    - os: osx
+      env:
+        - WebPack="iOS"
+        - Type="Vue"
+      osx_image: xcode10.2
+      language: node_js 
+      node_js: "10"
+      jdk: oraclejdk8
+      before_script:
+        - cd ../demo-vue && tns platform add ios@next
+      script:
+        - cd src && npm run build 
+        - cd ../publish && sh pack.sh
+        - cd ../demo-vue
+        - tns plugin add ../publish/package/*.tgz
+        - tns build ios --bundle --env.uglify
+    - language: android
+      os: linux
       dist: trusty
       env:
-        - Webpack="Android"
+        - WebPack="Android"
+        - Type="TypeScript"
       jdk: oraclejdk8
       before_install: nvm install 10
       before_script:
         - cd ../demo && tns platform add android@next
-      script: cd ../demo && npm run build.plugin && npm i && tns build android --bundle --env.uglify --env.snapshot
-    - os: linux
-      language: android
-      dist: trusty
-      jdk: oraclejdk8
-      env: 
-        - Android="UnitTests"
-      before_script:
-        - echo no | android create avd --force -n test -t android-21 -b armeabi-v7a
-        - emulator -avd test -no-audio -no-window &
-        - android-wait-for-emulator
-        - cd ../demo && tns platform add android@next
-      before_install:
-        - nvm install 10
       script:
-        - cd ../src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build android
-        - travis_wait travis_retry tns test android --justlaunch
-    - os: osx
-      language: node_js
-      node_js: "10"
+        - cd ../demo && npm run build.plugin
+        - tns build android --bundle --env.uglify --env.snapshot
+    - language: android
+      os: linux
+      dist: trusty
+      env:
+        - WebPack="Android"
+        - Type="Angular"
       jdk: oraclejdk8
-      env: 
-        - iOS="UnitTests"
-      osx_image: xcode10.2
+      before_install: nvm install 10
       before_script:
-        - pod repo update
-        - cd ../demo && tns platform add ios@next
-      script: 
-        - cd ../src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
-        - travis_wait travis_retry tns test ios --justlaunch
+        - cd ../demo-angular && tns platform add android@next
+      script:
+        - cd src && npm run build
+        - cd ../publish && sh pack.sh
+        - cd ../demo-angular
+        - tns plugin add ../publish/package/*.tgz
+        - tns build android --bundle --env.uglify --env.aot
+    - language: android
+      os: linux
+      dist: trusty
+      env:
+        - WebPack="Android"
+        - Type="Vue"
+      jdk: oraclejdk8
+      before_install: nvm install 10
+      before_script:
+        - cd ../demo-vue && tns platform add android@next
+      script:
+        - cd src && npm run build
+        - cd ../publish && sh pack.sh
+        - cd ../demo-vue
+        - tns plugin add ../publish/package/*.tgz
+        - tns build android --bundle --env.uglify --env.aot
 
 android:
   components:
     - tools
     - platform-tools
     - build-tools-28.0.3
-    - android-21
     - android-28
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-21
 
 before_install:
     - sudo pip install --upgrade pip
@@ -75,9 +113,27 @@ install:
     - tns error-reporting disable
     - cd demo
     - npm install tns-core-modules@next -P --save-exact
-    - npm install nativescript-unit-test-runner@next -P --save-exact
     - npm install tns-platform-declarations@next -D --save-exact
     - npm install nativescript-dev-webpack@next -D --save-exact
     - npm install nativescript-dev-typescript@next -D --save-exact
     - ./node_modules/.bin/update-ns-webpack --deps --configs
     - npx rimraf -- hooks node_modules platforms package-lock.json
+    - cd ../demo-angular
+    - npm install tns-core-modules@next -P --save-exact
+    - npm install tns-platform-declarations@next -D --save-exact
+    - npm install nativescript-angular@next -P --save-exact
+    - npm install nativescript-dev-webpack@next -D --save-exact
+    - npm install nativescript-dev-typescript@next -D --save-exact
+    - ./node_modules/.bin/update-ns-webpack --deps --configs
+    - ./node_modules/.bin/update-app-ng-deps
+    - npx rimraf -- hooks node_modules platforms package-lock.json
+    - cd ../demo-vue
+    - npm install tns-core-modules@next -P --save-exact
+    - npm install nativescript-vue@next -P --save-exact
+    - npm install tns-platform-declarations@next -D --save-exact
+    - npm install nativescript-dev-webpack@next -D --save-exact
+    - npm install nativescript-dev-typescript@next -D --save-exact
+    - ./node_modules/.bin/update-ns-webpack --deps --configs
+    - npx rimraf -- hooks node_modules platforms package-lock.json
+    - npm install -D wd@latest
+    
