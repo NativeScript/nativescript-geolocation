@@ -25,7 +25,8 @@
         "tns-core-modules": "^5.0.0",
         "reflect-metadata": "~0.1.10",
         "rxjs": "~6.3.0",
-        "zone.js": "~0.8.18"
+        "zone.js": "~0.8.18",
+        "tslint": "~5.11.0"
     },
     "devDependencies": {
         "@nativescript/schematics": "~0.5.0",
@@ -35,6 +36,7 @@
         "@ngtools/webpack": "~7.1.0"
     },
     "scripts": {
+        "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'",
         "build.plugin": "cd ../src && npm run build"
     }
 }
