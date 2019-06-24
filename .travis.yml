@@ -28,7 +28,6 @@ matrix:
       before_script:
         - cd ../demo-angular && tns platform add ios@next
       script:
-        - cd src && npm run build 
         - cd ../publish && sh pack.sh
         - cd ../demo-angular 
         - tns plugin add ../publish/package/*.tgz
@@ -44,7 +43,6 @@ matrix:
       before_script:
         - cd ../demo-vue && tns platform add ios@next
       script:
-        - cd ../src && npm run build 
         - cd ../publish && sh pack.sh
         - cd ../demo-vue
         - tns plugin add ../publish/package/*.tgz
@@ -73,7 +71,6 @@ matrix:
       before_script:
         - cd ../demo-angular && tns platform add android@next
       script:
-        - cd ../src && npm run build
         - cd ../publish && sh pack.sh
         - cd ../demo-angular
         - tns plugin add ../publish/package/*.tgz
@@ -89,7 +86,6 @@ matrix:
       before_script:
         - cd ../demo-vue && tns platform add android@next
       script:
-        - cd ../src && npm run build
         - cd ../publish && sh pack.sh
         - cd ../demo-vue
         - tns plugin add ../publish/package/*.tgz
