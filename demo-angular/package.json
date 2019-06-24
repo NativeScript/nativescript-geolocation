@@ -35,6 +35,7 @@
         "@ngtools/webpack": "~7.1.0"
     },
     "scripts": {
+        "ci.tslint": "npm i && tslint --config '../tslint.json' 'app/**/*.ts' --exclude '**/node_modules/**'",
         "build.plugin": "cd ../src && npm run build"
     }
 }
