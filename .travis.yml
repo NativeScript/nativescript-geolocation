@@ -105,7 +105,6 @@ matrix:
         - travis_wait travis_retry tns test android --justlaunch
     - os: osx
       language: node_js
-      dist: trusty
       node_js: "10"
       env: 
         - iOS="UnitTests"
