@@ -1,6 +1,5 @@
-var mockLocationManagerPath = typeof android !== 'undefined' && android ? "./mock-android" : "./mock-ios";
 var Accuracy = require("ui/enums").Accuracy;
-var MockLocationManager = require(mockLocationManagerPath).MockLocationManager;
+var MockLocationManager = typeof android !== 'undefined' && android ? require("./mock-android").MockLocationManager : require("./mock-ios").MockLocationManager;
 
 describe("location class", function () {
     it("can be instantiated", function () {
