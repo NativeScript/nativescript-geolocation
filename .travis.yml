@@ -122,8 +122,10 @@ android:
     - tools
     - platform-tools
     - build-tools-28.0.3
+    - android-21
     - android-28
     - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-21
 
 before_install:
     - sudo pip install --upgrade pip
