@@ -1,7 +1,6 @@
 import { Accuracy } from "tns-core-modules/ui/enums";
 import { setTimeout, clearTimeout } from "tns-core-modules/timer";
 import { on as applicationOn, uncaughtErrorEvent, UnhandledErrorEventData } from "tns-core-modules/application";
-import * as utils from "tns-core-modules/utils/utils";
 
 import {
     LocationBase,
@@ -257,7 +256,7 @@ export function enableLocationRequest(always?: boolean, iosOpenSettingsIfLocatio
             if (status === CLAuthorizationStatus.kCLAuthorizationStatusDenied &&
                 iosOpenSettingsIfLocationHasBeenDenied) {
                 // now open the Settings so the user can toggle the Location permission
-                utils.ios.getter(UIApplication, UIApplication.sharedApplication).openURL(NSURL.URLWithString(UIApplicationOpenSettingsURLString));
+                UIApplication.sharedApplication.openURL(NSURL.URLWithString(UIApplicationOpenSettingsURLString));
             } else {
                 let listener = LocationListenerImpl.initWithPromiseCallbacks(resolve, reject, always);
                 try {
