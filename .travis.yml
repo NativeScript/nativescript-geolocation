@@ -104,6 +104,7 @@ matrix:
         - echo no | android create avd --force -n test -t android-21 -b armeabi-v7a
         - emulator -avd test -no-audio -no-window &
         - android-wait-for-emulator
+        - cd ../demo && tns platform add android@next
       before_install:
         - nvm install 10
       script:
@@ -116,7 +117,9 @@ matrix:
       env: 
         - iOS="UnitTests"
       osx_image: xcode10.2
-      before_script: pod repo update
+      before_script: 
+        - pod repo update
+        - cd ../demo && tns platform add ios@next
       script: 
         - cd ../src && npm i && npm run tsc && npm run tslint && cd ../demo && tns build ios
         - travis_wait travis_retry tns test ios --justlaunch
