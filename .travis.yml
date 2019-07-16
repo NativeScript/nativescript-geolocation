@@ -147,7 +147,6 @@ install:
     - npm install tns-core-modules@next -P --save-exact
     - npm install tns-platform-declarations@next -D --save-exact
     - npm install nativescript-dev-webpack@next -D --save-exact
-    - npm install nativescript-dev-typescript@next -D --save-exact
     - ./node_modules/.bin/update-ns-webpack --deps --configs
     - npx rimraf -- hooks node_modules platforms package-lock.json
     - cd ../demo-angular
@@ -156,7 +155,6 @@ install:
     - npm install tns-platform-declarations@next -D --save-exact
     - npm install nativescript-angular@next -P --save-exact
     - npm install nativescript-dev-webpack@next -D --save-exact
-    - npm install nativescript-dev-typescript@next -D --save-exact
     - ./node_modules/.bin/update-ns-webpack --deps --configs
     - ./node_modules/.bin/update-app-ng-deps
     - npx rimraf -- hooks node_modules platforms package-lock.json
@@ -166,7 +164,6 @@ install:
     - npm install nativescript-vue@next -P --save-exact
     - npm install tns-platform-declarations@next -D --save-exact
     - npm install nativescript-dev-webpack@next -D --save-exact
-    - npm install nativescript-dev-typescript@next -D --save-exact
     - ./node_modules/.bin/update-ns-webpack --deps --configs
     - npx rimraf -- hooks node_modules platforms package-lock.json
     - npm install -D wd@latest
