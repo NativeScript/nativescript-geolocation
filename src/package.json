@@ -18,8 +18,8 @@
         "tslint": "cd .. && tslint \"**/*.ts\" --config tslint.json --exclude \"**/node_modules/**\" --exclude \"*demo*/platforms/**\"",
         "plugin.link": "npm link && cd ../demo && npm link nativescript-geolocation && cd ../src",
         "plugin.tscwatch": "npm run tsc -- -w",
-        "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios --syncAllFiles",
-        "demo.android": "npm i && npm run tsc && cd ../demo && tns run android --syncAllFiles",
+        "demo.ios": "npm i && npm run tsc && cd ../demo && tns run ios",
+        "demo.android": "npm i && npm run tsc && cd ../demo && tns run android",
         "ci.tslint": "npm i && tslint '**/*.ts' --config '../tslint.json' --exclude '**/node_modules/**'"
     },
     "repository": {
