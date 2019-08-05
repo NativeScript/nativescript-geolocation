@@ -20,6 +20,7 @@ matrix:
       language: node_js 
       node_js: "10"
       jdk: oraclejdk8
+      before_script: pod repo update
       script: 
         - cd demo && npm run build.plugin && npm i
         - tns build ios --bundle --env.uglify
@@ -31,6 +32,7 @@ matrix:
       language: node_js 
       node_js: "10"
       jdk: oraclejdk8
+      before_script: pod repo update
       script:
         - cd src && npm run build
         - cd ../publish && sh pack.sh
@@ -45,6 +47,7 @@ matrix:
       language: node_js 
       node_js: "10"
       jdk: oraclejdk8
+      before_script: pod repo update
       script:
         - cd src && npm run build 
         - cd ../publish && sh pack.sh
