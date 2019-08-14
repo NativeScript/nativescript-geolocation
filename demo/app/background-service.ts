@@ -37,43 +37,61 @@ function _startWatch() {
         console.log("Background enableLocationRequest error: " + (e.message || e));
     });
 }
-
 application.on(application.exitEvent, _clearWatch);
 
-if (application.android) {
-    if (device.sdkVersion < "26") {
-        (<any>android.app.Service).extend("com.nativescript.location.BackgroundService", {
-            onStartCommand: function (intent, flags, startId) {
-                this.super.onStartCommand(intent, flags, startId);
-                return android.app.Service.START_STICKY;
-            },
-            onCreate: function () {
-                _startWatch();
-            },
-            onBind: function (intent) {
-                console.log("on Bind Services");
-            },
-            onUnbind: function (intent) {
-                console.log('UnBind Service');
-            },
-            onDestroy: function () {
-                console.log('service onDestroy');
-                _clearWatch();
+export function getBackgroundServiceClass() {
+    if (application.android) {
+        if (device.sdkVersion < "26") {
+            @JavaProxy("com.nativescript.location.BackgroundService")
+            class BackgroundService extends (<any>android).app.Service {
+                constructor() {
+                    super();
+                    return global.__native(this);
+                }
+                onStartCommand(intent, flags, startId) {
+                    console.log('service onStartCommand');
+                    this.super.onStartCommand(intent, flags, startId);
+                    return android.app.Service.START_STICKY;
+                }
+                onCreate() {
+                    console.log('service onCreate');
+                    _startWatch();
+                }
+                onBind(intent) {
+                    console.log('service onBind');
+                }
+                onUnbind(intent) {
+                    console.log('service onUnbind');
+                }
+                onDestroy() {
+                    console.log('service onDestroy');
+                    _clearWatch();
+                }
             }
-        });
+            return BackgroundService;
+        } else {
+            @JavaProxy("com.nativescript.location.BackgroundService26")
+            class BackgroundService26 extends (<any>android.app).job.JobService {
+                constructor() {
+                    super();
+                    return global.__native(this);
+                }
+                onStartJob(): boolean {
+                    console.log('service onStartJob');
+                    _startWatch();
+                    return true;
+                }
+                onStopJob(jobParameters: any): boolean {
+                    console.log('service onStopJob');
+                    this.jobFinished(jobParameters, false);
+                    _clearWatch();
+                    return false;
+                }
+            }
+            return BackgroundService26;
+        }
     } else {
-        (<any>android.app).job.JobService.extend("com.nativescript.location.BackgroundService26", {
-            onStartJob() {
-                console.log('service onStartJob');
-                _startWatch();
-                return true;
-            },
-            onStopJob(jobParameters: any) {
-                console.log('service onStopJob');
-                this.jobFinished(jobParameters, false);
-                _clearWatch();
-                return false;
-            },
-        });
+        return null;
     }
 }
+export const BackgroundServiceClass = getBackgroundServiceClass();
