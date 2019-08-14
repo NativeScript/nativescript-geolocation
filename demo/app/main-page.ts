@@ -6,6 +6,7 @@ import { MainViewModel } from "./main-view-model";
 const utils = require("tns-core-modules/utils/utils");
 import * as application from "tns-core-modules/application";
 import { device } from "tns-core-modules/platform";
+import { BackgroundServiceClass } from "./background-service";
 
 let page: Page;
 let model = new MainViewModel();
@@ -35,12 +36,12 @@ export function startBackgroundTap() {
         let context = utils.ad.getApplicationContext();
         if (device.sdkVersion >= "26") {
             const jobScheduler = context.getSystemService((<any>android.content.Context).JOB_SCHEDULER_SERVICE);
-            const component = new android.content.ComponentName(context, com.nativescript.location.BackgroundService26.class);
+            const component = new android.content.ComponentName(context, BackgroundServiceClass.class);
             const builder = new (<any>android.app).job.JobInfo.Builder(jobId, component);
             builder.setOverrideDeadline(0);
-            return jobScheduler.schedule(builder.build());
+            jobScheduler.schedule(builder.build());
         } else {
-            let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
+            let intent = new android.content.Intent(context, BackgroundServiceClass.class);
             context.startService(intent);
         }
     }
@@ -52,7 +53,7 @@ export function stopBackgroundTap() {
             _stopBackgroundJob();
         } else {
             let context = utils.ad.getApplicationContext();
-            let intent = new android.content.Intent(context, com.nativescript.location.BackgroundService.class);
+            let intent = new android.content.Intent(context, BackgroundServiceClass.class);
             context.stopService(intent);
         }
     }
