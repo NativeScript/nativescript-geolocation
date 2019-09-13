@@ -23,9 +23,12 @@ export class HomeComponent implements OnInit {
     public enableLocationTap() {
         geolocation.isEnabled().then(function (isEnabled) {
             if (!isEnabled) {
-                geolocation.enableLocationRequest().then(function () {
-                }, function (e) {
+                geolocation.enableLocationRequest(true, true).then(() => {
+                    console.log("User Enabled Location Service");
+                }, (e) => {
                     console.log("Error: " + (e.message || e));
+                }).catch(ex => {
+                    console.log("Unable to Enable Location", ex);
                 });
             }
         }, function (e) {
