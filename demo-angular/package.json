@@ -2,10 +2,10 @@
   "nativescript": {
     "id": "org.nativescript.demoangular",
     "tns-android": {
-      "version": "6.1.0"
+      "version": "6.2.0"
     },
     "tns-ios": {
-      "version": "6.1.0"
+      "version": "6.2.0"
     }
   },
   "dependencies": {
@@ -17,7 +17,7 @@
     "@angular/platform-browser": "~8.2.0",
     "@angular/platform-browser-dynamic": "~8.2.0",
     "@angular/router": "~8.2.0",
-    "nativescript-angular": "~8.2.0",
+    "nativescript-angular": "~8.20.0",
     "nativescript-geolocation": "../src",
     "nativescript-theme-core": "~1.0.4",
     "nativescript-toast": "~2.0.0",
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@angular/compiler-cli": "~8.2.0",
     "@ngtools/webpack": "~8.2.0",
-    "nativescript-dev-webpack": "^1.0.0",
+    "nativescript-dev-webpack": "^1.3.0",
     "typescript": "~3.5.3"
   },
   "scripts": {
