@@ -52,19 +52,22 @@
                     console.log("Unable to Enable Location", ex);
                 }
             },
-            buttonGetLocationTap: function() {
-                let that = this;
-                geolocation.getCurrentLocation({
-                    desiredAccuracy: Accuracy.high,
-                    maximumAge: 5000,
-                    timeout: 10000
-                }).then(function (loc) {
+            buttonGetLocationTap: async function() {
+                let loc;
+
+                try {
+                    loc = await geolocation.getCurrentLocation({
+                        desiredAccuracy: Accuracy.high,
+                        maximumAge: 5000,
+                        timeout: 10000
+                    });
+
                     if (loc) {
-                        that.locations.push(loc);
+                        this.locations.push(loc);
                     }
-                }, function (e) {
-                    console.log("Error: " + (e.message || e));
-                });
+                } catch (err) {
+                    console.log(`Error: ${(err.message || err)}`);
+                }
             },
             buttonStartTap: function() {
                 try {
