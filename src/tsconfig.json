@@ -1,7 +1,8 @@
 {
     "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
+        "target": "es2017",
+        "module": "esnext",
+        "moduleResolution": "node",
         "declaration": false,
         "removeComments": true,
         "preserveConstEnums": true,
@@ -20,12 +21,9 @@
         "noImplicitUseStrict": false,
         "noFallthroughCasesInSwitch": true,
         "baseUrl": ".",
-        "paths": {
-            "*": [
-                "./node_modules/tns-core-modules/*",
-                "./node_modules/*"
-            ]
-        }
+        "plugins": [
+          { "transform": "@nativescript/webpack/transformers/ns-transform-native-classes", "type": "raw" }
+        ]
     },
     "exclude": [
         "node_modules",

@@ -5,3 +5,4 @@ tsconfig.json
 /platforms/android/**/*
 !platforms/android/include.gradle
 !platforms/android/nativescript_geolocation.aar
+*.tgz
