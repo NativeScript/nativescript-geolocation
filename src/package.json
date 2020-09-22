@@ -6,8 +6,8 @@
     "typings": "index.d.ts",
     "nativescript": {
         "platforms": {
-            "android": "4.0.0",
-            "ios": "4.0.0"
+            "android": "7.0.0",
+            "ios": "7.0.0"
         }
     },
     "scripts": {
@@ -38,9 +38,10 @@
     "homepage": "https://github.com/NativeScript/nativescript-geolocation",
     "readmeFilename": "README.md",
     "devDependencies": {
-        "tns-core-modules": "^5.0.0",
-        "tns-platform-declarations": "^5.0.0",
-        "typescript": "~3.1.6",
+        "@nativescript/core": "7.0.0",
+        "@nativescript/types": "7.0.0",
+        "@nativescript/webpack": "~3.0.0",
+        "typescript": "3.9.0",
         "prompt": "~1.0.0",
         "rimraf": "~2.6.2",
         "tslint": "~5.11.0"
