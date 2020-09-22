@@ -1,6 +1,5 @@
-import { on as applicationOn, android as androidAppInstance, AndroidApplication, uncaughtErrorEvent, UnhandledErrorEventData } from "application";
-import { Accuracy } from "tns-core-modules/ui/enums";
-import { setTimeout, clearTimeout } from "tns-core-modules/timer";
+import { Application, AndroidApplication, UnhandledErrorEventData, Enums } from "@nativescript/core";
+import { setTimeout, clearTimeout } from "@nativescript/core/timer";
 import { LocationBase, defaultGetLocationTimeout, fastestTimeUpdate, minTimeUpdate } from "./geolocation.common";
 import { Options, successCallbackType, errorCallbackType } from "./location-monitor";
 import * as permissions from "nativescript-permissions";
@@ -18,10 +17,10 @@ let attachedForErrorHandling = false;
 function _ensureLocationClient() {
     // Wrapped in a function as we should not access java object there because of the snapshots.
     fusedLocationClient = fusedLocationClient ||
-        com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(androidAppInstance.context);
+        com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(Application.android.context);
 }
 
-androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: any) {
+Application.android.on(AndroidApplication.activityResultEvent, function (args: any) {
     if (args.requestCode === REQUEST_ENABLE_LOCATION) {
         if (args.resultCode === 0) {
             if (_onEnableLocationFail) {
@@ -34,13 +33,13 @@ androidAppInstance.on(AndroidApplication.activityResultEvent, function (args: an
 });
 
 function isAirplaneModeOn(): boolean {
-    return android.provider.Settings.System.getInt(androidAppInstance.context.getContentResolver(),
+    return android.provider.Settings.System.getInt(Application.android.context.getContentResolver(),
         android.provider.Settings.System.AIRPLANE_MODE_ON) !== 0;
 }
 
 function isProviderEnabled(provider: string): boolean {
     try {
-        const locationManager: android.location.LocationManager = (<android.content.Context>androidAppInstance.context)
+        const locationManager: android.location.LocationManager = (<android.content.Context>Application.android.context)
             .getSystemService(android.content.Context.LOCATION_SERVICE);
         return locationManager.isProviderEnabled(provider);
     } catch (ex) {
@@ -115,7 +114,7 @@ function _getLocationRequest(options: Options): any {
     if (options.updateDistance) {
         mLocationRequest.setSmallestDisplacement(options.updateDistance);
     }
-    if (options.desiredAccuracy === Accuracy.high) {
+    if (options.desiredAccuracy === Enums.Accuracy.high) {
         mLocationRequest.setPriority(com.google.android.gms.location.LocationRequest.PRIORITY_HIGH_ACCURACY);
     } else {
         mLocationRequest.setPriority(com.google.android.gms.location.LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
@@ -178,7 +177,7 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
 
     if (!attachedForErrorHandling) {
         attachedForErrorHandling = true;
-        applicationOn(uncaughtErrorEvent, errorHandler.bind(this));
+        Application.on(Application.uncaughtErrorEvent, errorHandler.bind(this));
     }
 
     let locationRequest = _getLocationRequest(options);
@@ -215,7 +214,7 @@ export function enableLocationRequest(always?: boolean): Promise<void> {
                                 // on REQUEST_ENABLE_LOCATION Activity Result
                                 _onEnableLocationSuccess = resolve;
                                 _onEnableLocationFail = reject;
-                                return ex.startResolutionForResult(androidAppInstance.foregroundActivity, REQUEST_ENABLE_LOCATION);
+                                return ex.startResolutionForResult(Application.android.foregroundActivity, REQUEST_ENABLE_LOCATION);
                             } catch (sendEx) {
                                 // Ignore the error.
                                 return resolve();
@@ -240,7 +239,7 @@ function _makeGooglePlayServicesAvailable(): Promise<void> {
             return;
         }
         let googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
-        googleApiAvailability.makeGooglePlayServicesAvailable(androidAppInstance.foregroundActivity)
+        googleApiAvailability.makeGooglePlayServicesAvailable(Application.android.foregroundActivity)
             .addOnSuccessListener(_getTaskSuccessListener(resolve))
             .addOnFailureListener(_getTaskFailListener(reject));
     });
@@ -253,7 +252,7 @@ function _isGooglePlayServicesAvailable(): boolean {
 
     let isLocationServiceEnabled = true;
     let googleApiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
-    let resultCode = googleApiAvailability.isGooglePlayServicesAvailable(androidAppInstance.context);
+    let resultCode = googleApiAvailability.isGooglePlayServicesAvailable(Application.android.context);
     if (resultCode !== com.google.android.gms.common.ConnectionResult.SUCCESS) {
         isLocationServiceEnabled = false;
     }
@@ -268,12 +267,12 @@ function _isLocationServiceEnabled(options?: Options): Promise<boolean> {
             return;
         }
 
-        options = options || { desiredAccuracy: Accuracy.high, updateTime: 0, updateDistance: 0, maximumAge: 0, timeout: 0 };
+        options = options || { desiredAccuracy: Enums.Accuracy.high, updateTime: 0, updateDistance: 0, maximumAge: 0, timeout: 0 };
         let locationRequest = _getLocationRequest(options);
         let locationSettingsBuilder = new com.google.android.gms.location.LocationSettingsRequest.Builder();
         locationSettingsBuilder.addLocationRequest(locationRequest);
         locationSettingsBuilder.setAlwaysShow(true);
-        let locationSettingsClient = com.google.android.gms.location.LocationServices.getSettingsClient(androidAppInstance.context);
+        let locationSettingsClient = com.google.android.gms.location.LocationServices.getSettingsClient(Application.android.context);
         locationSettingsClient.checkLocationSettings(locationSettingsBuilder.build())
             .addOnSuccessListener(_getTaskSuccessListener(resolve))
             .addOnFailureListener(_getTaskFailListener(reject));
