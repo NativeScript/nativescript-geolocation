@@ -19,8 +19,8 @@ function _startWatch() {
                 if (loc) {
 
                     android.widget.Toast.makeText(application.android.context, 'Background Location: \n' + loc.latitude + ', ' + loc.longitude, android.widget.Toast.LENGTH_SHORT).show();
-                    //let toast = new Toasty({text:'Background Location: \n' + loc.latitude + ', ' + loc.longitude});
-                    //toast.show();
+                    // let toast = new Toasty({text:'Background Location: \n' + loc.latitude + ', ' + loc.longitude});
+                    // toast.show();
                     console.log('Background Location: ' + loc.latitude + ' ' + loc.longitude);
                 }
             },
