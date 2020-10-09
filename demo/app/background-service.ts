@@ -1,7 +1,6 @@
 import * as geolocation from "nativescript-geolocation";
 import { Accuracy } from "@nativescript/core/ui/enums";
 import {Application as application, Device as device } from "@nativescript/core";
-import {Toasty} from "nativescript-toasty";
 
 let watchId;
 
@@ -18,8 +17,10 @@ function _startWatch() {
         watchId = geolocation.watchLocation(
             function (loc) {
                 if (loc) {
-                    let toast = new Toasty({text:'Background Location: \n' + loc.latitude + ', ' + loc.longitude});
-                    toast.show();
+
+                    android.widget.Toast.makeText(application.android.context, 'Background Location: \n' + loc.latitude + ', ' + loc.longitude, android.widget.Toast.LENGTH_SHORT).show();
+                    //let toast = new Toasty({text:'Background Location: \n' + loc.latitude + ', ' + loc.longitude});
+                    //toast.show();
                     console.log('Background Location: ' + loc.latitude + ' ' + loc.longitude);
                 }
             },
@@ -41,7 +42,8 @@ application.on(application.exitEvent, _clearWatch);
 export function getBackgroundServiceClass() {
     if (application.android) {
         if (device.sdkVersion < "26") {
-            @JavaProxy("com.nativescript.location.BackgroundService")
+            @NativeClass()
+            @JavaProxy('com.nativescript.location.BackgroundService')
             class BackgroundService extends (<any>android).app.Service {
                 constructor() {
                     super();
@@ -69,7 +71,8 @@ export function getBackgroundServiceClass() {
             }
             return BackgroundService;
         } else {
-            @JavaProxy("com.nativescript.location.BackgroundService26")
+            @NativeClass()
+            @JavaProxy('com.nativescript.location.BackgroundService26')
             class BackgroundService26 extends (<any>android.app).job.JobService {
                 constructor() {
                     super();
