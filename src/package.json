@@ -41,7 +41,7 @@
         "@nativescript/core": "7.0.0",
         "@nativescript/types": "7.0.0",
         "@nativescript/webpack": "~3.0.0",
-        "typescript": "3.9.0",
+        "typescript": "~3.9.0",
         "prompt": "~1.0.0",
         "rimraf": "~2.6.2",
         "tslint": "~5.11.0"
