@@ -1,6 +1,5 @@
 import * as geolocation from "nativescript-geolocation";
-import { Observable } from "tns-core-modules/data/observable";
-import { ObservableArray } from "tns-core-modules/data/observable-array";
+import { Observable, ObservableArray } from "@nativescript/core";
 
 export class MainViewModel extends Observable {
     private _locations: ObservableArray<geolocation.Location>;

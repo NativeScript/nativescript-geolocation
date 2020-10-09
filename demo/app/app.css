@@ -1,1 +1,4 @@
 ﻿@import '~nativescript-theme-core/css/core.light.css';
+.ns-dark Button{
+	color:black;
+}

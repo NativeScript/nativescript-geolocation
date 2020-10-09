@@ -1,8 +1,7 @@
 import * as geolocation from "nativescript-geolocation";
-import { Accuracy } from "tns-core-modules/ui/enums";
-import * as application from "tns-core-modules/application";
-import { device } from "tns-core-modules/platform";
-import * as Toast from "nativescript-toast";
+import { Accuracy } from "@nativescript/core/ui/enums";
+import {Application as application, Device as device } from "@nativescript/core";
+import {Toasty} from "nativescript-toasty";
 
 let watchId;
 
@@ -19,7 +18,7 @@ function _startWatch() {
         watchId = geolocation.watchLocation(
             function (loc) {
                 if (loc) {
-                    let toast = Toast.makeText('Background Location: \n' + loc.latitude + ', ' + loc.longitude);
+                    let toast = new Toasty({text:'Background Location: \n' + loc.latitude + ', ' + loc.longitude});
                     toast.show();
                     console.log('Background Location: ' + loc.latitude + ' ' + loc.longitude);
                 }
