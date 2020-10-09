@@ -358,7 +358,7 @@ export class LocationMonitor {
     static createiOSLocationManager(locListener: any, options: Options): CLLocationManager {
         let iosLocManager = new CLLocationManager();
         iosLocManager.delegate = locListener;
-        iosLocManager.desiredAccuracy = options ? options.desiredAccuracy : Accuracy.high;
+        iosLocManager.desiredAccuracy = options ? options.desiredAccuracy : Enums.Accuracy.high;
         iosLocManager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
         locationManagers[locListener.id] = iosLocManager;
         locationListeners[locListener.id] = locListener;
@@ -383,7 +383,7 @@ function getIOSLocationManager(locListener: any, options: Options): CLLocationMa
         let manager = new iosLocationManager();
 
         manager.delegate = locListener;
-        manager.desiredAccuracy = options ? options.desiredAccuracy : Accuracy.high;
+        manager.desiredAccuracy = options ? options.desiredAccuracy : Enums.Accuracy.high;
         manager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
 
         locationManagers[locListener.id] = manager;
