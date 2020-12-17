@@ -33,8 +33,8 @@
             }
         },
         methods: {
-            enableLocationTap: function() {
-                geolocation.isEnabled().then(function (isEnabled) {
+            enableLocationTap: () => {
+                geolocation.isEnabled().then((isEnabled) => {
                     if (!isEnabled) {
                         geolocation.enableLocationRequest(true, true).then(() => {
                             console.log("User Enabled Location Service");
@@ -44,34 +44,32 @@
                             console.log("Unable to Enable Location", ex);
                         });
                     }
-                }, function (e) {
+                },  (e) => {
                     console.log("Error: " + (e.message || e));
                 });
             },
-            buttonGetLocationTap: function() {
-                let that = this;
+            buttonGetLocationTap: () => {
                 geolocation.getCurrentLocation({
                     desiredAccuracy: Accuracy.high,
                     maximumAge: 5000,
                     timeout: 10000
-                }).then(function (loc) {
+                }).then((loc) => {
                     if (loc) {
-                        that.locations.push(loc);
+                        this.locations.push(loc);
                     }
-                }, function (e) {
+                }, (e) => {
                     console.log("Error: " + (e.message || e));
                 });
             },
-            buttonStartTap: function() {
+            buttonStartTap: () => {
                 try {
-                    let that = this;
                     this.watchIds.push(geolocation.watchLocation(
-                        function (loc) {
+                        (loc) => {
                             if (loc) {
-                                that.locations.push(loc);
+                                this.locations.push(loc);
                             }
                         },
-                        function (e) {
+                        (e) => {
                             console.log("Error: " + e.message);
                         },
                         {
@@ -84,14 +82,14 @@
                     console.log("Error: " + ex.message);
                 }
             },
-            buttonStopTap: function() {
+            buttonStopTap: () => {
                 let watchId = this.watchIds.pop();
                 while (watchId != null) {
                     geolocation.clearWatch(watchId);
                     watchId = this.watchIds.pop();
                 }
             },
-            buttonClearTap: function() {
+            buttonClearTap: () => {
                 this.locations.splice(0, this.locations.length);
             }
         }
