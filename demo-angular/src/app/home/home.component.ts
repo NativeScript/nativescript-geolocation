@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import * as geolocation from "nativescript-geolocation";
-import { Accuracy } from "tns-core-modules/ui/enums";
+import { Accuracy } from "@nativescript/core/ui/enums";
 
 @Component({
     selector: "Home",

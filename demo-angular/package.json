@@ -23,7 +23,7 @@
     "nativescript-toast": "~2.0.0",
     "reflect-metadata": "~0.1.10",
     "rxjs": "^6.4.0",
-    "tns-core-modules": "^6.0.0",
+    "@nativescript/core": "^7.0.0",
     "tslint": "~5.11.0",
     "zone.js": "^0.9.1"
   },

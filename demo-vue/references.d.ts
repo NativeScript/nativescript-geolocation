@@ -1,3 +1,3 @@
-/// <reference path="./node_modules/tns-core-modules/tns-core-modules.d.ts" />
-/// <reference path="../src/node_modules/tns-platform-declarations/ios.d.ts" />
-/// <reference path="../src/node_modules/tns-platform-declarations/android.d.ts" />
+/// <reference path="./node_modules/@nativescript/core/references.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-ios/index.d.ts" />
+/// <reference path="./node_modules/@nativescript/types-android/index.d.ts" />

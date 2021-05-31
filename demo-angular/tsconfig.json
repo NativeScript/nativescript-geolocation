@@ -17,7 +17,7 @@
                 "src/*"
             ],
             "*": [
-                "./node_modules/tns-core-modules/*",
+                "./node_modules/@nativescript/core/*",
                 "./node_modules/*"
             ]
         }

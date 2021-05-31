@@ -1,11 +1,11 @@
 import * as geolocation from "nativescript-geolocation";
-import { Accuracy } from "tns-core-modules/ui/enums";
-import { EventData } from "tns-core-modules/data/observable";
-import { Page } from "tns-core-modules/ui/page";
+import { Accuracy } from "@nativescript/core/ui/enums";
+import { EventData } from "@nativescript/core/data/observable";
+import { Page } from "@nativescript/core/ui/page";
 import { MainViewModel } from "./main-view-model";
-const utils = require("tns-core-modules/utils/utils");
-import * as application from "tns-core-modules/application";
-import { device } from "tns-core-modules/platform";
+const utils = require("@nativescript/core/utils/utils");
+import * as application from "@nativescript/core/application";
+import { device } from "@nativescript/core/platform";
 import { BackgroundServiceClass } from "./background-service";
 
 let page: Page;

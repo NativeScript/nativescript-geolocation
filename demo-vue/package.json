@@ -16,7 +16,7 @@
         "nativescript-theme-core": "~1.0.4",
         "nativescript-toast": "~2.0.0",
         "nativescript-vue": "~2.4.0",
-        "tns-core-modules": "^6.0.0"
+        "@nativescript/core": "^7.0.0"
     },
     "devDependencies": {
         "@babel/core": "~7.1.0",

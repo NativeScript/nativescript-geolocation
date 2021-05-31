@@ -1,7 +1,7 @@
 import * as geolocation from "nativescript-geolocation";
-import { Accuracy } from "tns-core-modules/ui/enums";
-import * as application from "tns-core-modules/application";
-import { device } from "tns-core-modules/platform";
+import { Accuracy } from "@nativescript/core/ui/enums";
+import * as application from "@nativescript/core/application";
+import { device } from "@nativescript/core/platform";
 import * as Toast from "nativescript-toast";
 
 let watchId;

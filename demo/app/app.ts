@@ -1,2 +1,2 @@
-﻿import * as application from 'tns-core-modules/application';
+﻿import * as application from '@nativescript/core/application';
 application.run({ moduleName: "app-root" });
