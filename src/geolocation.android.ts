@@ -124,12 +124,21 @@ function _getLocationRequest(options: Options): any {
     return mLocationRequest;
 }
 
-function _requestLocationPermissions(): Promise<any> {
+function _requestLocationPermissions(always: boolean): Promise<any> {
     return new Promise<any>(function (resolve, reject) {
         if (LocationManager.shouldSkipChecks()) {
             resolve();
         } else {
-            permissions.requestPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION).then(resolve, reject);
+            if (always) {
+                permissions.requestPermission((<any>android).Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                .then(resolve, reject)
+                .catch((e) => {
+                    console.error("Failed to request Android background location permission due to: " + e);
+                });
+            } else {
+                permissions.requestPermission((<any>android).Manifest.permission.ACCESS_FINE_LOCATION).then(resolve, reject);
+            }
+
         }
     });
 }
@@ -202,7 +211,7 @@ export function clearWatch(watchId: number): void {
 
 export function enableLocationRequest(always?: boolean): Promise<void> {
     return new Promise<void>(function (resolve, reject) {
-        _requestLocationPermissions().then(() => {
+        _requestLocationPermissions(always).then(() => {
             _makeGooglePlayServicesAvailable().then(() => {
                 _isLocationServiceEnabled().then(() => {
                     resolve();
