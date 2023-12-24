@@ -1,6 +1,4 @@
-import { Accuracy } from "tns-core-modules/ui/enums";
-import { setTimeout, clearTimeout } from "tns-core-modules/timer";
-import { on as applicationOn, uncaughtErrorEvent, UnhandledErrorEventData } from "tns-core-modules/application";
+import { Application, Enums, UnhandledErrorEventData, Device } from "@nativescript/core";
 
 import {
     LocationBase,
@@ -12,13 +10,13 @@ import {
     successCallbackType,
     errorCallbackType
 } from "./location-monitor";
-import * as Platform from "platform";
 
 const locationManagers = {};
 const locationListeners = {};
 let watchId = 0;
 let attachedForErrorHandling = false;
 
+@NativeClass()
 class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate {
     public static ObjCProtocols = [CLLocationManagerDelegate]; // tslint:disable-line:variable-name
 
@@ -140,7 +138,7 @@ function errorHandler(errData: UnhandledErrorEventData) {
 }
 
 function getVersionMaj () {
-    return parseInt(Platform.device.osVersion.split(".")[0]);
+    return parseInt(Device.osVersion.split(".")[0]);
 }
 
 // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
@@ -184,7 +182,7 @@ export function getCurrentLocation(options: Options): Promise<Location> {
                             return;
                         }
 
-                        if (options.desiredAccuracy !== Accuracy.any && !initLocation) {
+                        if (options.desiredAccuracy !== Enums.Accuracy.any && !initLocation) {
                             // regardless of desired accuracy ios returns first location as quick as possible even if not as accurate as requested
                             initLocation = location;
                             return;
@@ -223,7 +221,7 @@ export function watchLocation(successCallback: successCallbackType,
     options: Options): number {
     if (!attachedForErrorHandling) {
         attachedForErrorHandling = true;
-        applicationOn(uncaughtErrorEvent, errorHandler.bind(this));
+        Application.on(Application.uncaughtErrorEvent, errorHandler.bind(this));
     }
 
     let zonedSuccessCallback = (<any>global).zonedCallback(successCallback);
@@ -359,7 +357,7 @@ export class LocationMonitor {
     static createiOSLocationManager(locListener: any, options: Options): CLLocationManager {
         let iosLocManager = new CLLocationManager();
         iosLocManager.delegate = locListener;
-        iosLocManager.desiredAccuracy = options ? options.desiredAccuracy : Accuracy.high;
+        iosLocManager.desiredAccuracy = options ? options.desiredAccuracy : Enums.Accuracy.high;
         iosLocManager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
         locationManagers[locListener.id] = iosLocManager;
         locationListeners[locListener.id] = locListener;
@@ -384,7 +382,7 @@ function getIOSLocationManager(locListener: any, options: Options): CLLocationMa
         let manager = new iosLocationManager();
 
         manager.delegate = locListener;
-        manager.desiredAccuracy = options ? options.desiredAccuracy : Accuracy.high;
+        manager.desiredAccuracy = options ? options.desiredAccuracy : Enums.Accuracy.high;
         manager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
 
         locationManagers[locListener.id] = manager;
