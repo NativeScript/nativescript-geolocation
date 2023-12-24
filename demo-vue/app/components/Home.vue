@@ -33,34 +33,41 @@
             }
         },
         methods: {
-            enableLocationTap: function() {
-                geolocation.isEnabled().then(function (isEnabled) {
-                    if (!isEnabled) {
-                        geolocation.enableLocationRequest(true, true).then(() => {
-                            console.log("User Enabled Location Service");
-                        }, (e) => {
-                            console.log("Error: " + (e.message || e));
-                        }).catch(ex => {
-                            console.log("Unable to Enable Location", ex);
-                        });
-                    }
-                }, function (e) {
-                    console.log("Error: " + (e.message || e));
-                });
+            enableLocationTap: async function() {
+                let isEnable;
+
+                try {
+                    isEnable = await geolocation.isEnabled();
+                } catch (e) {
+                    console.log(`Error: ${(e.message || e)}`);
+                    return;
+                }
+
+                if (isEnable) return;
+
+                try {
+                    await geolocation.enableLocationRequest(true, true)
+                    console.log("User Enabled Location Service");
+                } catch (ex) {
+                    console.log("Unable to Enable Location", ex);
+                }
             },
-            buttonGetLocationTap: function() {
-                let that = this;
-                geolocation.getCurrentLocation({
-                    desiredAccuracy: Accuracy.high,
-                    maximumAge: 5000,
-                    timeout: 10000
-                }).then(function (loc) {
+            buttonGetLocationTap: async function() {
+                let loc;
+
+                try {
+                    loc = await geolocation.getCurrentLocation({
+                        desiredAccuracy: Accuracy.high,
+                        maximumAge: 5000,
+                        timeout: 10000
+                    });
+
                     if (loc) {
-                        that.locations.push(loc);
+                        this.locations.push(loc);
                     }
-                }, function (e) {
-                    console.log("Error: " + (e.message || e));
-                });
+                } catch (err) {
+                    console.log(`Error: ${(err.message || err)}`);
+                }
             },
             buttonStartTap: function() {
                 try {
